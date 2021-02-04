@@ -1,11 +1,10 @@
 'use strict';
-
+import {loadView} from './spa/spaControl.js'
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
 //connection.send(JSON.stringify({mType: 'uID', data: id}));
 
 let socket = undefined;
-
 //socket msg handlers
 const handleSocket = mType => ({
   'AAAAAAAAAAAAAAAAAAA': console.log,
@@ -45,3 +44,5 @@ document.addEventListener('click', evt => {
     handleClick(evt)();
   }
 });
+loadView();
+document.onchange = loadView();
