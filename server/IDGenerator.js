@@ -26,7 +26,6 @@ class IDGenerator {
     let id = undefined;
     do {
       id = this._gererateID();
-      console.log(id);
     } while (this._usedID.includes(id));
     this._usedID.push(id);
     return id;

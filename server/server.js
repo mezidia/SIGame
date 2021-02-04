@@ -22,6 +22,8 @@ const mime = {
 
 //class server singleton
 class Server {
+  _users = {};
+
   constructor(port) {
     if (!Server._instance) {
       Server._instance = this;
@@ -32,8 +34,7 @@ class Server {
       const server = this.server;
       this.ws = new WebSocket.Server({ server });
       this.ws.on('connection', (connection, req) => {
-        console.log(req.url);
-        this.connectionOpen(connection);
+        this.connectionOpen(connection, req);
         connection.on('message', m => this.connectionMessage(connection, m));
         connection.on('close', () => this.connectionClose(connection));
       });
@@ -57,16 +58,31 @@ class Server {
   }
 
   //on new user connected
-  connectionOpen(connection) {
+  connectionOpen(connection, req) {
     let n = 0;
     this.ws.clients.forEach(() => n++);
+    this.sendToAll({mType: 'usersOnline', data: n});
+    const id = idGenerator.getID();
+    this._users[id] = [connection, req.url.slice(11)];
+    this.sendToUser(id, {mType: 'uID', data: id});
+    console.log(this._users);
+  }
+
+  //send message to everyone
+  sendToAll(message) {
     this.ws.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({mType: 'usersOnline', data: n}));
+        client.send(JSON.stringify(message));
       }
     });
-    const id = idGenerator.getID();
-    connection.send(JSON.stringify({mType: 'uID', data: id}));
+  }
+
+  //send to specific user 
+  sendToUser(id, message) {
+    const user = this._users[id][1];
+    if (user.readyState === WebSocket.OPEN) {
+      user.send(JSON.stringify(message));
+    }
   }
 
   //executes on new message from client
@@ -76,7 +92,16 @@ class Server {
 
   //executes on user quitting
   connectionClose(connection) {
-    console.log('user quits');
+    let n = 0;
+    this.ws.clients.forEach(() => n++);
+    this.sendToAll({mType: 'usersOnline', data: n});
+  }
+
+  // gets users id by connection
+  getIdByConnection(connection) {
+    for (let [id, info] of Object.entries(this._users)) {
+      if (info[0] === connection) return id;
+    }
   }
 }
 
