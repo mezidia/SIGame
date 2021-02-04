@@ -5,6 +5,9 @@ export default class User {
     this.name = name;
     _id = id;
   }
+
+  
+
 }
 
 

@@ -31,7 +31,8 @@ class Server {
       this.server.on('request', this.handleRequest);
       const server = this.server;
       this.ws = new WebSocket.Server({ server });
-      this.ws.on('connection', connection => {
+      this.ws.on('connection', (connection, req) => {
+        console.log(req.url);
         this.connectionOpen(connection);
         connection.on('message', m => this.connectionMessage(connection, m));
         connection.on('close', () => this.connectionClose(connection));
