@@ -64,7 +64,6 @@ class Server {
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
     this._users[id] = [connection, req.url.slice(11)];
-    this.sendToUser(id, {mType: 'uID', data: id});
     console.log(this._users);
   }
 
@@ -79,7 +78,7 @@ class Server {
 
   //send to specific user 
   sendToUser(id, message) {
-    const user = this._users[id][1];
+    const user = this._users[id][0];
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify(message));
     }
