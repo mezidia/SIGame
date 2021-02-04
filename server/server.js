@@ -2,6 +2,10 @@
 const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
+const IDGenerator = require('./IDGenerator');
+
+const fileManager = new FileManager();
+const idGenerator = new IDGenerator();
 
 const routing = {
   '/': '/index.html'
@@ -28,7 +32,7 @@ class Server {
       const server = this.server;
       this.ws = new WebSocket.Server({ server });
       this.ws.on('connection', connection => {
-        this.connectionOpen();
+        this.connectionOpen(connection);
         connection.on('message', m => this.connectionMessage(connection, m));
         connection.on('close', () => this.connectionClose(connection));
       });
@@ -43,7 +47,6 @@ class Server {
     let extention = name.split('.')[1];
     const typeAns = mime[extention];
     let data = null;
-    const fileManager = new FileManager();
     data = await fileManager.readFile('.' + name);
     if (data) {
       res.writeHead(200, { 'Content-Type': `${typeAns}; charset=utf-8` });
@@ -53,7 +56,7 @@ class Server {
   }
 
   //on new user connected
-  connectionOpen() {
+  connectionOpen(connection) {
     let n = 0;
     this.ws.clients.forEach(() => n++);
     this.ws.clients.forEach(client => {
@@ -61,6 +64,8 @@ class Server {
         client.send(JSON.stringify({mType: 'usersOnline', data: n}));
       }
     });
+    const id = idGenerator.getID();
+    connection.send(JSON.stringify({mType: 'uID', data: id}));
   }
 
   //executes on new message from client
