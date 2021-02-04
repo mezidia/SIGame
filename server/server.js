@@ -79,7 +79,7 @@ class Server {
 
   //send to specific user 
   sendToUser(id, message) {
-    const user = this._users[id][1];
+    const user = this._users[id][0];
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify(message));
     }
