@@ -18,7 +18,8 @@ export default class Router {
 
   getView(midURL) {
     return (endURL = '') => ({
-      'about': 'azazaza',
+      help: {viewName: 'help'},
+      createGame: {viewName: 'createGame'}
     })[midURL] || {viewName: 'mainPage'};
   }
 
