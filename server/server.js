@@ -18,6 +18,8 @@ const mime = {
   'png': 'image/png',
   'ico': 'image/x-icon',
   'jpeg': 'image/jpeg',
+  'json': 'text/plain',
+  'txt': 'text/plain',
 };
 
 //class server singleton
