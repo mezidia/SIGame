@@ -1,6 +1,6 @@
 const view = () => {
   return `<div class="container-fluid">
-    <h1>Help page</h1>    
+    <h1 data-localize="help-page">Help page</h1>    
     </div>
     `
 };

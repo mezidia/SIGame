@@ -1,5 +1,8 @@
 'use strict';
 import { loadView } from './spa/spaControl.js'
+import { changeLanguage } from './changeLanguage.js'
+import { de } from '../localization/de.js'
+import { ua } from '../localization/ua.js'
 
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
@@ -84,9 +87,16 @@ document.addEventListener('click', evt => {
   }
 });
 
+//put listeners on language change
+const deEl = document.getElementById('de');
+const uaEl = document.getElementById('ua');
+uaEl.addEventListener('click', () => changeLanguage(ua));
+deEl.addEventListener('click', () => changeLanguage(de));
+
 /**
  * 1 - it opens main page
  * 2 - it switch pages on hach change
 */
 loadView();
 window.onhashchange = loadView;
+
