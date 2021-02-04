@@ -6,8 +6,6 @@ export default class User {
     _id = id;
   }
 
-  
-
 }
 
 
