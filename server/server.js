@@ -18,6 +18,8 @@ const mime = {
   'png': 'image/png',
   'ico': 'image/x-icon',
   'jpeg': 'image/jpeg',
+  'json': 'text/plain',
+  'txt': 'text/plain',
 };
 
 //class server singleton
@@ -64,7 +66,6 @@ class Server {
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
     this._users[id] = [connection, req.url.slice(11)];
-    this.sendToUser(id, {mType: 'uID', data: id});
     console.log(this._users);
   }
 
