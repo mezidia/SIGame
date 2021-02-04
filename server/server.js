@@ -28,7 +28,7 @@ class Server {
       const server = this.server;
       this.ws = new WebSocket.Server({ server });
       this.ws.on('connection', connection => {
-        this.connectionOpen(connection);
+        this.connectionOpen();
         connection.on('message', m => this.connectionMessage(connection, m));
         connection.on('close', () => this.connectionClose(connection));
       });
@@ -53,8 +53,14 @@ class Server {
   }
 
   //on new user connected
-  connectionOpen(connection) {
-    console.log('new user connected');
+  connectionOpen() {
+    let n = 0;
+    this.ws.clients.forEach(() => n++);
+    this.ws.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({mType: 'usersOnline', data: n}));
+      }
+    });
   }
 
   //executes on new message from client
