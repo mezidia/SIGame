@@ -1,0 +1,9 @@
+.column-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-50 {
+    margin-top: 5px;
+    min-height: 50px;
+}

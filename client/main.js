@@ -45,4 +45,4 @@ document.addEventListener('click', evt => {
   }
 });
 loadView();
-document.onchange = loadView();
+window.onhashchange = loadView;
