@@ -2,6 +2,10 @@
 const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
+const IDGenerator = require('./IDGenerator');
+
+const fileManager = new FileManager();
+const idGenerator = new IDGenerator();
 
 const routing = {
   '/': '/index.html'
@@ -14,10 +18,14 @@ const mime = {
   'png': 'image/png',
   'ico': 'image/x-icon',
   'jpeg': 'image/jpeg',
+  'json': 'text/plain',
+  'txt': 'text/plain',
 };
 
 //class server singleton
 class Server {
+  _users = {};
+
   constructor(port) {
     if (!Server._instance) {
       Server._instance = this;
@@ -27,8 +35,8 @@ class Server {
       this.server.on('request', this.handleRequest);
       const server = this.server;
       this.ws = new WebSocket.Server({ server });
-      this.ws.on('connection', connection => {
-        this.connectionOpen(connection);
+      this.ws.on('connection', (connection, req) => {
+        this.connectionOpen(connection, req);
         connection.on('message', m => this.connectionMessage(connection, m));
         connection.on('close', () => this.connectionClose(connection));
       });
@@ -43,7 +51,6 @@ class Server {
     let extention = name.split('.')[1];
     const typeAns = mime[extention];
     let data = null;
-    const fileManager = new FileManager();
     data = await fileManager.readFile('.' + name);
     if (data) {
       res.writeHead(200, { 'Content-Type': `${typeAns}; charset=utf-8` });
@@ -53,8 +60,30 @@ class Server {
   }
 
   //on new user connected
-  connectionOpen(connection) {
-    console.log('new user connected');
+  connectionOpen(connection, req) {
+    let n = 0;
+    this.ws.clients.forEach(() => n++);
+    this.sendToAll({mType: 'usersOnline', data: n});
+    const id = idGenerator.getID();
+    this._users[id] = [connection, req.url.slice(11)];
+    console.log(this._users);
+  }
+
+  //send message to everyone
+  sendToAll(message) {
+    this.ws.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(message));
+      }
+    });
+  }
+
+  //send to specific user 
+  sendToUser(id, message) {
+    const user = this._users[id][0];
+    if (user.readyState === WebSocket.OPEN) {
+      user.send(JSON.stringify(message));
+    }
   }
 
   //executes on new message from client
@@ -64,7 +93,16 @@ class Server {
 
   //executes on user quitting
   connectionClose(connection) {
-    console.log('user quits');
+    let n = 0;
+    this.ws.clients.forEach(() => n++);
+    this.sendToAll({mType: 'usersOnline', data: n});
+  }
+
+  // gets users id by connection
+  getIdByConnection(connection) {
+    for (let [id, info] of Object.entries(this._users)) {
+      if (info[0] === connection) return id;
+    }
   }
 }
 
