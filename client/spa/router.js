@@ -18,6 +18,7 @@ export default class Router {
 
   getView(midURL) {
     return (endURL = '') => ({
+      'about': 'azazaza',
     })[midURL] || {viewName: 'mainPage'};
   }
 

@@ -10,7 +10,7 @@ async function loadMainView() {
 }
 
 const loadView = () => {
-  const { viewName, endpointName } = router.getState();
+  const { viewName } = router.getState();
   engine.loader();
   import(`./views/${viewName}.js`)
     .then((viewModel) => {      
@@ -25,7 +25,4 @@ const loadView = () => {
     });
 };
 
-export {
-  loadMainView,
-  loadView
-};
+export { loadView };

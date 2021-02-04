@@ -1,15 +1,31 @@
 'use strict';
-import {loadView} from './spa/spaControl.js'
+import { loadView } from './spa/spaControl.js'
+
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
 //connection.send(JSON.stringify({mType: 'uID', data: id}));
 
 let socket = undefined;
-//socket msg handlers
+
+/**
+ * config function for socket msg handlers
+ * @example
+ * handleSocket('AAAAAAAA')
+ * returns console.log
+ * @returns {Function} Returns the handler of socket msg type.
+*/
 const handleSocket = mType => ({
   'AAAAAAAAAAAAAAAAAAA': console.log,
 })[mType];
 
+/**
+ * it runs socket msg handler if it is exists
+ * @example
+ * msg.data.mType = 'F'
+ * handleSocket(msg)
+ * it runs 'F' handler from handleSocket
+ * 
+*/
 function sockethandle(msg) {
   if (handleSocket(msg.data.mType) === undefined) {
     return;
@@ -18,7 +34,14 @@ function sockethandle(msg) {
   }
 }
 
-const connectToSIgame = (name) => {
+/**
+ * it connect user to webSocket server,
+ * setup socket msg events
+ * send userName to WS server
+ * 
+*/
+const connectToSIgame = () => {
+  const name = document.getElementById('name-input').value;
   socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
   socket.onopen = () => {
     socket.onclose = () => {
@@ -32,11 +55,25 @@ const connectToSIgame = (name) => {
   };
 };
 
-
+/**
+ * config function for clickes msg handlers
+ * @example
+ * handleClick('play-btn')
+ * returns connectToSIgame
+ * @returns {Function} Returns the handler of click
+*/
 const handleClick = evt => ({
-  'AAAAAAAAAAAAAAAAAAA': connectToSIgame('vasya'),
+  'play-btn': connectToSIgame,
 })[evt.target.id];
 
+/**
+ * it runs click handler if it is exists
+ * @example
+ * evt.target.id = 'play-btn'
+ * handleClick(evt)
+ * it runs 'play-btn' handler from handleClick
+ * 
+*/
 document.addEventListener('click', evt => {
   if (handleClick(evt) === undefined) {
     return;
@@ -44,5 +81,10 @@ document.addEventListener('click', evt => {
     handleClick(evt)();
   }
 });
+
+/**
+ * 1 - it opens main page
+ * 2 - it switch pages on hach change
+*/
 loadView();
 window.onhashchange = loadView;
