@@ -26,6 +26,7 @@ const connectToSIgame = () => {
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
+  changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
   socket.onopen = () => {
     socket.onclose = () => {
