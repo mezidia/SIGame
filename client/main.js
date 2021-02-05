@@ -10,39 +10,18 @@ import { ua } from '../localization/ua.js'
 
 let socket = undefined;
 
-/**
- * config function for socket msg handlers
- * @example
- * handleSocket('AAAAAAAA')
- * returns console.log
- * @returns {Function} Returns the handler of socket msg type.
-*/
-const handleSocket = mType => ({
+//this config function returns function by mType of message, that came from socket
+const socketHandleConfig = mType => ({
   'AAAAAAAAAAAAAAAAAAA': console.log,
 })[mType];
 
-/**
- * it runs socket msg handler if it is exists
- * @example
- * msg.data.mType = 'F'
- * handleSocket(msg)
- * it runs 'F' handler from handleSocket
- * 
-*/
-function sockethandle(msg) {
-  if (handleSocket(msg.data.mType) === undefined) {
-    return;
-  } else {
-    handleSocket(msg.data.mType)();
-  }
+//executes function returned by socketHandleConfig
+function socketHandle(msg) {
+  if (!socketHandleConfig(msg.data.mType)) return;
+  socketHandleConfig(msg.data.mType)();
 }
 
-/**
- * it connect user to webSocket server,
- * setup socket msg events
- * send userName to WS server
- * 
-*/
+//connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   const name = document.getElementById('name-input').value;
@@ -54,49 +33,28 @@ const connectToSIgame = () => {
       console.log('closed');
     };
     socket.onmessage = msg => {
-      sockethandle(JSON.parse(msg.data));
+      socketHandle(JSON.parse(msg.data));
       console.log(JSON.parse(msg.data));
     };
   };
 };
 
-/**
- * config function for clickes msg handlers
- * @example
- * handleClick('play-btn')
- * returns connectToSIgame
- * @returns {Function} Returns the handler of click
-*/
+//config function returns handlers by id
 const handleClick = evt => ({
   'play-btn': connectToSIgame,
+  'de': () => changeLanguage(de),
+  'ua': () => changeLanguage(ua),
 })[evt.target.id];
 
-/**
- * it runs click handler if it exists
- * @example
- * evt.target.id = 'play-btn'
- * handleClick(evt)
- * it runs 'play-btn' handler from handleClick
- * 
-*/
+
+// it runs click handler if it exists
 document.addEventListener('click', evt => {
-  if (handleClick(evt) === undefined) {
-    return;
-  } else {
-    handleClick(evt)();
-  }
+  if (!handleClick(evt)) return;
+  handleClick(evt)();
 });
 
-//put listeners on language change
-const deEl = document.getElementById('de');
-const uaEl = document.getElementById('ua');
-uaEl.addEventListener('click', () => changeLanguage(ua));
-deEl.addEventListener('click', () => changeLanguage(de));
 
-/**
- * 1 - it opens main page
- * 2 - it switch pages on hach change
-*/
+//opens main page
 loadView();
+//switches pages 
 window.onhashchange = loadView;
-
