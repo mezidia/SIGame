@@ -11,7 +11,7 @@ function changeLanguage(lang) {
     if (el.attributes.title) {
       el.title = lang[dataLocal].title;
     }
-    if (lang.has(lang[dataLocal])) el.textContent = lang[dataLocal];
+    if (lang[dataLocal]) el.textContent = lang[dataLocal];
   }
 }
 

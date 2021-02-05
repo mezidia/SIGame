@@ -72,7 +72,7 @@ const handleClick = evt => ({
 })[evt.target.id];
 
 /**
- * it runs click handler if it is exists
+ * it runs click handler if it exists
  * @example
  * evt.target.id = 'play-btn'
  * handleClick(evt)
