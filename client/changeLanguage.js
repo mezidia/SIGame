@@ -1,7 +1,7 @@
 'use strict';
 
 //this function changes language according to json files
-function changeLanguage(lang) {
+const changeLanguage = (lang) => () => {
   const allText = document.querySelectorAll('[data-localize]');
   for (let el of allText) {
     const dataLocal = el.attributes['data-localize'].textContent;

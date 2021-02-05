@@ -44,8 +44,8 @@ const connectToSIgame = () => {
 const handleClick = evt => ({
   'create-game-btn': [changeHash('createGame')],
   'play-btn': [connectToSIgame],
-  'de': () => [changeLanguage(de)],
-  'ua': () => [changeLanguage(ua)],
+  'de': [changeLanguage(de)],
+  'ua': [changeLanguage(ua)],
 })[evt.target.id];
 
 
