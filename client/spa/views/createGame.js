@@ -1,44 +1,44 @@
 const view = () => {
   return `<div class="container">
     <form>
-      <h1>New Game</h1>
-      <h2>Title</h2>
+      <h1 data-localize="new-game">New Game</h1>
+      <h2 data-localize="title-word">Title</h2>
       <input type="text">
       
-      <h2>Password</h2>
+      <h2 data-localize="password-word">Password</h2>
       <input type="text">
       
-      <h2>Question bundle</h2>
+      <h2 data-localize="question-bundle-word">Question bundle</h2>
       <select class="form-control" id="select-question">
-        <option>Random</option>
-        <option>Download</option>
+        <option data-localize="random-word">Random</option>
+        <option data-localize="download-word">Download</option>
       </select>    
       
-      <h2>Game type</h2>
+      <h2 data-localize="game-type-word">Game type</h2>
       <select class="form-control" id="select-game-type">
-        <option>Simple</option>
-        <option>Classic</option>
+        <option data-localize="simple-word">Simple</option>
+        <option data-localize="classic-word">Classic</option>
       </select>
       
-      <h2>Role</h2>
+      <h2 data-localize="role-word">Role</h2>
       <select class="form-control" id="select-role">
-        <option>Player</option>
-        <option>Game master</option>
+        <option data-localize="player-word">Player</option>
+        <option data-localize="game-master-word">Game master</option>
       </select>
       
       <br>
-      <h2>Players</h2>
+      <h2 data-localize="players-word">Players</h2>
       <br>
-      <h2>Total:</h2>
+      <h2 data-localize="total-word">Total</h2>
       <input type="range" max="10" min="1">
       
-      <h2>People</h2>
+      <h2 data-localize="people-word">People</h2>
       <input type="range" max="10" min="1">
       
       <br>
       
-      <button type="button" class="btn btn-primary">Settings</button>
-      <button type="submit" class="btn btn-primary">Start game</button>
+      <button type="button" class="btn btn-primary" data-localize="settings">Settings</button>
+      <button type="submit" class="btn btn-primary" data-localize="play">Start game</button>
       
     </form>
   </div>
