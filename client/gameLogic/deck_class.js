@@ -5,6 +5,7 @@ export default class Deck {
     this.subject = data.subject;
     this.questions = data.questions;
     this.author = data.author;
+    this.language = data.language;
 
   }
 
