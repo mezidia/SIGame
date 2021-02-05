@@ -4,13 +4,14 @@
 function changeLanguage(lang) {
   const allText = document.querySelectorAll('[data-localize]');
   for (let el of allText) {
+    const dataLocal = el.attributes['data-localize'].textContent;
     if (el.attributes.placeholder) {
-      el.placeholder = lang[el.attributes['data-localize'].textContent].placeholder;
+      el.placeholder = lang[dataLocal].placeholder;
     }
     if (el.attributes.title) {
-      el.title = lang[el.attributes['data-localize'].textContent].title;
+      el.title = lang[dataLocal].title;
     }
-    el.textContent = lang[el.attributes['data-localize'].textContent];
+    if (lang.has(lang[dataLocal])) el.textContent = lang[dataLocal];
   }
 }
 
