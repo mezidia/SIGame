@@ -1,4 +1,5 @@
 const ua = {
+  "code": "ua",
   "home": "Дім",
   "help": "Допомога",
   "title": "Своя Гра",
@@ -25,7 +26,9 @@ const ua = {
   "total-word": "Всього",
   "people-word": "Люди",
   "settings": "Налаштування",
-  
+  "create-game": "Створити нову гру",
+  "join-lobby": "Увійти до лоббі",
+
 }
 
 export { ua };

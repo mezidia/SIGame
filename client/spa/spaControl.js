@@ -1,5 +1,6 @@
 import RenderEngine from './engine.js';
 import Router from './router.js';
+import { changeLanguage } from '../changeLanguage.js';
 
 const router = new Router();
 const engine = new RenderEngine();
@@ -27,7 +28,8 @@ const loadView = () => {
     })
     .catch(reason => {
       console.log(reason);
-    });
+    })
+    .finally(changeLanguage());
 };
 
 export { loadView, changeHash };
