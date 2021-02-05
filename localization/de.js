@@ -1,4 +1,5 @@
 const de = {
+  "code": "de",
   "home": "Home",
   "help": "Help",
   "title": "SI Game",
@@ -25,7 +26,9 @@ const de = {
   "total-word": "Total",
   "people-word": "People",
   "settings": "Settings",
-  
+  "create-game": "Create new game",
+  "join-lobby": "Join lobby",
+
 };
 
 export { de };

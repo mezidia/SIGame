@@ -1,8 +1,14 @@
 'use strict';
 
+//start with default language
+import { de } from '../localization/de.js'
+let language = { json: de};
+
 //this function changes language according to json files
-const changeLanguage = (lang) => () => {
+const changeLanguage = (lang = null) => () => {
   const allText = document.querySelectorAll('[data-localize]');
+  if (!lang) lang = language.json;
+  else language.json = lang;
   for (let el of allText) {
     const dataLocal = el.attributes['data-localize'].textContent;
     if (el.attributes.placeholder) {
