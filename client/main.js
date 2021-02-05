@@ -1,5 +1,5 @@
 'use strict';
-import { loadView } from './spa/spaControl.js'
+import { loadView, changeHash } from './spa/spaControl.js'
 import { changeLanguage } from './changeLanguage.js'
 import { de } from '../localization/de.js'
 import { ua } from '../localization/ua.js'
@@ -41,16 +41,17 @@ const connectToSIgame = () => {
 
 //config function returns handlers by id
 const handleClick = evt => ({
-  'play-btn': connectToSIgame,
-  'de': () => changeLanguage(de),
-  'ua': () => changeLanguage(ua),
+  'create-game-btn': [changeHash('createGame')],
+  'play-btn': [connectToSIgame],
+  'de': () => [changeLanguage(de)],
+  'ua': () => [changeLanguage(ua)],
 })[evt.target.id];
 
 
 // it runs click handler if it exists
 document.addEventListener('click', evt => {
   if (!handleClick(evt)) return;
-  handleClick(evt)();
+  handleClick(evt).forEach(x => x());
 });
 
 

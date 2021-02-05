@@ -4,7 +4,7 @@ export default class Router {
     return window.location.hash.split('#')[1];
   }
 
-  changeURL(url) {
+  change(url) {
     globalThis.history.pushState({}, null, `#${url}`);
   }
 
@@ -19,7 +19,8 @@ export default class Router {
   getView(midURL) {
     return (endURL = '') => ({
       help: {viewName: 'help'},
-      createGame: {viewName: 'createGame'}
+      createGame: {viewName: 'createGame'},
+      chooseMode: {viewName: 'chooseMode'}
     })[midURL] || {viewName: 'mainPage'};
   }
 

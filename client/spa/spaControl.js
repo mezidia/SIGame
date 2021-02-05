@@ -9,6 +9,11 @@ async function loadMainView() {
   engine.render(view);
 }
 
+const changeHash = (hash) => () => {
+  router.change(hash);
+  loadView();
+};
+
 const loadView = () => {
   const { viewName } = router.getState();
   engine.loader();
@@ -25,4 +30,4 @@ const loadView = () => {
     });
 };
 
-export { loadView };
+export { loadView, changeHash };
