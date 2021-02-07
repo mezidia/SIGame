@@ -17,7 +17,7 @@ const de = {
   "random-word": "Random",
   "download-word": "Download",
   "game-type-word": "Game type",
-  "simple-word": "Simple",
+  "simple-word": "S1mple",
   "classic-word": "Classic",
   "role-word": "Role",
   "player-word": "Player",

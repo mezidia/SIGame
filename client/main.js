@@ -82,6 +82,7 @@ const handleClick = evt => ({
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
   'startGame': [() => alert('startGame'), startGame],
+  'join-btn': [ () => changeHash('lobbySearch')()],
 })[evt.target.id];
 
 

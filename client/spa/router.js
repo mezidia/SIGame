@@ -20,7 +20,8 @@ export default class Router {
     return (endURL = '') => ({
       help: {viewName: 'help'},
       createGame: {viewName: 'createGame'},
-      chooseMode: {viewName: 'chooseMode'}
+      chooseMode: {viewName: 'chooseMode'},
+      lobbySearch: {viewName: 'lobbySearch'}
     })[midURL] || {viewName: 'mainPage'};
   }
 
