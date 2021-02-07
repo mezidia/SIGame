@@ -20,6 +20,15 @@ const Database = require('./database/database').Database;
         ppl,
         socket,
       };
+  const msg = {
+    'mType': 'getAllBundles',
+  };
+  promisifySocketMSG(msg, 'allBundles', socket).then(data => {
+    allBundles = data.allBundles;
+    changeHash('createGame')();
+  });
+
+
 */
 const database = new Database({
   host: 'sql7.freemysqlhosting.net',
