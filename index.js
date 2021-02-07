@@ -31,9 +31,9 @@ const Database = require('./database/database').Database;
 
 */
 const database = new Database({
-  host: 'sql7.freemysqlhosting.net',
-  user: 'sql7391378',
-  password: 'j42JlvEiNG',
-  database: 'sql7391378',
+  host: 'db4free.net',
+  user: 'sigameadmin',
+  password: '#Ananas208',
+  database: 'sigame',
 });
 const server = new Server(5000, database);
