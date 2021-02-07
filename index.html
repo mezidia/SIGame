@@ -10,29 +10,31 @@
     <script type="module" src="./client/main.js"></script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">DJU</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <div class="column-content" style="height: 100vh">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">DJU</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navbarColor01">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" data-localize="home" href="#">Home
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-localize="help" href="#help">Help</a>
-          </li>
-        </ul>
+        <div class="collapse navbar-collapse" id="navbarColor01">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" data-localize="home" href="#">Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-localize="help" href="#help">Help</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div>
+        <a id="de">de</a>
+        <a id="ua">ua</a>
       </div>
-    </nav>
-    <a id="de">de</a>
-    <a id="ua">ua</a>
-
-    <div id="main"></div>
-
+      <div id="main" style="flex-grow: 1; min-height: 200px"></div>
+    </div>
   </body>
 </html>
