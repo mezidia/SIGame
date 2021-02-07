@@ -18,6 +18,7 @@ export default class Router {
 
   getView(midURL) {
     return (endURL = '') => ({
+      simpleLobby: {viewName: 'simpleLobby'},
       help: {viewName: 'help'},
       createGame: {viewName: 'createGame'},
       chooseMode: {viewName: 'chooseMode'}

@@ -7,3 +7,26 @@
     margin-top: 5px;
     min-height: 50px;
 }
+
+.chat-container {
+    display: grid;
+    grid-template-rows: 1fr 130px;
+}
+
+.game-container {
+    display: grid;
+    grid-template-rows: 1fr 80px 50px;
+}
+
+.game-button {
+    padding: 0px 0px 0px 0px;
+    border: 1px solid #000000;
+}
+
+.game-button-placeholder {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 40px;
+    width: 100%;
+    height: 80px;
+}
