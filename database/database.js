@@ -12,6 +12,14 @@ class Database {
     });
   }
 
+  getAllBundles() {
+    this.con.query('SELECT * FROM deck', (err, rows) => {
+      console.log(rows);
+    });
+  }
+
+  
+
 }
 
 //con.query('SELECT * FROM langcode', (err, rows) => {

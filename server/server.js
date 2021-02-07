@@ -90,7 +90,7 @@ class Server {
   //executes on new message from client
   connectionMessage(connection, message) {
     console.log('new message: ' + message);
-    console.log(this.database);
+    this.database.getAllBundles();
   }
 
   //executes on user quitting
