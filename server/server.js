@@ -88,7 +88,7 @@ class Server {
 
   //executes on new message from client
   connectionMessage(connection, message) {
-    console.log('new message');
+    console.log('new message: ' + message);
   }
 
   //executes on user quitting

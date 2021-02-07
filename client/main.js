@@ -9,19 +9,18 @@ import { ua } from '../localization/ua.js'
 
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
-//connection.send(JSON.stringify({mType: 'uID', data: id}));
 
 let socket = undefined;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
-  'AAAAAAAAAAAAAAAAAAA': console.log,
+  'usersOnline': (data) => console.log(data),
 })[mType];
 
 //executes function returned by socketHandleConfig
-function socketHandle(msg) {
-  if (!socketHandleConfig(msg.data.mType)) return;
-  socketHandleConfig(msg.data.mType)();
+function socketHandle(data) {
+  if (!socketHandleConfig(data.mType)) return;
+  socketHandleConfig(data.mType)(data);
 }
 
 const startGame = () => {
@@ -41,7 +40,6 @@ const startGame = () => {
     const f = new FileReader();
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
-      console.log(bundleObj);
       const bundle = parseBundle(bundleObj);
       const settings = {
         roomName, 
@@ -53,11 +51,23 @@ const startGame = () => {
         ppl,
         socket,
       };
-      new Game(settings, bundle);
+      const game = new Game(bundle, settings);
+      console.log(game);
+      const msg = {
+        'mType': 'newGame',
+        data: {
+          bundle,
+          settings,
+        },
+      }
+      socket.send(JSON.stringify(msg));
+      changeHash('simpleLobby')();
     }
     f.readAsText(file);
+  } else {
+    changeHash('simpleLobby')();
   }
-  changeHash('simpleLobby')();
+
 };
 
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
@@ -73,8 +83,8 @@ const connectToSIgame = () => {
       console.log('closed');
     };
     socket.onmessage = msg => {
-      socketHandle(JSON.parse(msg.data));
       console.log(JSON.parse(msg.data));
+      socketHandle(JSON.parse(msg.data));
     };
   };
 };
