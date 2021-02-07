@@ -3,7 +3,7 @@ const view = () => {
     <h1 style="text-align: center" data-localize="title">SI Game</h1>
     <form class="column-content" id="name">
       <input id="name-input" type="text" placeholder="Enter your name" pattern="[A-Za-zА-яҐґЇїІі0-9]+" title="May contain letters and/or numbers only" maxlength=34 style="min-height: 50px" data-localize="name" required>
-      <button type="submit" class="btn btn-primary btn-50" data-localize="bundle">Create bundle</button>
+      <button id="openEditor-btn" type="submit" class="btn btn-primary btn-50" data-localize="bundle">Create bundle</button>
       <button id="play-btn" type="submit" class="btn btn-primary btn-50" data-localize="play">Start game</button>
     </form>
   </div>

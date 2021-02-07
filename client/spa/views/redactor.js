@@ -12,8 +12,8 @@ const view = () => {
       <input type="text" placeholder="Category" id="final-theme-${i}">  
       <br>
       <br>    
-      <input type="text" placeholder="Question" id="question-4-1-${i}">
-      <input type="text" placeholder="Answers" id="answer-4-1-${i}">
+      <input type="text" placeholder="Question" id="question-4-1-${i} required">
+      <input type="text" placeholder="Answers" id="answer-4-1-${i}" required>
       <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-4-1-${i}">`).join('\n');
   }
 

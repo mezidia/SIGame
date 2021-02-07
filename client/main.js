@@ -89,6 +89,13 @@ const connectToSIgame = () => {
   };
 };
 
+const openEditor = () => {
+  const name = document.getElementById('name-input').value;
+  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
+  if (!reg.test(name)) return;
+  changeHash('redactor')();
+}
+
 //config function returns handlers by id
 const handleClick = evt => ({
   'create-game-btn': [changeHash('createGame')],
@@ -97,6 +104,7 @@ const handleClick = evt => ({
   'ua': [changeLanguage(ua)],
   'startGame': [() => alert('startGame'), createGame],
   'join-btn': [ () => changeHash('lobbySearch')()],
+  'openEditor-btn': [openEditor],
 })[evt.target.id];
 
 
