@@ -3,25 +3,26 @@ const view = () => {
     <form>
       <h1 data-localize="new-game">New Game</h1>
       <h2 data-localize="title-word">Title</h2>
-      <input type="text">
+      <input id="roomName" type="text">
       
       <h2 data-localize="password-word">Password</h2>
-      <input type="text">
+      <input id="roomPassword" type="text">
       
       <h2 data-localize="question-bundle-word">Question bundle</h2>
-      <select class="form-control" id="select-question">
+      <select id="questionBundle" class="form-control" id="select-question">
         <option data-localize="random-word">Random</option>
         <option data-localize="download-word">Download</option>
       </select>    
+      <input id="bundle-file" type="file" accept=".json" />
       
       <h2 data-localize="game-type-word">Game type</h2>
-      <select class="form-control" id="select-game-type">
-        <option data-localize="simple-word">Simple</option>
+      <select id="gameMode" class="form-control" id="select-game-type">
         <option data-localize="classic-word">Classic</option>
+        <option data-localize="simple-word">Simple</option>
       </select>
       
       <h2 data-localize="role-word">Role</h2>
-      <select class="form-control" id="select-role">
+      <select id="role" class="form-control" id="select-role">
         <option data-localize="player-word">Player</option>
         <option data-localize="game-master-word">Game master</option>
       </select>
@@ -30,15 +31,15 @@ const view = () => {
       <h2 data-localize="players-word">Players</h2>
       <br>
       <h2 data-localize="total-word">Total</h2>
-      <input type="range" max="10" min="1">
+      <input id="totalPlayers" type="range" max="10" min="1">
       
       <h2 data-localize="people-word">People</h2>
-      <input type="range" max="10" min="1">
+      <input id="ppl" type="range" max="10" min="1">
       
       <br>
       
       <button type="button" class="btn btn-primary" data-localize="settings">Settings</button>
-      <button type="submit" class="btn btn-primary" data-localize="play">Start game</button>
+      <button id="startGame" type="button" class="btn btn-primary" data-localize="play">Start game</button>
       
     </form>
   </div>
