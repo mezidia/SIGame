@@ -1,7 +1,6 @@
 'use strict';
 const http = require('http');
 const WebSocket = require('ws');
-const mysql = require('mysql');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
 
@@ -23,28 +22,12 @@ const mime = {
   'txt': 'text/plain',
 };
 
-//connect to database
-const con = mysql.createConnection({
-  host: 'sql7.freemysqlhosting.net',
-  user: 'sql7391378',
-  password: 'j42JlvEiNG',
-  database: 'sql7391378',
-});
-
-con.connect( err => {
-  if (err) throw err;
-  console.log("Connected!");
-});
-
-con.query('SELECT * FROM langcode', (err, rows) => {
-  console.log(rows);
-});
-
 //class server singleton
 class Server {
   _users = {};
 
-  constructor(port) {
+  constructor(port, database) {
+    this.database = database;
     if (!Server._instance) {
       Server._instance = this;
 
@@ -107,6 +90,7 @@ class Server {
   //executes on new message from client
   connectionMessage(connection, message) {
     console.log('new message: ' + message);
+    console.log(this.database);
   }
 
   //executes on user quitting
