@@ -19,6 +19,15 @@ const Server = require('./server/server').Server;
         ppl,
         socket,
       };
+  const msg = {
+    'mType': 'getAllBundles',
+  };
+  promisifySocketMSG(msg, 'allBundles', socket).then(data => {
+    allBundles = data.allBundles;
+    changeHash('createGame')();
+  });
+
+
 */
 const server = new Server(5000);
 

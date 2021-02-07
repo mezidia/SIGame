@@ -3,14 +3,17 @@ import { loadView, changeHash } from './spa/spaControl.js'
 import { changeLanguage } from './changeLanguage.js'
 import parseBundle from './gameLogic/parseBundle.js';
 import Game from './gameLogic/game_class.js';
+import promisifySocketMSG from './gameLogic/promosifySocketMSG.js';
 import { de } from '../localization/de.js'
 import { ua } from '../localization/ua.js'
+
 
 
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
 
 let socket = undefined;
+let allBundles = undefined;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -52,23 +55,37 @@ const createGame = () => {
         socket,
       };
       const game = new Game(bundle, settings);
-      console.log(game);
       const msg = {
-        'mType': 'newGame',
+        'mType': 'newGameWithOwnBundle',
         data: {
           bundle,
           settings,
         },
-      }
+      };
       socket.send(JSON.stringify(msg));
       changeHash('simpleLobby')();
     }
     f.readAsText(file);
+  } else if (questionBundle.value === 'BundleByName') {
+
+
+    changeHash('simpleLobby')();
   } else {
+    
     changeHash('simpleLobby')();
   }
 
 };
+
+const createGameLobby = () => {
+  const msg = {
+    'mType': 'getAllBundles',
+  };
+  promisifySocketMSG(msg, 'allBundles', socket).then(data => {
+    allBundles = data.allBundles;
+    changeHash('createGame')();
+  });
+}
 
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
@@ -98,7 +115,7 @@ const openEditor = () => {
 
 //config function returns handlers by id
 const handleClick = evt => ({
-  'create-game-btn': [changeHash('createGame')],
+  'create-game-btn': [createGameLobby],
   'play-btn': [connectToSIgame],
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
