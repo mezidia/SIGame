@@ -23,7 +23,7 @@ function socketHandle(data) {
   socketHandleConfig(data.mType)(data);
 }
 
-const startGame = () => {
+const createGame = () => {
   const roomName = document.getElementById('roomName').value;
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
@@ -95,7 +95,7 @@ const handleClick = evt => ({
   'play-btn': [connectToSIgame],
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
-  'startGame': [() => alert('startGame'), startGame],
+  'startGame': [() => alert('startGame'), createGame],
   'join-btn': [ () => changeHash('lobbySearch')()],
 })[evt.target.id];
 

@@ -10,7 +10,7 @@ const Server = require('./server/server').Server;
       }
       socket.send(JSON.stringify(msg));
             const settings = {
-        roomName, 
+        roomName,
         password,
         questionBundle,
         gameMode,

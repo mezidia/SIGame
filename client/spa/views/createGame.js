@@ -17,8 +17,8 @@ const view = () => {
       
       <h2 data-localize="game-type-word">Game type</h2>
       <select id="gameMode" class="form-control" id="select-game-type">
-        <option data-localize="simple-word">Simple</option>
         <option data-localize="classic-word">Classic</option>
+        <option data-localize="simple-word">Simple</option>
       </select>
       
       <h2 data-localize="role-word">Role</h2>
