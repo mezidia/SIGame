@@ -1,9 +1,11 @@
 'use strict';
 import { loadView, changeHash } from './spa/spaControl.js'
 import { changeLanguage } from './changeLanguage.js'
+import parseBundle from './gameLogic/parseBundle.js';
+import Game from './gameLogic/game_class.js';
 import { de } from '../localization/de.js'
 import { ua } from '../localization/ua.js'
-import parseBundle from './gameLogic/parseBundle.js';
+
 
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
@@ -41,19 +43,21 @@ const startGame = () => {
       const bundleObj = JSON.parse(e.target.result);
       console.log(bundleObj);
       const bundle = parseBundle(bundleObj);
+      const settings = {
+        roomName, 
+        password,
+        questionBundle,
+        gameMode,
+        role,
+        totalPlayers,
+        ppl,
+        socket,
+      };
+      new Game(settings, bundle);
     }
     f.readAsText(file);
-    console.log(file);
   }
-  console.log(
-    roomName, 
-    password,
-    questionBundle,
-    gameMode,
-    role,
-    totalPlayers,
-    ppl,
-    );
+  changeHash('simpleLobby')();
 };
 
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server

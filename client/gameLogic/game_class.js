@@ -2,8 +2,22 @@
 
 export default class Game {
 
-  constructor(data, bundle) {
-    
+  constructor(bundle, settings) {
+    this.master = settings.socket;
+    this.bundle = bundle;
+
+  }
+
+  addPlayer() {
+
+  }
+
+  kikcPlayer() {
+
+  }
+
+  pause() {
+
   }
 
   gameLoop() {

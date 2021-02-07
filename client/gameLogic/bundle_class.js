@@ -2,9 +2,9 @@
 
 export default class Bundle {
   _setupRounds() {
-    this.round_1 = data.decks.slice(0, 5);
-    this.round_2 = data.decks.slice(5, 10);
-    this.round_3 = data.decks.slice(10, 15);
+    this.round_1 = this.decks.slice(0, 5);
+    this.round_2 = this.decks.slice(5, 10);
+    this.round_3 = this.decks.slice(10, 15);
   }
 
   constructor(data) {
