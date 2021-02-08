@@ -58,21 +58,7 @@ const createGame = () => {
     const f = new FileReader();
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
-<<<<<<< HEAD
-      const bundle = parseBundle(bundleObj);
-=======
       const bundle = bundleEditor.parseBundle(bundleObj);
-      const settings = {
-        roomName, 
-        password,
-        questionBundle,
-        gameMode,
-        role,
-        totalPlayers,
-        ppl,
-        socket,
-      };
->>>>>>> 12678e9e6e0a12a90342decbca8df96e42fe9258
       const game = new Game(bundle, settings);
       const msg = {
         'mType': 'newGameLobby',
