@@ -5,9 +5,11 @@ import Deck from "./deck_class.js";
 import Question from "./question_class.js";
 
 export default function parseBundle(obj) {
-  const bundle = obj.bundle;
+  const decks = obj.decks;
+  const language = obj.language;
+  const author = obj.author;
   const res = [];
-  for (const deck of bundle) {
+  for (const deck of decks) {
     const questions = [];
     for (const q of deck.questions) {
       questions.push(new Question(q));
@@ -16,7 +18,10 @@ export default function parseBundle(obj) {
     res.push(new Deck(deck));
   }
   const bundleData = { 
-    decks: res,
+    'decks': res,
+    language,
+    author,
+    
   };
   return new Bundle(bundleData);
 }
