@@ -3,6 +3,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
+const bundle = require('../exampleBundle.json');
 
 const fileManager = new FileManager();
 const idGenerator = new IDGenerator();
@@ -91,6 +92,7 @@ class Server {
   connectionMessage(connection, message) {
     console.log('new message: ' + message);
     this.database.getAllBundles();
+    //this.database.insertBundle(bundle);
   }
 
   //executes on user quitting
