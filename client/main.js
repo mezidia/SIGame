@@ -1,11 +1,15 @@
 'use strict';
-import { loadView, changeHash } from './spa/spaControl.js'
-import { changeLanguage } from './changeLanguage.js'
-import parseBundle from './gameLogic/parseBundle.js';
+
 import Game from './gameLogic/game_class.js';
 import promisifySocketMSG from './gameLogic/promosifySocketMSG.js';
-import { de } from '../localization/de.js'
-import { ua } from '../localization/ua.js'
+import submitBundleEditor from './gameLogic/submitBundleEditor.js';
+import BundleEditor from './gameLogic/bundleEditor_class.js';
+import { loadView, changeHash } from './spa/spaControl.js';
+import { changeLanguage } from './changeLanguage.js';
+import { de } from '../localization/de.js';
+import { ua } from '../localization/ua.js';
+
+const bundleEditor = new BundleEditor();
 
 
 
@@ -54,7 +58,21 @@ const createGame = () => {
     const f = new FileReader();
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
+<<<<<<< HEAD
       const bundle = parseBundle(bundleObj);
+=======
+      const bundle = bundleEditor.parseBundle(bundleObj);
+      const settings = {
+        roomName, 
+        password,
+        questionBundle,
+        gameMode,
+        role,
+        totalPlayers,
+        ppl,
+        socket,
+      };
+>>>>>>> 12678e9e6e0a12a90342decbca8df96e42fe9258
       const game = new Game(bundle, settings);
       const msg = {
         'mType': 'newGameLobby',
@@ -96,7 +114,7 @@ const createGameLobby = () => {
 
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
-  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
+const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
   changeHash('chooseMode')();
@@ -129,6 +147,7 @@ const handleClick = evt => ({
   'startGame': [createGame],
   'join-btn': [ () => changeHash('lobbySearch')()],
   'openEditor-btn': [openEditor],
+  'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
 
 
