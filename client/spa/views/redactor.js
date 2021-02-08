@@ -12,7 +12,7 @@ const view = () => {
       <input type="text" placeholder="Category" id="final-theme-${i}">  
       <br>
       <br>    
-      <input type="text" placeholder="Question" id="question-4-1-${i} required">
+      <input type="text" placeholder="Question" id="question-4-1-${i}" required>
       <input type="text" placeholder="Answers" id="answer-4-1-${i}" required>
       <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-4-1-${i}">`).join('\n');
   }
@@ -64,7 +64,7 @@ const view = () => {
         ${finalQuestionList()}
       </div>
 
-      <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 40px">Create pack</button>
+      <button id="submitBundleEditor-btn" type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 40px">Create pack</button>
       <div style="height: 40px">      
     </form>
   </div>
