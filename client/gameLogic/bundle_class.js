@@ -12,6 +12,7 @@ export default class Bundle {
     this.decks = data.decks;
     this.language = data.language;
     this.author = data.author;
+    this.title = data.title;
     this._setupRounds();
   }
 

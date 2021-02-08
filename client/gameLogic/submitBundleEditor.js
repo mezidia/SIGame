@@ -1,16 +1,16 @@
 'use strict';
-
+/*
 const bundleAuthorInput = document.getElementById('');
 const bundleTitleInput = document.getElementById('');
 const bundleLangSelect = document.getElementById('');
-const bundleModeSelect = document.getElementById('');
+const bundleModeSelect = document.getElementById(''); */
 
 function submitQ(r, c, q) {
   const qstn = document.getElementById(`question-${r}-${c}-${q}`).value;
   const ans = document.getElementById(`answer-${r}-${c}-${q}`).value;
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
-  if (!reg.test(qstn) && !reg.test(ans) && !reg.test(falseAns)) return {r, c, q};
+  if (!reg.test(qstn) && !reg.test(ans) && !reg.test(falseAns)) console.log(`failed reg test on `)//return {r, c, q};
   console.log(qstn, ans, falseAns);
   return (qstn, ans, falseAns);
 }
@@ -38,5 +38,5 @@ export default function submitBundleEditor() {
   for (let q = 1; q <= 7; q++) {
     submitQ(4, 1, q); //final questione
   }
-  //downloadAsFile(text);
+  downloadAsFile(text);
 }

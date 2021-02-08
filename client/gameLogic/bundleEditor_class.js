@@ -29,6 +29,7 @@ export default class BundleEditor {
     }
     const bundleData = { 
       'decks': res,
+      title,
       language,
       author,
       
