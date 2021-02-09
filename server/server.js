@@ -3,7 +3,6 @@ const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
-const bundle = require('../exampleBundle.json');
 
 const fileManager = new FileManager();
 const idGenerator = new IDGenerator();
@@ -91,8 +90,8 @@ class Server {
   //executes on new message from client
   connectionMessage(connection, message) {
     console.log('new message: ' + message);
-    this.database.sendToAll({mType: 'allBundles', data: bundle});
-    this.database.getAllBundles();
+    const bundle = this.database.getAllBundles();
+    this.sendToAll({mType: 'allBundles', data: bundle});
     //this.database.insertBundle(bundle);
   }
 
