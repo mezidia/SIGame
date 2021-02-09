@@ -137,13 +137,11 @@ const handleClick = evt => ({
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
 
-
 // it runs click handler if it exists
 document.addEventListener('click', evt => {
   if (!handleClick(evt)) return;
   handleClick(evt).forEach(x => x());
 });
-
 
 //opens main page
 loadView();

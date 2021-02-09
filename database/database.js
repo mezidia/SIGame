@@ -13,11 +13,11 @@ class Database {
   }
 
   //create promise from sql query
-  promisifyConQuery(sqlCommStr, cb) {
+  promisifyConQuery(sqlCommStr) {
     return new Promise((res, rej) => {
       this.con.query(sqlCommStr, (err, rows) => {
         try {
-          res(cb(rows));
+          res(rows);
         } catch (err) {
           console.log(err);
           rej(err);
@@ -37,7 +37,8 @@ class Database {
       ON d.bundle_id = b.bundle_id 
       INNER JOIN langcode l
       ON l.langcode_id = b.bundle_langcode`;
-    await this.promisifyConQuery(getDeckSqlStr, rows => rows)
+    await this.promisifyConQuery(getDeckSqlStr)
+    .catch(err => console.log(err))
     .then(rows => {
       const allBundles = [];
       let bundle = {
@@ -100,7 +101,8 @@ class Database {
         }
       }
       returnBundles = allBundles;
-    });
+    })
+    .catch(err => console.log(err));
     return returnBundles;
   }
 
@@ -112,28 +114,34 @@ class Database {
     FROM langcode 
     WHERE langcode_name = '${bundle.langcode}')
     LIMIT 1`;
-    this.promisifyConQuery(insertLangcodeSqlStr, rows => rows)
-    .then((res, reg) => {
+    this.promisifyConQuery(insertLangcodeSqlStr)
+    .then(() => {
       const getlangIDSqlStr = `SELECT langcode_id FROM langcode WHERE langcode_name = '${bundle.langcode}'`;
-      return this.promisifyConQuery(getlangIDSqlStr, rows => rows[0].langcode_id);
-    }).then(langcodeId => {
+      return this.promisifyConQuery(getlangIDSqlStr);
+    })
+    .catch(err => console.log(err))
+    .then(rows => {
+      const langcodeId = rows[0].langcode_id;
       const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode) VALUES('${bundle.author}', '${bundle.title}', '${langcodeId}')`;
-      return this.promisifyConQuery(insertBundleSqlStr, rows => rows.insertId);
-    }).then(bundleId => {
+      return this.promisifyConQuery(insertBundleSqlStr);
+    })
+    .catch(err => console.log(err))
+    .then(rows => {
+      const bundleId = rows.insertId;
       for (const deck of bundle.decks) {
         const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) VALUES('${deck.subject}', '${bundleId}')`;
-        this.promisifyConQuery(insertDeckSqlStr, rows => {
+        this.promisifyConQuery(insertDeckSqlStr)
+        .then(rowsD => {
           for (const q of deck.questions) {
-            console.log(rows.insertId, q.string);
-            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) VALUES('${q.type}', '${q.string}', '${q.trueAns}', '${q.falseAns}', '${rows.insertId}')`;
-            this.promisifyConQuery(insertQuestionSqlStr, rows => rows);
+            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) VALUES('${q.type}', '${q.string}', '${q.trueAns}', '${q.falseAns}', '${rowsD.insertId}')`;
+            this.promisifyConQuery(insertQuestionSqlStr)
+            .catch(err => console.log(err));
           }
-        });
+        })
+        .catch(err => console.log(err));
       }
-    }).then(() => {
-      const selectBundleSqlStr = `SELECT * FROM question`;
-      this.promisifyConQuery(selectBundleSqlStr, rows => console.log('success'));
-    });
+    })
+    .catch(err => console.log(err));
   }
 }
 
