@@ -27,13 +27,7 @@ class Database {
   }
 
   getAllBundles() {
-    const getBundleSqlStr = `SELECT bundle_author, bundle_title, langcode_name 
-    FROM bundle t1 
-    INNER JOIN langcode t2 
-    ON t1.bundle_langcode = t2.langcode_id `;
-    this.promisifyConQuery(getBundleSqlStr, rows => console.log(rows))
-    .then(() => {
-      const getDeckSqlStr = `SELECT b.*, l.langcode_name, d.*, q.*
+    const getDeckSqlStr = `SELECT b.*, l.langcode_name, d.*, q.*
       FROM bundle b
       INNER JOIN langcode l
       ON b.bundle_langcode = l.langcode_id
@@ -41,7 +35,15 @@ class Database {
       ON b.bundle_id = d.bundle_id
       INNER JOIN question q
       ON d.deck_id = q.deck_id `;
-      this.promisifyConQuery(getDeckSqlStr, rows => console.log(rows));
+    this.promisifyConQuery(getDeckSqlStr, rows => rows)
+    .then(rows => {
+      console.log(rows);
+      /*const bundle = {
+        bundle
+      }
+      for (const chunk of rows) {
+
+      }*/
     });
   }
 

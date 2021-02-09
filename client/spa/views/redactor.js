@@ -1,27 +1,27 @@
 const view = () => {
   const questionList = (roundNumber, themeNumber) => {
     return [1, 2, 3, 4, 5].map(i => `
-      <h5>Question ${i}: ${i*roundNumber}00 points</h5>
-      <input type="text" placeholder="Question" id="question-${roundNumber}-${themeNumber}-${i}" required>
-      <input type="text" placeholder="Answers" id="answer-${roundNumber}-${themeNumber}-${i}" required>
-      <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-${roundNumber}-${themeNumber}-${i}">`).join('\n');
+      <h5><span data-localize="question">Question</span> ${i}: ${i*roundNumber}00 <span data-localize="points">points</span></h5>
+      <input type="text" placeholder="Question" id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
+      <input type="text" placeholder="Answers" id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
+      <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">`).join('\n');
   }
   const finalQuestionList = () => {
     return [1, 2, 3, 4, 5, 6, 7].map(i => `
-      <h5>Question ${i}</h5>
-      <input type="text" placeholder="Category" id="final-theme-${i}">  
+      <h5 data-localize="question">Question ${i}</h5>
+      <input type="text" placeholder="Category" id="final-theme-${i}" data-localize="input-category">  
       <br>
       <br>    
-      <input type="text" placeholder="Question" id="question-4-1-${i}" required>
-      <input type="text" placeholder="Answers" id="answer-4-1-${i}" required>
-      <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-4-1-${i}">`).join('\n');
+      <input type="text" placeholder="Question" id="question-4-1-${i}" data-localize="input-question" required>
+      <input type="text" placeholder="Answers" id="answer-4-1-${i}" data-localize="answers" required>
+      <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-4-1-${i}" data-localize="wrong-answers">`).join('\n');
   }
 
   const themesList = roundNumber => {
     return [1, 2, 3, 4, 5].map(i => `
-        <h3>Category ${i}</h3>
+        <h3 data-localize="category">Category ${i}</h3>
         <div class="collapse show">
-          <h4>Category name: </h4>
+          <h4 data-localize="category-name">Category name</h4>
           <input type="text" id="category-name-${roundNumber}-${i}">
           ${questionList(roundNumber, i)}
         </div>
@@ -31,40 +31,40 @@ const view = () => {
 
   return `<div class="container">
     <form>
-      <h2>Pack title:</h2>
+      <h2 data-localize="pack-title-word">Pack title</h2>
       <input type="text">
-      <h2>Author:</h2>
+      <h2 data-localize="author-word">Author</h2>
       <input type="text">
-      <h2>Language:</h2>
+      <h2 data-localize="language">Language:</h2>
       <select class="form-control">
-        <option>German</option>
-        <option>Ukrainian</option>
+        <option data-localize="german">German</option>
+        <option data-localize="ukrainian">Ukrainian</option>
       </select>
-      <h2>Mode:</h2>
+      <h2 data-localize="mode">Mode:</h2>
       <select class="form-control">
-        <option>Classic</option>
-        <option>Simplified</option>
+        <option data-localize="classic">Classic</option>
+        <option data-localize="simplified">Simplified</option>
       </select>
       
       <br>
-      <h2>Round 1</h2>
+      <h2><span data-localize="round">Round</span> 1</h2>
       <div class="collapse show">
         ${themesList(1)}
       </div>
-     <h2>Round 2</h2>
+     <h2><span data-localize="round">Round</span> 2</h2>
       <div class="collapse show">
         ${themesList(2)}
       </div>
-      <h2>Round 3</h2>
+      <h2><span data-localize="round">Round</span> 3</h2>
       <div class="collapse show">
         ${themesList(3)}
       </div>
-      <h2>Final Round</h2>
+      <h2 data-localize="final-round">Final Round</h2>
       <div class="collapse show">
         ${finalQuestionList()}
       </div>
 
-      <button id="submitBundleEditor-btn" type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 40px">Create pack</button>
+      <button id="submitBundleEditor-btn" type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 40px" data-localize="bundle">Create bundle</button>
       <div style="height: 40px">      
     </form>
   </div>
