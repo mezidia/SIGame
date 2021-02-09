@@ -4,7 +4,7 @@
 import { de } from '../localization/de.js'
 let language = { json: de};
 
-//this function changes language according to json files
+//this function changes language according to json files and data-localize attribute
 const changeLanguage = (lang = null) => () => {
   const allText = document.querySelectorAll('[data-localize]');
   if (!lang) lang = language.json;
