@@ -26,28 +26,81 @@ class Database {
   }
 
   getAllBundles() {
-    const getDeckSqlStr = `SELECT b.*, l.langcode_name, d.*, q.*
-      FROM bundle b
-      INNER JOIN langcode l
-      ON b.bundle_langcode = l.langcode_id
+    const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
+      FROM question q
       INNER JOIN deck d
-      ON b.bundle_id = d.bundle_id
-      INNER JOIN question q
-      ON d.deck_id = q.deck_id `;
+      ON d.deck_id = q.deck_id
+      INNER JOIN bundle b
+      ON d.bundle_id = b.bundle_id 
+      INNER JOIN langcode l
+      ON l.langcode_id = b.bundle_langcode`;
     this.promisifyConQuery(getDeckSqlStr, rows => rows)
     .then(rows => {
-      console.log(rows);
-      /*const bundle = {
-        bundle
+      const allBundles = [];
+      let bundle = {
+        author: null,
+        langcode: null,
+        title: null,
+        decks: []
+      };
+      let deck = {
+        subject: null,
+        questions: []
+      };
+      let question = {
+        type: null,
+        string: null,
+        trueAns: null,
+        falseAns: null
       }
-      for (const chunk of rows) {
+      let bundleId = 1;
+      let deckId = 1;
+      for (let i = 0; i < rows.length; i++) {
 
-      }*/
+        question.type = rows[i].question_type;
+        question.string = rows[i].question_string;
+        question.trueAns = rows[i].question_trueans;
+        question.falseAns = rows[i].question_falseans;
+        const queToDeck = {};
+        deck.questions.push(Object.assign(queToDeck, question));
+        question = {
+          type: null,
+          string: null,
+          trueAns: null,
+          falseAns: null
+        }
+
+        bundle.author = rows[i].bundle_author;
+        bundle.langcode = rows[i].langcode_name;
+        bundle.title = rows[i].bundle_title;
+        deck.subject = rows[i].deck_subject;
+        
+        if (i === rows.length - 1 || deckId !== rows[i + 1].deck_id) {
+          const deckToBundle = {};
+          bundle.decks.push(Object.assign(deckToBundle, deck));
+          deck = {
+            subject: null,
+            questions: []
+          };
+          if (i !== rows.length - 1) deckId = rows[i + 1].deck_id;
+        }
+        if (i === rows.length - 1 || bundleId !== rows[i + 1].bundle_id) {
+          const bundleToAllBundles = {};
+          allBundles.push(Object.assign(bundleToAllBundles, bundle));
+          bundle = {
+            author: null,
+            langcode: null,
+            title: null,
+            decks: []
+          };
+          if (i !== rows.length - 1) bundleId = rows[i + 1].bundle_id;
+        }
+      }
+      return allBundles;
     });
   }
 
   insertBundle(bundle) {
-    console.log(bundle);
     let insertLangcodeSqlStr = `INSERT INTO langcode (langcode_name)
     SELECT * FROM (SELECT '${bundle.langcode}') AS tmp
     WHERE NOT EXISTS ( SELECT langcode_name 
@@ -63,19 +116,18 @@ class Database {
       return this.promisifyConQuery(insertBundleSqlStr, rows => rows.insertId);
     }).then(bundleId => {
       for (const deck of bundle.decks) {
-        let deckId = null;
         const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) VALUES('${deck.subject}', '${bundleId}')`;
         this.promisifyConQuery(insertDeckSqlStr, rows => {
-          deckId = rows.insertId;
           for (const q of deck.questions) {
-            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) VALUES('${q.type}', '${q.string}', '${q.trueAns}', '${q.falseAns}', '${deckId}')`;
+            console.log(rows.insertId, q.string);
+            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) VALUES('${q.type}', '${q.string}', '${q.trueAns}', '${q.falseAns}', '${rows.insertId}')`;
             this.promisifyConQuery(insertQuestionSqlStr, rows => rows);
           }
         });
       }
     }).then(() => {
-      const selectBundleSqlStr = `SELECT * FROM bundle`;
-      this.promisifyConQuery(selectBundleSqlStr, rows => console.log(rows));
+      const selectBundleSqlStr = `SELECT * FROM question`;
+      this.promisifyConQuery(selectBundleSqlStr, rows => console.log('success'));
     });
   }
 }
