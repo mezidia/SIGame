@@ -42,6 +42,9 @@ const ua = {
   "points": "балів",
   "category": "Категорія",
   "category-name": "Назва Категорії",
+  "question-type": {
+    "placeholder": "Тип запитання"
+  },
   "input-question": {
     "placeholder": "Питання"
   },
