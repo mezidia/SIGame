@@ -1,6 +1,6 @@
 'use strict';
 
-import Question from "./question_class";
+import Question from "./question_class.js";
 
 function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;

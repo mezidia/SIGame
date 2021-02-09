@@ -25,7 +25,8 @@ class Database {
     });
   }
 
-  getAllBundles() {
+  async getAllBundles() {
+    let returnBundles = [];
     const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
       FROM question q
       INNER JOIN deck d
@@ -34,7 +35,7 @@ class Database {
       ON d.bundle_id = b.bundle_id 
       INNER JOIN langcode l
       ON l.langcode_id = b.bundle_langcode`;
-    this.promisifyConQuery(getDeckSqlStr, rows => rows)
+    await this.promisifyConQuery(getDeckSqlStr, rows => rows)
     .then(rows => {
       const allBundles = [];
       let bundle = {
@@ -96,8 +97,9 @@ class Database {
           if (i !== rows.length - 1) bundleId = rows[i + 1].bundle_id;
         }
       }
-      return allBundles;
+      returnBundles = allBundles;
     });
+    return returnBundles;
   }
 
   insertBundle(bundle) {

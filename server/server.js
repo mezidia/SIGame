@@ -88,9 +88,10 @@ class Server {
   }
 
   //executes on new message from client
-  connectionMessage(connection, message) {
+  async connectionMessage(connection, message) {
     console.log('new message: ' + message);
-    const bundle = this.database.getAllBundles();
+    const bundle = await this.database.getAllBundles();
+    console.log(bundle);
     this.sendToAll({mType: 'allBundles', data: bundle});
     //this.database.insertBundle(bundle);
   }
