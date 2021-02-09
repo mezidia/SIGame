@@ -1,7 +1,6 @@
 'use strict';
 
 const mysql = require('mysql');
-const util = require('util');
 
 class Database {
   constructor (config) {
@@ -80,9 +79,5 @@ class Database {
     });
   }
 }
-
-//con.query('SELECT * FROM langcode', (err, rows) => {
-//    console.log(rows);
-//  });
 
 module.exports = { Database };

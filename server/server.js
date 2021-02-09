@@ -91,6 +91,7 @@ class Server {
   //executes on new message from client
   connectionMessage(connection, message) {
     console.log('new message: ' + message);
+    this.database.sendToAll({mType: 'allBundles', data: bundle});
     this.database.getAllBundles();
     //this.database.insertBundle(bundle);
   }
