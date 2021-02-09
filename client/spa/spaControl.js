@@ -7,7 +7,7 @@ const engine = new RenderEngine();
 
 async function loadMainView() {
   const view = await import('./views/mainPage.js');
-  engine.render(view);
+  engine.render(view.default);
 }
 
 const changeHash = (hash) => () => {
