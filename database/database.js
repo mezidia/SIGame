@@ -26,6 +26,7 @@ class Database {
     });
   }
 
+  //get all bundles from database
   getAllBundles() {
     const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
       FROM question q
@@ -101,6 +102,7 @@ class Database {
     });
   }
 
+  //insert new bundle to database
   insertBundle(bundle) {
     let insertLangcodeSqlStr = `INSERT INTO langcode (langcode_name)
     SELECT * FROM (SELECT '${bundle.langcode}') AS tmp
@@ -132,9 +134,5 @@ class Database {
     });
   }
 }
-
-//con.query('SELECT * FROM langcode', (err, rows) => {
-//    console.log(rows);
-//  });
 
 module.exports = { Database };
