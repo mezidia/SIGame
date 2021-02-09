@@ -12,6 +12,7 @@ class Database {
     });
   }
 
+  //create promise from sql query
   promisifyConQuery(sqlCommStr, cb) {
     return new Promise((res, rej) => {
       this.con.query(sqlCommStr, (err, rows) => {
