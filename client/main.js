@@ -31,6 +31,7 @@ function socketHandle(data) {
 }
 
 const createGame = () => {
+  const data = {};
   const roomName = document.getElementById('roomName').value;
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
@@ -40,6 +41,16 @@ const createGame = () => {
   const ppl = document.getElementById('ppl').value;
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(roomName)) return;
+  const settings = {
+    roomName, 
+    password,
+    questionBundle,
+    gameMode,
+    role,
+    totalPlayers,
+    ppl,
+    socket,
+  };
   if (questionBundle.value === 'Download') {
     const bundleFileImport = document.getElementById('bundle-file');
     const file = bundleFileImport.files[0];
@@ -48,20 +59,11 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       const bundle = bundleEditor.parseBundle(bundleObj);
-      const settings = {
-        roomName, 
-        password,
-        questionBundle,
-        gameMode,
-        role,
-        totalPlayers,
-        ppl,
-        socket,
-      };
       const game = new Game(bundle, settings);
       const msg = {
-        'mType': 'newGameWithOwnBundle',
+        'mType': 'newGameLobby',
         data: {
+          saveBundle: true,
           bundle,
           settings,
         },
@@ -71,7 +73,12 @@ const createGame = () => {
     }
     f.readAsText(file);
   } else if (questionBundle.value === 'BundleByName') {
-
+    const bundleSubject = document.getElementById('bundleSubjectSearch-input').value;
+    for (const bundle of allBundles) {
+      if (bundle.subject === bundleSubject) {
+        data.bundle = bundle;
+      }
+    }
 
     changeHash('simpleLobby')();
   } else {
@@ -85,8 +92,12 @@ const createGameLobby = () => {
   const msg = {
     'mType': 'getAllBundles',
   };
-  promisifySocketMSG(msg, 'allBundles', socket).then(data => {
-    allBundles = data.allBundles;
+  promisifySocketMSG(msg, 'allBundles', socket).then(msg => {
+    allBundles = msg.data;
+    console.log(allBundles);
+    for (const bundleObj of allBundles) {
+      console.log(bundleEditor.parseBundle(bundleObj));
+    }
     changeHash('createGame')();
   });
 }
@@ -123,7 +134,7 @@ const handleClick = evt => ({
   'play-btn': [connectToSIgame],
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
-  'startGame': [() => alert('startGame'), createGame],
+  'startGame': [createGame],
   'join-btn': [ () => changeHash('lobbySearch')()],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [submitBundleEditor],
@@ -140,7 +151,6 @@ document.addEventListener('click', evt => {
   if (!handleClick(evt)) return;
   handleClick(evt).forEach(x => x());
 });
-
 
 //opens main page
 loadView();

@@ -28,6 +28,35 @@ const de = {
   "settings": "Settings",
   "create-game": "Create new game",
   "join-lobby": "Join lobby",
+  "pack-title-word": "Pack title",
+  "author-word": "Author",
+  "language": "Language",
+  "german": "German",
+  "ukrainian": "Ukrainian",
+  "mode": "Mode",
+  "classic": "Classic",
+  "simplified": "Simplified",
+  "round": "Round",
+  "final-round": "Final Round",
+  "question": "Question",
+  "points": "points",
+  "category": "Category",
+  "category-name": "Category name",
+  "question-type":{
+    "placeholder": "Question type"
+  },
+  "input-question": {
+    "placeholder": "Question"
+  },
+  "answers": {
+    "placeholder": "Answers"
+  },
+  "wrong-answers": {
+    "placeholder": "Wrong answers(optional)"
+  },
+  "input-category": {
+    "placeholder": "Category"
+  }
 
 };
 

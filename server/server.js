@@ -3,6 +3,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
+//const bundle = require('../exampleBundle.json');
 
 const fileManager = new FileManager();
 const idGenerator = new IDGenerator();
@@ -28,6 +29,11 @@ class Server {
 
   constructor(port, database) {
     this.database = database;
+    this._messageConfig = {
+      'getAllBundles': data => this.getAllBundles(data),
+
+    };
+
     if (!Server._instance) {
       Server._instance = this;
 
@@ -87,10 +93,24 @@ class Server {
     }
   }
 
-  //executes on new message from client
-  connectionMessage(connection, message) {
-    console.log('new message: ' + message);
-    this.database.getAllBundles();
+  //executes specific function on new message from client
+  async connectionMessage(connection, message) {
+    const request = JSON.parse(message);
+    const messageHandler = this._messageConfig[request.mType];
+    console.log(request);
+    if (!messageHandler) return;
+    await messageHandler([this.getIdByConnection(connection), request.data]);
+    //this.database.insertBundle(bundle);
+  }
+
+  //gets all bundles from database
+  async getAllBundles(message) {
+    const bundles = await this.database.getAllBundles();
+    this.sendToUser(message[0], {mType: 'allBundles', data: bundles});
+  }
+
+  insertBundle(message) {
+    console.log(message);
   }
 
   //executes on user quitting

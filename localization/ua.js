@@ -28,6 +28,35 @@ const ua = {
   "settings": "Налаштування",
   "create-game": "Створити нову гру",
   "join-lobby": "Увійти до лоббі",
+  "pack-title-word": "Назва низки питань",
+  "author-word": "Автор",
+  "language": "Мова",
+  "german": "Німецька",
+  "ukrainian": "Українська",
+  "mode": "Мод",
+  "classic": "Класична",
+  "simplified": "Спрощена",
+  "round": "Раунд",
+  "final-round": "Фінальний Раунд",
+  "question": "Питання",
+  "points": "балів",
+  "category": "Категорія",
+  "category-name": "Назва Категорії",
+  "question-type": {
+    "placeholder": "Тип запитання"
+  },
+  "input-question": {
+    "placeholder": "Питання"
+  },
+  "answers": {
+    "placeholder": "Відповіді"
+  },
+  "wrong-answers": {
+    "placeholder": "Неправильні відповіді(необов'язково)"
+  },
+  "input-category": {
+    "placeholder": "Категорія"
+  }
 
 }
 
