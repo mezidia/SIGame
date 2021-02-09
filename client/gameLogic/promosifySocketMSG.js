@@ -7,7 +7,6 @@ export default function promisifySocketMSG(msg, awaitMsgType, socket, timeout = 
 
     function responseHandler(msg) {
       const parsedMSG = JSON.parse(msg.data);
-      console.log(msg.data)
       if (parsedMSG.mType === awaitMsgType) {
         const result = parsedMSG;
         resolve(result);
