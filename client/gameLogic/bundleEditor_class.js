@@ -15,7 +15,7 @@ export default class BundleEditor {
 
   parseBundle(obj) {
     const decks = obj.decks;
-    const language = obj.language;
+    const language = obj.langcode;
     const author = obj.author;
     const title = obj.title;
     const res = [];

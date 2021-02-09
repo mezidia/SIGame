@@ -6,12 +6,12 @@ function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;
   const trueAns = document.getElementById(`answer-${r}-${c}-${q}`).value;
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
-  const qType = document.getElementById(`question-type-${r}-${c}-${q}`).value
+  const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(qstn) && !reg.test(ans) && !reg.test(falseAns)) {
     throw new Error(`failed reg test on ${r}-${c}-${q}`);
   }
-  return {qstn, ans, qType, falseAns, 'cost': q * 100, type: 'regular'};
+  return {string, trueAns, falseAns, 'cost': q * 100, type};
 }
 
 function getMainFields() {
@@ -25,18 +25,14 @@ function getMainFields() {
     bundleLangSelect, 
     bundleModeSelect,
   ];
-  for (const domElem of mainBundleFields) {
+  for (let i = 0; i < mainBundleFields.length; i++) {
     try {
-      domElem = getDomElemVal(domElem); 
+      mainBundleFields[i] = getDomElemVal(mainBundleFields[i]); 
     } catch (err) {
       console.log(err);
       return false;
     }
   }
-  /*mainBundleFields.forEach((elem) => {
-    console.log(elem);
-    elem = getDomElemVal(elem);
-  }); */
   return mainBundleFields;
 }
 
@@ -64,32 +60,27 @@ export default function getBundleEditorData() {
   console.log(mainBundleFields);
   if (!mainBundleFields) return false;
   const bundleData = {};
-  for (let r = 1; r < 4; r++) { //round
-    for (let c = 1; c <= 5; c++) { //category
-      const sbjInput = document.getElementById('category-name-${r}-${c}');
-      const subject = getDomElemVal(sbjInput);
-      const deck = {
-        subject,
-        questions: [],
-      }
-      for(let q = 1; q <= 5; q++) { //question
-        try {
+  try {
+    for (let r = 1; r < 4; r++) { //round
+      for (let c = 1; c <= 5; c++) { //category
+        console.log(r, c);
+        const sbjInput = document.getElementById('category-name-${r}-${c}');
+        const subject = getDomElemVal(sbjInput);
+        const deck = {
+          subject,
+          questions: [],
+        }
+        for(let q = 1; q <= 5; q++) { //question
           const q = new Question (getQData(r, c, q)); // submiting 3 rounds
-        } catch (err) {
-          console.log(err);
-          return false;
         }
       }
-      bundleData
     }
-  }
-  for (let q = 1; q <= 7; q++) {
-    try {
+    for (let q = 1; q <= 7; q++) {
       getQData(4, 1, q); //final questione
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
+    } 
+  } catch (err) {
+    console.log(err);
+    return false;
   }
   downloadAsFile(text);
 }

@@ -22,7 +22,6 @@ let allBundles = undefined;
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
   'usersOnline': (data) => console.log(data),
-  'allBundles': (bundleObj) => console.log(bundleEditor.parseBundle(JSON.parse(bundleObj))),
 })[mType];
 
 //executes function returned by socketHandleConfig
@@ -95,6 +94,10 @@ const createGameLobby = () => {
   };
   promisifySocketMSG(msg, 'allBundles', socket).then(msg => {
     allBundles = msg.data;
+    console.log(allBundles);
+    for (const bundleObj of allBundles) {
+      console.log(bundleEditor.parseBundle(bundleObj));
+    }
     changeHash('createGame')();
   });
 }
