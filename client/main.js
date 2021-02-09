@@ -129,6 +129,11 @@ const handleClick = evt => ({
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
 
+document.addEventListener('animationend', (evt) => {
+  if (evt.target.id === 'last-letter') {
+    alert('Victory!!')
+  }
+})
 
 // it runs click handler if it exists
 document.addEventListener('click', evt => {
