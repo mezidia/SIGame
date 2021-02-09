@@ -4,6 +4,7 @@ const view = () => {
       <h5><span data-localize="question">Question</span> ${i}: ${i*roundNumber}00 <span data-localize="points">points</span></h5>
       <input type="text" placeholder="Question" id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
       <input type="text" placeholder="Answers" id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
+      <input type="text" placeholder="Question type" id="question-type-${roundNumber}-${themeNumber}-${i}" data-localize="question-type" required >
       <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">`).join('\n');
   }
   const finalQuestionList = () => {
@@ -14,6 +15,7 @@ const view = () => {
       <br>    
       <input type="text" placeholder="Question" id="question-4-1-${i}" data-localize="input-question" required>
       <input type="text" placeholder="Answers" id="answer-4-1-${i}" data-localize="answers" required>
+      <input type="text" placeholder="Question type" id="question-type-4-1-${i}" data-localize="question-type" value="final" hidden required >
       <input type="text" placeholder="Wrong answers(optional)" id="wrong-answer-4-1-${i}" data-localize="wrong-answers">`).join('\n');
   }
 
@@ -32,16 +34,16 @@ const view = () => {
   return `<div class="container">
     <form>
       <h2 data-localize="pack-title-word">Pack title</h2>
-      <input type="text">
+      <input id="bundleTitle-input" type="text">
       <h2 data-localize="author-word">Author</h2>
-      <input type="text">
+      <input id="bundleAuthor-input" type="text">
       <h2 data-localize="language">Language:</h2>
-      <select class="form-control">
+      <select id="bundleLang-select" class="form-control">
         <option data-localize="german">German</option>
         <option data-localize="ukrainian">Ukrainian</option>
       </select>
       <h2 data-localize="mode">Mode:</h2>
-      <select class="form-control">
+      <select id="bundleGameMode-select" class="form-control">
         <option data-localize="classic">Classic</option>
         <option data-localize="simplified">Simplified</option>
       </select>

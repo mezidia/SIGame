@@ -42,6 +42,9 @@ const de = {
   "points": "points",
   "category": "Category",
   "category-name": "Category name",
+  "question-type":{
+    "placeholder": "Question type"
+  },
   "input-question": {
     "placeholder": "Question"
   },
