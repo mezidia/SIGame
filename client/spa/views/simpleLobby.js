@@ -11,7 +11,7 @@ const view = () => {
     <div class="col-md-3 chat-container" style="padding: 0px 0px 0px 0px">
       <div id="chat" style="background-color: #6f42c1; min-height: 70px; overflow: auto"></div>
       <div id="chat-input" style="background-color: #8c8c8c;">
-        <input type="text" style="width: 100%; height: 50px;">
+        <input type="text" style="width: 100%; height: 50px;" id="message-input">
         <div class="game-button-placeholder">
           <button class="game-button">button 1</button>
           <button class="game-button">button 2</button>

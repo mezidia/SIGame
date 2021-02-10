@@ -25,12 +25,15 @@ const mime = {
 
 //class server singleton
 class Server {
+  //saves {room: [id1, id2, .....]}
+  _games = { 2000: [] };
   _users = {};
 
   constructor(port, database) {
     this.database = database;
     this._messageConfig = {
       'getAllBundles': data => this.getAllBundles(data),
+      'messageToGameChat': data => this.messageToGameChat(data),
 
     };
 
@@ -73,7 +76,7 @@ class Server {
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
     this._users[id] = [connection, req.url.slice(11)];
-    console.log(this._users);
+    this._games[2000].push(id);
   }
 
   //send message to everyone
@@ -107,6 +110,15 @@ class Server {
   async getAllBundles(message) {
     const bundles = await this.database.getAllBundles();
     this.sendToUser(message[0], {mType: 'allBundles', data: bundles});
+  }
+
+  //sends message to everyone in game chat
+  messageToGameChat(message) {
+    const id = message[0];
+    for (let userId of this._games[message[1].room]) {
+      message[1].name = this._users[id][1];
+      this.sendToUser(userId, {mType: 'messageToGameChat', data: message[1]});
+    }
   }
 
   insertBundle(message) {

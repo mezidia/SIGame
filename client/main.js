@@ -11,8 +11,6 @@ import { ua } from '../localization/ua.js';
 
 const bundleEditor = new BundleEditor();
 
-
-
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
 
@@ -21,7 +19,8 @@ let allBundles = undefined;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
-  'usersOnline': (data) => console.log(data),
+  'usersOnline': data => console.log(data),
+  'messageToGameChat': data => sendMessageToGameChat(data),
 })[mType];
 
 //executes function returned by socketHandleConfig
@@ -79,10 +78,8 @@ const createGame = () => {
         data.bundle = bundle;
       }
     }
-
     changeHash('simpleLobby')();
   } else {
-    
     changeHash('simpleLobby')();
   }
 
@@ -128,6 +125,28 @@ const openEditor = () => {
   changeHash('redactor')();
 }
 
+//this func sends message to other members of room
+const sendMessageRoom = e => {
+  if (e.key !== 'Enter') return;
+  const inputFieldData = document.getElementById('message-input').value;
+  socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, room: 2000}}));
+  document.getElementById('message-input').value = '';
+}
+
+//this func handles message from another member in game chat
+const sendMessageToGameChat = mess => {
+  const data = mess.data;
+  const chatField = document.getElementById('chat');
+  const message = document.createElement('div');
+  const name = document.createElement('p');
+  const text = document.createElement('p');
+  name.innerHTML = data.name + ': ';
+  text.innerHTML = data.message;
+  message.appendChild(name);
+  message.appendChild(text);
+  chatField.appendChild(message);
+}
+
 //config function returns handlers by id
 const handleClick = evt => ({
   'create-game-btn': [createGameLobby],
@@ -140,10 +159,20 @@ const handleClick = evt => ({
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
 
+const handleKeydown = evt => ({
+  'message-input': [sendMessageRoom],
+})[evt.target.id];
+
 // it runs click handler if it exists
 document.addEventListener('click', evt => {
   if (!handleClick(evt)) return;
   handleClick(evt).forEach(x => x());
+});
+
+// it runs keydown handler if it exists
+document.addEventListener('keydown', evt => {
+  if (!handleKeydown(evt)) return;
+  handleKeydown(evt).forEach(x => x(evt));
 });
 
 //opens main page
