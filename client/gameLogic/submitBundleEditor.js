@@ -1,5 +1,7 @@
 'use strict';
 
+import Bundle from "./bundle_class.js";
+import Deck from "./deck_class.js";
 import Question from "./question_class.js";
 
 function getQData(r, c, q) {
@@ -8,10 +10,11 @@ function getQData(r, c, q) {
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
   const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
-  if (!reg.test(qstn) && !reg.test(ans) && !reg.test(falseAns)) {
+  if (!reg.test(string) || !reg.test(trueAns) 
+  || !reg.test(falseAns) || !reg.test(type)) {
     throw new Error(`failed reg test on ${r}-${c}-${q}`);
   }
-  return {string, trueAns, falseAns, 'cost': q * 100, type};
+  return {string, trueAns, falseAns, type};
 }
 
 function getMainFields() {
@@ -20,9 +23,9 @@ function getMainFields() {
   const bundleLangSelect = document.getElementById('bundleLang-select');
   const bundleModeSelect = document.getElementById('bundleGameMode-select');
   const mainBundleFields = [
-    bundleAuthorInput, 
+    bundleLangSelect,
+    bundleAuthorInput,
     bundleTitleInput,
-    bundleLangSelect, 
     bundleModeSelect,
   ];
   for (let i = 0; i < mainBundleFields.length; i++) {
@@ -45,8 +48,6 @@ function getDomElemVal(elem) {
   return val;
 }
 
-let text = JSON.stringify({hello: 'example'});
-
 function downloadAsFile(data) {
   let a = document.createElement('a');
   let file = new Blob([data], {type: 'application/json'});
@@ -59,28 +60,51 @@ export default function getBundleEditorData() {
   const mainBundleFields = getMainFields();
   console.log(mainBundleFields);
   if (!mainBundleFields) return false;
-  const bundleData = {};
+  const bundleData = {
+    decks: [],
+    'language': undefined,
+    'author': undefined,
+    'title': undefined,
+  };
+  let i = 0;
+  for (const key in bundleData) {
+    if (key === 'decks') continue;
+    bundleData[key] = mainBundleFields[i];
+    i++;
+  }
   try {
     for (let r = 1; r < 4; r++) { //round
       for (let c = 1; c <= 5; c++) { //category
-        console.log(r, c);
-        const sbjInput = document.getElementById('category-name-${r}-${c}');
+        const sbjInput = document.getElementById(`category-name-${r}-${c}`);
         const subject = getDomElemVal(sbjInput);
         const deck = {
           subject,
           questions: [],
         }
         for(let q = 1; q <= 5; q++) { //question
-          const q = new Question (getQData(r, c, q)); // submiting 3 rounds
+          const qstn = new Question(getQData(r, c, q)); // submiting 3 rounds
+          deck.questions.push(qstn);
         }
+        console.log(deck);
+        bundleData.decks.push(new Deck(deck));
       }
     }
     for (let q = 1; q <= 7; q++) {
-      getQData(4, 1, q); //final questione
+      const sbjInput = document.getElementById(`final-theme-${q}`);
+      const subject = getDomElemVal(sbjInput);
+      const deck = {
+        subject,
+        questions: [],
+      };
+      const qstn = new Question(getQData(4, 1, q));
+      deck.questions.push(qstn); //final questione
+      bundleData.decks.push(new Deck(deck));
     } 
   } catch (err) {
     console.log(err);
     return false;
   }
-  downloadAsFile(text);
+  console.log(bundleData);
+  downloadAsFile(JSON.stringify(new Bundle(bundleData), null, '\t'));
+  return true;
 }

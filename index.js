@@ -5,6 +5,7 @@ const Database = require('./database/database').Database;
       const msg = {
         'mType': 'newGame',
         data: {
+          saveBundle = false,
           bundle,
           settings,
         },
