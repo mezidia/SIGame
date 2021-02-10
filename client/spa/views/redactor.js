@@ -43,7 +43,14 @@ const view = () => {
       <select id="bundleLang-select" class="form-control">
         <option data-localize="german">German</option>
         <option data-localize="ukrainian">Ukrainian</option>
-      </select>      
+      </select>
+      <br>
+      <div class="form-check disabled">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" value="">
+          <h4>Save your bundle to the DJU database</h4>
+        </label>
+      </div>
       <br>
       <h2><span data-localize="round">Round</span> 1</h2>
       <div class="collapse show">

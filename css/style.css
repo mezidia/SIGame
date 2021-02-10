@@ -66,3 +66,16 @@
     display: flex;
     margin: auto;
 }
+
+.spaced-text {
+    margin-top: 15px;
+}
+
+.search-btns {
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin-left: -30px;
+    display: flex;
+}

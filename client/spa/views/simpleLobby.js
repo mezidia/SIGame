@@ -10,7 +10,7 @@ const view = () => {
     
       <div id="reply" style="background-color: #7c7c7c">
         <input type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
-        <button class="game-button" style="width: 100px; height: 100%"></button>
+        <button class="btn btn-primary game-button" style="width: 100px; height: 100%"></button>
       </div>
     </div>
     <div class="col-md-3 chat-container" style="padding: 0 0 0 0">
@@ -18,10 +18,10 @@ const view = () => {
       <div id="chat-input" style="background-color: #8c8c8c;">
         <input type="text" style="width: 100%; height: 50px;" id="message-input">
         <div class="game-button-placeholder">
-          <button class="game-button">button 1</button>
-          <button class="game-button">button 2</button>
-          <button class="game-button">button 3</button>
-          <button class="game-button">button 4</button>
+          <button class="btn btn-primary game-button">button 1</button>
+          <button class="btn btn-primary game-button">button 2</button>
+          <button class="btn btn-primary game-button">button 3</button>
+          <button class="btn btn-primary game-button">button 4</button>
         </div>
       </div>
     </div>
