@@ -6,7 +6,7 @@ import promisifySocketMSG from './gameLogic/promosifySocketMSG.js';
 import submitBundleEditor from './gameLogic/submitBundleEditor.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import { loadView, changeHash } from './spa/spaControl.js';
-import { changeLanguage } from './changeLanguage.js';
+import { changeLanguage, language } from './changeLanguage.js';
 import { getRandomIntInclusive } from './utils.js';
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
@@ -78,30 +78,45 @@ const createGame = () => {
     for (const bundle of allBundles) {
       if (bundle.title === bundleTitle) {
         data.bundle = new Bundle(bundle);
-        console.log(data.bundle);
         break;
       }
     }
-    changeHash('simpleLobby')();
     const game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
     };
-    socket.send(JSON.stringify(msg));
+    promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+      roomId = msg.data.id;
+      changeHash('simpleLobby')();
+    });
   } else {
+    const bundleData = {
+      author: 'autogen',
+      language: language.json.code,
+      title: 'autogen',
+      decks: [],
+    };
     for (let c = 0; c < 5; c++) {
-      //const bundle = allBundles[getRandomIntInclusive(0, allBundles.length)];
-      //const 
+      let bundle = undefined;  
+      do {
+        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
+        console.log(bundle.langcode, bundleData.language);
+      } while (bundle.langcode !== bundleData.language);
+      const deck = bundle.decks[getRandomIntInclusive(0, bundle.decks.length)];
+      bundleData.decks.push(deck);
     }
-    for (const bundle of allBundles) {
-      if (bundle.title === bundleTitle) {
-        data.bundle = new Bundle(bundle);
-        console.log(data.bundle);
-        break;
-      }
-    }
-    changeHash('simpleLobby')();
+    console.log(bundleData.decks);
+    data.bundle = new Bundle(bundleData);
+    const game = new Game(data.bundle, data.settings);
+    const msg = {
+      'mType': 'newGameLobby',
+      data,
+    };
+    promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+      roomId = msg.data.id;
+      changeHash('simpleLobby')();
+    });
   }
 
 };
