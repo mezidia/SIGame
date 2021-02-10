@@ -43,13 +43,7 @@ const view = () => {
       <select id="bundleLang-select" class="form-control">
         <option data-localize="german">German</option>
         <option data-localize="ukrainian">Ukrainian</option>
-      </select>
-      <h2 data-localize="mode">Mode:</h2>
-      <select id="bundleGameMode-select" class="form-control">
-        <option data-localize="classic">Classic</option>
-        <option data-localize="simplified">Simplified</option>
-      </select>
-      
+      </select>      
       <br>
       <h2><span data-localize="round">Round</span> 1</h2>
       <div class="collapse show">
