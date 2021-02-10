@@ -19,6 +19,7 @@ const bundleEditor = new BundleEditor();
 
 let socket = undefined;
 let allBundles = undefined;
+let roomId = undefined;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -65,10 +66,10 @@ const createGame = () => {
         'mType': 'newGameLobby',
         data,
       };
-      promisifySocketMSG(msg, 'newChatId', socket).then(() => {
+      promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+        roomId = msg.data.id;
         changeHash('simpleLobby')();
       });
-      socket.send(JSON.stringify(msg));
     }
     f.readAsText(file);
   } else if (questionBundle.value === 'Find bundle by name') {
@@ -90,7 +91,7 @@ const createGame = () => {
   } else {
     for (let c = 0; c < 5; c++) {
       const bundle = allBundles[getRandomIntInclusive(0, allBundles.length)];
-      const 
+      //const 
     }
     for (const bundle of allBundles) {
       if (bundle.title === bundleTitle) {
@@ -150,7 +151,8 @@ const sendMessageRoom = e => {
   const inputFieldData = document.getElementById('message-input').value;
   const reg = /.+/; //--------------------------------------------------------------------------
   if (!reg.test(inputFieldData)) return;
-  socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, room: 2000}})); //roomId
+  console.log(roomId);
+  socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, 'room': roomId}}));
   document.getElementById('message-input').value = '';
 }
 

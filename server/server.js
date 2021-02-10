@@ -78,14 +78,8 @@ class Server {
     this.ws.clients.forEach(() => n++);
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
-<<<<<<< HEAD
-    console.log(id);
-    this._users[id] = [connection, req.url.slice(11)];
-    this._games[2000].push(id);
-=======
     this._users[id] = {connection: connection, name: req.url.slice(11)};
-    this._games[2000].players.push(id);
->>>>>>> 6cff9e0918acc293a15d5a1b8f8d6fddf4629306
+    //this._games[2000].players.push(id);
   }
 
   //send message to everyone
@@ -138,6 +132,9 @@ class Server {
   createNewGame(data) {
     const message = data.data;
     const id = idGenerator.getID();
+    this._games[id] = {
+      players: [],
+    };
     this._games[id].players.push(data.id);
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;

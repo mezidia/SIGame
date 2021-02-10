@@ -16,7 +16,7 @@ export default class Game {
     this.gameField = new GameField();
     this._setupEventListeners();
     console.log('new Game');
-    this.gameField.drawQuestion('улюлю');
+    //this.gameField.drawQuestion('улюлю');
   }
 
   addPlayer() {
