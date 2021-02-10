@@ -1,6 +1,6 @@
 {
   "author": "Eurovision fan",
-  "langcode": "ua",
+  "langcode": "de",
   "title": "The greatest song contest in the world!",
   "decks": [
     {
@@ -8,7 +8,7 @@
         "questions": [
           {
             "type": "gamble",
-            "string": "How many of Ukraine's songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+            "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
             "trueAns": ["3"],
             "falseAns": ["2"]
           },
@@ -43,7 +43,7 @@
       "questions": [
         {
           "type": "gamble",
-          "string": "Ukraine's first Eurovision winner",
+          "string": "Ukraine s first Eurovision winner",
           "trueAns": ["Ruslana"],
           "falseAns": ["Jamala"]
         },
@@ -183,7 +183,7 @@
         "questions": [
           {
             "type": "gamble",
-            "string": "How many of Ukraine's songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+            "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
             "trueAns": ["3"],
             "falseAns": ["2"]
           },
@@ -218,7 +218,7 @@
         "questions": [
           {
             "type": "gamble",
-            "string": "Ukraine's first Eurovision winner",
+            "string": "Ukraine s first Eurovision winner",
             "trueAns": ["Ruslana"],
             "falseAns": ["Jamala"]
           },
@@ -358,7 +358,7 @@
             "questions": [
               {
                 "type": "gamble",
-                "string": "How many of Ukraine's songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+                "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
                 "trueAns": ["3"],
                 "falseAns": ["2"]
               },
@@ -393,7 +393,7 @@
           "questions": [
             {
               "type": "gamble",
-              "string": "Ukraine's first Eurovision winner",
+              "string": "Ukraine s first Eurovision winner",
               "trueAns": ["Ruslana"],
               "falseAns": ["Jamala"]
             },
@@ -533,7 +533,7 @@
                 "questions": [
                   {
                     "type": "final",
-                    "string": "How many of Ukraine's songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+                    "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
                     "trueAns": ["3"],
                     "falseAns": ["2"]
                   }
@@ -544,7 +544,7 @@
                 "questions": [
                   {
                     "type": "final",
-                    "string": "Ukraine's first Eurovision winner",
+                    "string": "Ukraine s first Eurovision winner",
                     "trueAns": ["Ruslana"],
                     "falseAns": ["Jamala"]}
                   ]

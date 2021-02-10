@@ -102,7 +102,7 @@ const createGame = () => {
       let bundle = undefined;  
       do {
         bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.language);
+      } while (bundle.langcode === bundleData.language);
       const deck = bundle.decks[getRandomIntInclusive(0, 14)];
       bundleData.decks.push(deck);
     }
@@ -111,7 +111,7 @@ const createGame = () => {
       let bundle = undefined;  
       do {
         bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.language);
+      } while (bundle.langcode === bundleData.language);
       const deck = bundle.decks[getRandomIntInclusive(15, 21)];
       bundleData.decks.push(deck);
     }
