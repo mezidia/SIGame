@@ -1,3 +1,5 @@
+'use strict';
+
 const view = () => {
   return `<div class="container" style="max-width: 500px; margin-top: 7vh">
     <h1 style="text-align: center" data-localize="title">SI Game</h1>

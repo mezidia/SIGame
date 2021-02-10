@@ -129,6 +129,8 @@ const openEditor = () => {
 const sendMessageRoom = e => {
   if (e.key !== 'Enter') return;
   const inputFieldData = document.getElementById('message-input').value;
+  const reg = /.+/; //--------------------------------------------------------------------------
+  if (!reg.test(inputFieldData)) return;
   socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, room: 2000}}));
   document.getElementById('message-input').value = '';
 }

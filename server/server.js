@@ -102,22 +102,26 @@ class Server {
     const messageHandler = this._messageConfig[request.mType];
     console.log(request);
     if (!messageHandler) return;
-    await messageHandler([this.getIdByConnection(connection), request.data]);
+    await messageHandler({ 
+      'id': this.getIdByConnection(connection),
+      'data': request.data,
+    });
     //this.database.insertBundle(bundle);
   }
 
   //gets all bundles from database
   async getAllBundles(message) {
     const bundles = await this.database.getAllBundles();
-    this.sendToUser(message[0], {mType: 'allBundles', data: bundles});
+    this.sendToUser(message.id, {mType: 'allBundles', data: bundles});
   }
 
   //sends message to everyone in game chat
   messageToGameChat(message) {
-    const id = message[0];
-    for (let userId of this._games[message[1].room]) {
-      message[1].name = this._users[id][1];
-      this.sendToUser(userId, {mType: 'messageToGameChat', data: message[1]});
+    const data = message.data;
+    const id = message.id;
+    for (let userId of this._games[data.room]) {
+      data.name = this._users[id][1];
+      this.sendToUser(userId, {mType: 'messageToGameChat', data: data });
     }
   }
 

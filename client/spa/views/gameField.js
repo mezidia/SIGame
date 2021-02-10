@@ -1,7 +1,14 @@
-export default class GameField {
+'use strict';
 
+export default class GameField {
+  constructor() {
+    if (!GameField._instance) {
+      GameField._instance = this;
+    }
+    return GameField._instance;
+  }
   // returns a game table used in classic mode
-  static drawTable() {
+  drawTable() {
     const drawCells = () => {
       const res = [];
       for(let i = 1; i<=5; ++i) {
@@ -30,7 +37,7 @@ export default class GameField {
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
-  static drawQuestion(str) {
+  drawQuestion(str) {
     // noinspection CssInvalidPropertyValue
     return `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}

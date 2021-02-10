@@ -28,6 +28,22 @@ class Database {
 
   //get all bundles from database
   async getAllBundles() {
+    let bundle = {
+      author: null,
+      langcode: null,
+      title: null,
+      decks: []
+    };
+    let deck = {
+      subject: null,
+      questions: []
+    };
+    let question = {
+      type: null,
+      string: null,
+      trueAns: null,
+      falseAns: null
+    };
     let returnBundles = [];
     const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
       FROM question q
@@ -41,26 +57,9 @@ class Database {
     .catch(err => console.log(err))
     .then(rows => {
       const allBundles = [];
-      let bundle = {
-        author: null,
-        langcode: null,
-        title: null,
-        decks: []
-      };
-      let deck = {
-        subject: null,
-        questions: []
-      };
-      let question = {
-        type: null,
-        string: null,
-        trueAns: null,
-        falseAns: null
-      }
       let bundleId = 1;
       let deckId = 1;
       for (let i = 0; i < rows.length; i++) {
-
         question.type = rows[i].question_type;
         question.string = rows[i].question_string;
         question.trueAns = rows[i].question_trueans;

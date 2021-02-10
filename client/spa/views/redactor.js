@@ -1,3 +1,5 @@
+'use strict';
+
 const view = () => {
   const questionList = (roundNumber, themeNumber) => {
     return [1, 2, 3, 4, 5].map(i => `

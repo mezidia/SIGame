@@ -1,3 +1,5 @@
+'use strict';
+
 import RenderEngine from './engine.js';
 import Router from './router.js';
 import { changeLanguage } from '../changeLanguage.js';

@@ -1,3 +1,5 @@
+'use strict';
+
 const view = () => {
   return `<div class="container">
     <form>

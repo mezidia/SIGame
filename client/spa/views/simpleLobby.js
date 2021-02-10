@@ -1,3 +1,5 @@
+'use strict';
+
 import GameField from './gameField.js';
 
 const view = () => {

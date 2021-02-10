@@ -1,3 +1,5 @@
+'use strict';
+
 export default class RenderEngine {
   render(view) {
     const root = document.getElementById('main');
