@@ -26,7 +26,7 @@ const mime = {
 //class server singleton
 class Server {
   //saves {room: [id1, id2, .....]}
-  _games = { 2000: [] };
+  _games = {};
   _users = {};
 
   constructor(port, database) {
@@ -34,6 +34,9 @@ class Server {
     this._messageConfig = {
       'getAllBundles': data => this.getAllBundles(data),
       'messageToGameChat': data => this.messageToGameChat(data),
+      'newGameLobby': data => this.createNewGame(data),
+      'returnAllGameIds': data => this.returnAllGameIds(data),
+      'joinGame': data => this.joinGame(data),
 
     };
 
@@ -75,8 +78,8 @@ class Server {
     this.ws.clients.forEach(() => n++);
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
-    this._users[id] = [connection, req.url.slice(11)];
-    this._games[2000].push(id);
+    this._users[id] = {connection: connection, name: req.url.slice(11)};
+    this._games[2000].players.push(id);
   }
 
   //send message to everyone
@@ -90,7 +93,7 @@ class Server {
 
   //send to specific user 
   sendToUser(id, message) {
-    const user = this._users[id][0];
+    const user = this._users[id].connection;
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify(message));
     }
@@ -119,11 +122,36 @@ class Server {
   messageToGameChat(message) {
     const data = message.data;
     const id = message.id;
-    for (let userId of this._games[data.room]) {
-      data.name = this._users[id][1];
+    for (let userId of this._games[data.room].players) {
+      data.name = this._users[id].name;
       this.sendToUser(userId, {mType: 'messageToGameChat', data: data });
     }
   }
+
+  //creates new game and puts it to game
+  createNewGame(data) {
+    const message = data.data;
+    const id = idGenerator.getID();
+    this._games[id].players.push(data.id);
+    this._games[id].bundle = message.bundle;
+    this._games[id].settings = message.settings;
+    this.sendToUser(data.id, {mType: 'newChatId', data: {id: id}});
+  }
+
+  //returns all game ids
+  returnAllGameIds(data) {
+    const id = data.id;
+    this.sendToUser(id, {mType: Object.keys(this._games)});
+  }
+
+  // in {mType: , data: {gameId: , }}
+  // returns nothing yet
+  joinGame(data) {
+    const id = data.id;
+    const message = data.data;
+    this._games[message.gameId].players.push(id);
+  }
+
 
   insertBundle(message) {
     console.log(message);
@@ -139,7 +167,7 @@ class Server {
   // gets users id by connection
   getIdByConnection(connection) {
     for (let [id, info] of Object.entries(this._users)) {
-      if (info[0] === connection) return id;
+      if (info.connection === connection) return id;
     }
   }
 }

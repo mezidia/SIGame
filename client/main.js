@@ -13,6 +13,7 @@ const bundleEditor = new BundleEditor();
 
 //messages from server
 //client.send(JSON.stringify({mType: 'usersOnline', data: n}));
+//{mType: 'newChatId', data: {id: id}}
 
 let socket = undefined;
 let allBundles = undefined;
