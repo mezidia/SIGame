@@ -28,6 +28,7 @@ class Server {
   //saves {room: [id1, id2, .....]}
   _games = {};
   _users = {};
+  _usersInLobby = [];
 
   constructor(port, database) {
     this.database = database;
@@ -35,7 +36,7 @@ class Server {
       'getAllBundles': data => this.getAllBundles(data),
       'messageToGameChat': data => this.messageToGameChat(data),
       'newGameLobby': data => this.createNewGame(data),
-      'returnAllGameIds': data => this.returnAllGameIds(data),
+      'returnAllGames': data => this.returnAllGames(data),
       'joinGame': data => this.joinGame(data),
       'insertBundle': data => this.insertBundle(data),
 
@@ -140,12 +141,17 @@ class Server {
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;
     this.sendToUser(data.id, {mType: 'newChatId', data: {id: id}});
+    for (let user of this._usersInLobby) {
+      this.sendToUser(user, {mType: 'returnAllGames', data: this._games});
+    }
+    console.log(this._games);
   }
 
   //returns all game ids
-  returnAllGameIds(data) {
+  returnAllGames(data) {
     const id = data.id;
-    this.sendToUser(id, {mType: Object.keys(this._games)});
+    this._usersInLobby.push(id);
+    this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
   }
 
   // in {mType: , data: {gameId: , }}
@@ -155,6 +161,7 @@ class Server {
     const message = data.data;
     this._games[message.gameId].players.push(id);
     const gameData = this._games[message.gameId];
+    if(this._usersInLobby.includes(id)) this._usersInLobby.splice(this._usersInLobby.lastIndexOf(id), 1);
     this.sendToUser(id, {mType: 'joinGame', data: {bundle: gameData.bundle, settings: gameData.settings, players: gameData.players}});
   }
 
