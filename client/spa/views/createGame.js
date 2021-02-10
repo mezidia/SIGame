@@ -5,17 +5,19 @@ const view = () => {
     <form>
       <h1 data-localize="new-game">New Game</h1>
       <h2 data-localize="title-word">Title</h2>
-      <input id="roomName" type="text">
+      <input id="roomName" type="text" required>
       
       <h2 data-localize="password-word">Password</h2>
-      <input id="roomPassword" type="text">
+      <input id="roomPassword" type="text" required>
       
       <h2 data-localize="question-bundle-word">Question bundle</h2>
       <select id="questionBundle" class="form-control" id="select-question">
         <option data-localize="random-word">Random</option>
         <option data-localize="download-word">Download</option>
+        <option data-localize="findBundleByName-word">Find bundle by name</option>
       </select>    
       <input id="bundle-file" type="file" accept=".json" />
+      <input id="bundleSearch-input" type="text" />
       
       <h2 data-localize="game-type-word">Game type</h2>
       <select id="gameMode" class="form-control" id="select-game-type">

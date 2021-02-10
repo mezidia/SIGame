@@ -1,6 +1,6 @@
 'use strict';
 
-export default function promisifySocketMSG(msg, awaitMsgType, socket, timeout = 222030203) {
+const promisifySocketMSG = (msg, awaitMsgType, socket, timeout = 222030203) => {
   return new Promise((resolve, reject) => {
     let timer = undefined;
     socket.send(JSON.stringify(msg));
@@ -23,3 +23,4 @@ export default function promisifySocketMSG(msg, awaitMsgType, socket, timeout = 
   });
 }
 
+export default promisifySocketMSG;

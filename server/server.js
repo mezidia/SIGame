@@ -75,6 +75,7 @@ class Server {
     this.ws.clients.forEach(() => n++);
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
+    console.log(id);
     this._users[id] = [connection, req.url.slice(11)];
     this._games[2000].push(id);
   }

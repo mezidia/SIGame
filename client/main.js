@@ -1,11 +1,13 @@
 'use strict';
 
 import Game from './gameLogic/game_class.js';
+import Bundle from './gameLogic/bundle_class.js';
 import promisifySocketMSG from './gameLogic/promosifySocketMSG.js';
 import submitBundleEditor from './gameLogic/submitBundleEditor.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import { loadView, changeHash } from './spa/spaControl.js';
 import { changeLanguage } from './changeLanguage.js';
+import { getRandomIntInclusive } from './utils.js';
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
 
@@ -31,6 +33,7 @@ function socketHandle(data) {
 
 const createGame = () => {
   const data = {};
+
   const roomName = document.getElementById('roomName').value;
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
@@ -40,15 +43,13 @@ const createGame = () => {
   const ppl = document.getElementById('ppl').value;
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(roomName)) return;
-  const settings = {
+  data.settings = {
     roomName, 
     password,
-    questionBundle,
     gameMode,
     role,
     totalPlayers,
     ppl,
-    socket,
   };
   if (questionBundle.value === 'Download') {
     const bundleFileImport = document.getElementById('bundle-file');
@@ -57,29 +58,46 @@ const createGame = () => {
     const f = new FileReader();
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
-      const bundle = bundleEditor.parseBundle(bundleObj);
-      const game = new Game(bundle, settings);
+      data.bundle = bundleEditor.parseBundle(bundleObj);
+      const game = new Game(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
-        data: {
-          saveBundle: true,
-          bundle,
-          settings,
-        },
+        data,
       };
+      promisifySocketMSG(msg, 'newChatId', socket).then(() => {
+        changeHash('simpleLobby')();
+      });
       socket.send(JSON.stringify(msg));
-      changeHash('simpleLobby')();
     }
     f.readAsText(file);
-  } else if (questionBundle.value === 'BundleByName') {
-    const bundleSubject = document.getElementById('bundleSubjectSearch-input').value;
+  } else if (questionBundle.value === 'Find bundle by name') {
+    const bundleTitle = document.getElementById('bundleSearch-input').value;
     for (const bundle of allBundles) {
-      if (bundle.subject === bundleSubject) {
-        data.bundle = bundle;
+      if (bundle.title === bundleTitle) {
+        data.bundle = new Bundle(bundle);
+        console.log(data.bundle);
+        break;
       }
     }
     changeHash('simpleLobby')();
+    const game = new Game(data.bundle, data.settings);
+    const msg = {
+      'mType': 'newGameLobby',
+      data,
+    };
+    socket.send(JSON.stringify(msg));
   } else {
+    for (let c = 0; c < 5; c++) {
+      const bundle = allBundles[getRandomIntInclusive(0, allBundles.length)];
+      const 
+    }
+    for (const bundle of allBundles) {
+      if (bundle.title === bundleTitle) {
+        data.bundle = new Bundle(bundle);
+        console.log(data.bundle);
+        break;
+      }
+    }
     changeHash('simpleLobby')();
   }
 
@@ -131,7 +149,7 @@ const sendMessageRoom = e => {
   const inputFieldData = document.getElementById('message-input').value;
   const reg = /.+/; //--------------------------------------------------------------------------
   if (!reg.test(inputFieldData)) return;
-  socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, room: 2000}}));
+  socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, room: 2000}})); //roomId
   document.getElementById('message-input').value = '';
 }
 
