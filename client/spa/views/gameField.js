@@ -1,5 +1,7 @@
 'use strict';
 
+const gameDisplay = document.getElementById('game-display');
+
 export default class GameField {
   constructor() {
     if (!GameField._instance) {
@@ -18,7 +20,7 @@ export default class GameField {
       }
       return res.join('\n');
     }
-    return `<div class="col-3" style="background-color: #c7280e; padding: 0 0 0 0;">
+    gameDisplay.innerHTML = `<div class="col-3" style="background-color: #c7280e; padding: 0 0 0 0;">
       <div class="vertical-grid-5">
         <div class="centred-text" id="theme-1"></div>
         <div class="centred-text" id="theme-2"></div>
@@ -39,7 +41,7 @@ export default class GameField {
   // animationend listener. There's an example of it in main.js 141 line
   drawQuestion(str) {
     // noinspection CssInvalidPropertyValue
-    return `<span id="question-text">${[...str].map((letter, index) =>
+    gameDisplay.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter" style="animation-duration: ${index * 0.16}s">${letter}</span>`).join('')}
     </span>`
