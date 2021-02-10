@@ -37,6 +37,7 @@ class Server {
       'newGameLobby': data => this.createNewGame(data),
       'returnAllGameIds': data => this.returnAllGameIds(data),
       'joinGame': data => this.joinGame(data),
+      'insertBundle': data => this.insertBundle(data),
 
     };
 
@@ -153,11 +154,13 @@ class Server {
     const id = data.id;
     const message = data.data;
     this._games[message.gameId].players.push(id);
+    const gameData = this._games[message.gameId];
+    this.sendToUser(id, {mType: 'joinGame', data: {bundle: gameData.bundle, settings: gameData.settings, players: gameData.players}});
   }
 
-
+  //inserts bundle to database
   insertBundle(message) {
-    console.log(message);
+    this.database.insertBundle(message.bundle);
   }
 
   //executes on user quitting
