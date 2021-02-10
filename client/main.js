@@ -25,6 +25,7 @@ let roomId = undefined;
 const socketHandleConfig = mType => ({
   'usersOnline': data => console.log(data),
   'messageToGameChat': data => sendMessageToGameChat(data),
+  'returnAllGames': data => updateGames(data),
 })[mType];
 
 //executes function returned by socketHandleConfig
@@ -200,10 +201,33 @@ const handleClick = evt => ({
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
   'startGame': [createGame],
-  'join-btn': [ () => changeHash('lobbySearch')()],
+  'join-btn': [ () => joinLobby()],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
+
+//joins lobby and sends request to server for
+const joinLobby = () => {
+  changeHash('lobbySearch')();
+  socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
+}
+
+//update games in lobby
+const updateGames = data => {
+  const games = data.data;
+  const gamesSearchField = document.getElementById('games-search');
+  gamesSearchField.innerHTML = '';
+  for (const gameId of Object.keys(games)) {
+    const game = games[gameId];
+    const gameDiv = document.createElement('div');
+    gameDiv.addEventListener('click', () => {
+      //do something on click
+    });
+    gameDiv.innerHTML = game.settings.roomName;
+    gamesSearchField.appendChild(gameDiv);
+  }
+  console.log(data);
+}
 
 //this func handles keydowns on elements
 const handleKeydown = evt => ({
