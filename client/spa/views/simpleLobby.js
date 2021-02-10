@@ -1,15 +1,13 @@
 'use strict';
 
-import GameField from './gameField.js';
-
 const view = () => {
   return `<div class="row" style="margin: 0 0 0 0; height: 100%">
     <div class="col-md-9 game-container" style="padding: 0 0 0 0">
-      <div id="game-display" class="row" style="min-height: 200px; margin: 0 0 0 0">
-        <!-- Gamefield class methods should be injected here -->
-      </div>
+    
+      <div id="game-display" class="row" style="min-height: 200px; margin: 0 0 0 0"></div>
       
       <div id="players-icons" style="background-color: #3c9a5f"></div>
+    
       <div id="reply" style="background-color: #7c7c7c">
         <input type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
         <button class="game-button" style="width: 100px; height: 100%"></button>
