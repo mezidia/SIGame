@@ -96,13 +96,22 @@ const createGame = () => {
       title: 'autogen',
       decks: [],
     };
-    for (let c = 0; c < 5; c++) {
+    // get 15 regular decks
+    for (let c = 0; c < 15; c++) {
       let bundle = undefined;  
       do {
         bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-        console.log(bundle.langcode, bundleData.language);
       } while (bundle.langcode !== bundleData.language);
-      const deck = bundle.decks[getRandomIntInclusive(0, bundle.decks.length)];
+      const deck = bundle.decks[getRandomIntInclusive(0, 14)];
+      bundleData.decks.push(deck);
+    }
+    // get 7 final decks
+    for (let c = 0; c < 7; c++) {
+      let bundle = undefined;  
+      do {
+        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
+      } while (bundle.langcode !== bundleData.language);
+      const deck = bundle.decks[getRandomIntInclusive(15, 21)];
       bundleData.decks.push(deck);
     }
     console.log(bundleData.decks);
@@ -166,7 +175,6 @@ const sendMessageRoom = e => {
   const inputFieldData = document.getElementById('message-input').value;
   const reg = /.+/; //--------------------------------------------------------------------------
   if (!reg.test(inputFieldData)) return;
-  console.log(roomId);
   socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, 'room': roomId}}));
   document.getElementById('message-input').value = '';
 }
