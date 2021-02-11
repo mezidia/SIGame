@@ -79,3 +79,14 @@
     margin-left: -30px;
     display: flex;
 }
+
+.choose-mode-btn {
+    height: 70px;
+    width: 300px;
+}
+
+#choose-mode-container {
+    max-width: 300px;
+    margin-top: 15vh;
+    padding: 0 0 0 0;
+}

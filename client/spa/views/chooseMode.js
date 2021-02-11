@@ -1,9 +1,11 @@
 'use strict';
 
 const view = () => {
-  return `<div class="container" style="max-width: 500px; margin-top: 15vh">
-    <button id="create-game-btn" type="button" class="btn btn-primary btn-50" data-localize="create-game">Create new game</button>
-    <button id="join-btn" type="button" class="btn btn-primary btn-50" data-localize="join-lobby">Join lobby</button>
+  return `<div class="container" id="choose-mode-container">
+    <div>
+      <button id="create-game-btn" type="button" class="btn btn-primary btn-50 choose-mode-btn" data-localize="create-game">Create new game</button>
+      <button id="join-btn" type="button" class="btn btn-primary btn-50 choose-mode-btn" data-localize="join-lobby">Join lobby</button>
+    </div>
   </div>
   `;
 };
