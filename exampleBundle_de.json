@@ -1,0 +1,609 @@
+{
+  "author": "Eurovision fan",
+  "langcode": "de",
+  "title": "The greatest song contest in the world!",
+  "decks": [
+    {
+        "subject": "Culture of countries at Eurovision",
+        "questions": [
+          {
+            "type": "gamble",
+            "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+            "trueAns": ["3"],
+            "falseAns": ["2"]
+          },
+          {
+            "type": "regular",
+            "string": "How many songs from the UK were not your native language?",
+            "trueAns": ["0"],
+            "falseAns": ["1", "3", "100"]
+          },
+          {
+            "type": "regular",
+            "string": "How many countries in 2020 wanted to present their songs in their native language (in full)?",
+            "trueAns": ["10"],
+            "falseAns": ["2004", "2016", "1999"]
+          },
+          {
+            "type": "regular",
+            "string": "Which country, at the beginning of one of the semifinals of Eurovision, turned the songs of the past years into its own way?",
+            "trueAns": ["Ukraine"],
+            "falseAns": ["Netherlands"]
+          },
+          {
+            "type": "regular",
+            "string": "What was the last country to present a song in their native language and win?",
+            "trueAns": ["Portugal"],
+            "falseAns": ["Ukraine"]
+          }
+        ]
+    },
+    {
+      "subject": "Ukraine at Eurovision",
+      "questions": [
+        {
+          "type": "gamble",
+          "string": "Ukraine s first Eurovision winner",
+          "trueAns": ["Ruslana"],
+          "falseAns": ["Jamala"]
+        },
+        {
+          "type": "regular",
+          "string": "How many times at Eurovision did Ukraine not reach the final?",
+          "trueAns": ["0"],
+          "falseAns": ["1", "3", "100"]
+        },
+        {
+          "type": "regular",
+          "string": "In what year did Ukraine perform at Eurovision for the first time?",
+          "trueAns": ["2003"],
+          "falseAns": ["2004", "2016", "1999"]
+        },
+        {
+          "type": "regular",
+          "string": "Who represented Ukraine at Eurovision in 2007?",
+          "trueAns": ["Verka Serdyuchka"],
+          "falseAns": ["Ruslana", "Ani Lorak", "Gaitana"]
+        },
+        {
+          "type": "regular",
+          "string": "In which cities of Ukraine was Eurovision held?",
+          "trueAns": ["Kyiv"],
+          "falseAns": ["Kyiv and Lviv", "Lviv", "Odessa"]
+        }
+      ]
+    },
+    {
+      "subject": "Strange Eurovision",
+      "questions": [
+        {
+          "type": "regular",
+          "string": "With which song did Lithuania take its highest place at Eurovision?",
+          "trueAns": ["We are the winners"],
+          "falseAns": ["The best"]
+        },
+        {
+          "type": "norisk",
+          "string": "What place did Verka Serdyuchka take at Eurovision?",
+          "trueAns": ["2"],
+          "falseAns": ["1", "3", "24"]
+        },
+        {
+          "type": "regular",
+          "string": "Which band won Eurovision with a rock song?",
+          "trueAns": ["Lordi"],
+          "falseAns": ["Abba", "Beatles", "lalala"]
+        },
+        {
+          "type": "regular",
+          "string": "What song did the grandmothers from Russia perform?",
+          "trueAns": ["Party for Everybody"],
+          "falseAns": ["Bread", "Dances"]
+        },
+        {
+          "type": "regular",
+          "string": "In what year did Romania send Dracula to Eurovision?",
+          "trueAns": ["2013"],
+              "falseAns": ["2004", "2016", "1999"]
+          }
+        ]
+      },
+      {
+        "subject": "Eurovision winners",
+        "questions": [
+          {
+            "type": "regular",
+            "string": "How many times has Ukraine won Eurovision?",
+            "trueAns": ["2"],
+            "falseAns": ["3", "0"]
+          },
+          {
+              "type": "regular",
+              "string": "Which world-famous performers have won Eurovision?",
+              "trueAns": ["Celine Dion", "abba", "celine dion, abba"],
+              "falseAns": ["Lady Gaga"]
+          },
+          {
+              "type": "regular",
+              "string": "Which country won Eurovision first?",
+              "trueAns": ["Switzerland"],
+              "falseAns": ["Ukraine", "USSR", "USA"]
+          },
+          {
+              "type": "regular",
+              "string": "Which country has won Eurovision the most?",
+              "trueAns": ["Ireland"],
+              "falseAns": ["Iceland", "United Kingdom"]
+          },
+          {
+              "type": "regular",
+              "string": "Which country won Eurovision in 2017?",
+              "trueAns": ["Portugal"],
+              "falseAns": ["Ukraine"]
+          }
+        ]
+      },
+      {
+        "subject": "Eurovision in the World",
+        "questions": [
+          {
+            "type": "norisk",
+            "string": "In which film did Verka Serdyuchka star after participating in Eurovisionand?",
+            "trueAns": ["Spy"],
+            "falseAns": [""]
+          },
+          {
+              "type": "gamble",
+              "string": "In what year was the feature film for Eurovision made?",
+              "trueAns": ["2020"],
+              "falseAns": ["1", "3", "100"]
+          },
+          {
+            "type": "regular",
+            "string": "Which country is participating in Eurovision, even though it is not in Europe?",
+            "trueAns": ["Australia"],
+            "falseAns": ["Russia"]
+        },
+        {
+          "type": "regular",
+          "string": "In which country did you decide to hold an analogue of Eurovision, where different parts of the country will perform instead of countries?",
+          "trueAns": ["USA"],
+          "falseAns": ["Ukraine"]
+      },
+          {
+              "type": "regular",
+              "string": "In which country did you decide to hold an analogue of Eurovision, where different parts of the country will perform instead of countries?",
+              "trueAns": ["USA"],
+              "falseAns": ["Ukraine"]
+          }
+        ]
+      },
+      {
+        "subject": "Culture of countries at Eurovision",
+        "questions": [
+          {
+            "type": "gamble",
+            "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+            "trueAns": ["3"],
+            "falseAns": ["2"]
+          },
+          {
+            "type": "regular",
+            "string": "How many songs from the UK were not your native language?",
+            "trueAns": ["0"],
+            "falseAns": ["1", "3", "100"]
+          },
+          {
+            "type": "regular",
+            "string": "How many countries in 2020 wanted to present their songs in their native language (in full)?",
+            "trueAns": ["10"],
+            "falseAns": ["2004", "2016", "1999"]
+          },
+          {
+            "type": "regular",
+            "string": "Which country, at the beginning of one of the semifinals of Eurovision, turned the songs of the past years into its own way?",
+            "trueAns": ["Ukraine"],
+            "falseAns": ["Netherlands"]
+          },
+          {
+            "type": "regular",
+            "string": "What was the last country to present a song in their native language and win?",
+            "trueAns": ["Portugal"],
+            "falseAns": ["Ukraine"]
+          }
+        ]
+    },
+      {
+        "subject": "Ukraine at Eurovision",
+        "questions": [
+          {
+            "type": "gamble",
+            "string": "Ukraine s first Eurovision winner",
+            "trueAns": ["Ruslana"],
+            "falseAns": ["Jamala"]
+          },
+          {
+            "type": "regular",
+            "string": "How many times at Eurovision did Ukraine not reach the final?",
+            "trueAns": ["0"],
+            "falseAns": ["1", "3", "100"]
+          },
+          {
+            "type": "regular",
+            "string": "In what year did Ukraine perform at Eurovision for the first time?",
+            "trueAns": ["2003"],
+            "falseAns": ["2004", "2016", "1999"]
+          },
+          {
+            "type": "regular",
+            "string": "Who represented Ukraine at Eurovision in 2007?",
+            "trueAns": ["Verka Serdyuchka"],
+            "falseAns": ["Ruslana", "Ani Lorak", "Gaitana"]
+          },
+          {
+            "type": "regular",
+            "string": "In which cities of Ukraine was Eurovision held?",
+            "trueAns": ["Kyiv"],
+            "falseAns": ["Kyiv and Lviv", "Lviv", "Odessa"]
+          }
+        ]
+      },
+      {
+        "subject": "Strange Eurovision",
+        "questions": [
+          {
+            "type": "regular",
+            "string": "With which song did Lithuania take its highest place at Eurovision?",
+            "trueAns": ["We are the winners"],
+            "falseAns": ["The best"]
+          },
+          {
+            "type": "norisk",
+            "string": "What place did Verka Serdyuchka take at Eurovision?",
+            "trueAns": ["2"],
+            "falseAns": ["1", "3", "24"]
+          },
+          {
+            "type": "regular",
+            "string": "Which band won Eurovision with a rock song?",
+            "trueAns": ["Lordi"],
+            "falseAns": ["Abba", "Beatles", "lalala"]
+          },
+          {
+            "type": "regular",
+            "string": "What song did the grandmothers from Russia perform?",
+            "trueAns": ["Party for Everybody"],
+            "falseAns": ["Bread", "Dances"]
+          },
+          {
+            "type": "regular",
+            "string": "In what year did Romania send Dracula to Eurovision?",
+            "trueAns": ["2013"],
+                "falseAns": ["2004", "2016", "1999"]
+            }
+          ]
+        },
+        {
+          "subject": "Eurovision winners",
+          "questions": [
+            {
+              "type": "regular",
+              "string": "How many times has Ukraine won Eurovision?",
+              "trueAns": ["2"],
+              "falseAns": ["3", "0"]
+            },
+            {
+                "type": "regular",
+                "string": "Which world-famous performers have won Eurovision?",
+                "trueAns": ["Celine Dion", "abba", "celine dion, abba"],
+                "falseAns": ["Lady Gaga"]
+            },
+            {
+                "type": "regular",
+                "string": "Which country won Eurovision first?",
+                "trueAns": ["Switzerland"],
+                "falseAns": ["Ukraine", "USSR", "USA"]
+            },
+            {
+                "type": "regular",
+                "string": "Which country has won Eurovision the most?",
+                "trueAns": ["Ireland"],
+                "falseAns": ["Iceland", "United Kingdom"]
+            },
+            {
+                "type": "regular",
+                "string": "Which country won Eurovision in 2017?",
+                "trueAns": ["Portugal"],
+                "falseAns": ["Ukraine"]
+            }
+          ]
+        },
+        {
+          "subject": "Eurovision in the World",
+          "questions": [
+            {
+              "type": "norisk",
+              "string": "In which film did Verka Serdyuchka act after participating in Eurovision?",
+              "trueAns": ["Spy"],
+              "falseAns": [""]
+            },
+            {
+                "type": "gamble",
+                "string": "In what year was the feature film for Eurovision made?",
+                "trueAns": ["2020"],
+                "falseAns": ["1", "3", "100"]
+            },
+            {
+              "type": "regular",
+              "string": "Which country is participating in Eurovision, even though it is not in Europe?",
+              "trueAns": ["Australia"],
+              "falseAns": ["Russia"]
+          },
+            {
+                "type": "regular",
+                "string": "Which country is participating in Eurovision, even though it is not in Europe?",
+                "trueAns": ["Australia"],
+                "falseAns": ["Russia"]
+            },
+            {
+                "type": "regular",
+                "string": "In which country did you decide to hold an analogue of Eurovision, where different parts of the country will perform instead of countries?",
+                "trueAns": ["USA"],
+                "falseAns": ["Ukraine"]
+            }
+          ]
+        },
+        {
+            "subject": "Culture of countries at Eurovision",
+            "questions": [
+              {
+                "type": "gamble",
+                "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+                "trueAns": ["3"],
+                "falseAns": ["2"]
+              },
+              {
+                "type": "regular",
+                "string": "How many songs from the UK were not your native language?",
+                "trueAns": ["0"],
+                "falseAns": ["1", "3", "100"]
+              },
+              {
+                "type": "regular",
+                "string": "How many countries in 2020 wanted to present their songs in their native language (in full)?",
+                "trueAns": ["10"],
+                "falseAns": ["2004", "2016", "1999"]
+              },
+              {
+                "type": "regular",
+                "string": "Which country, at the beginning of one of the semifinals of Eurovision, turned the songs of the past years into its own way?",
+                "trueAns": ["Ukraine"],
+                "falseAns": ["Netherlands"]
+              },
+              {
+                "type": "regular",
+                "string": "What was the last country to present a song in their native language and win?",
+                "trueAns": ["Portugal"],
+                "falseAns": ["Ukraine"]
+              }
+            ]
+        },
+        {
+          "subject": "Ukraine at Eurovision",
+          "questions": [
+            {
+              "type": "gamble",
+              "string": "Ukraine s first Eurovision winner",
+              "trueAns": ["Ruslana"],
+              "falseAns": ["Jamala"]
+            },
+            {
+              "type": "regular",
+              "string": "How many times at Eurovision did Ukraine not reach the final?",
+              "trueAns": ["0"],
+              "falseAns": ["1", "3", "100"]
+            },
+            {
+              "type": "regular",
+              "string": "In what year did Ukraine perform at Eurovision for the first time?",
+              "trueAns": ["2003"],
+              "falseAns": ["2004", "2016", "1999"]
+            },
+            {
+              "type": "regular",
+              "string": "Who represented Ukraine at Eurovision in 2007?",
+              "trueAns": ["Verka Serdyuchka"],
+              "falseAns": ["Ruslana", "Ani Lorak", "Gaitana"]
+            },
+            {
+              "type": "regular",
+              "string": "In which cities of Ukraine was Eurovision held?",
+              "trueAns": ["Kyiv"],
+              "falseAns": ["Kyiv and Lviv", "Lviv", "Odessa"]
+            }
+          ]
+        },
+          {
+            "subject": "Strange Eurovision",
+            "questions": [
+              {
+                "type": "regular",
+                "string": "With which song did Lithuania take its highest place at Eurovision?",
+                "trueAns": ["We are the winners"],
+                "falseAns": ["The best"]
+              },
+              {
+                "type": "norisk",
+                "string": "What place did Verka Serdyuchka take at Eurovision?",
+                "trueAns": ["2"],
+                "falseAns": ["1", "3", "24"]
+              },
+              {
+                "type": "regular",
+                "string": "Which band won Eurovision with a rock song?",
+                "trueAns": ["Lordi"],
+                "falseAns": ["Abba", "Beatles", "lalala"]
+              },
+              {
+                "type": "regular",
+                "string": "What song did the grandmothers from Russia perform?",
+                "trueAns": ["Party for Everybody"],
+                "falseAns": ["Bread", "Dances"]
+              },
+              {
+                "type": "regular",
+                "string": "In what year did Romania send Dracula to Eurovision?",
+                "trueAns": ["2013"],
+                    "falseAns": ["2004", "2016", "1999"]
+                }
+              ]
+            },
+            {
+              "subject": "Eurovision winners",
+              "questions": [
+                {
+                  "type": "regular",
+                  "string": "How many times has Ukraine won Eurovision?",
+                  "trueAns": ["2"],
+                  "falseAns": ["3", "0"]
+                },
+                {
+                    "type": "regular",
+                    "string": "Which world-famous performers have won Eurovision?",
+                    "trueAns": ["Celine Dion", "abba", "celine dion, abba"],
+                    "falseAns": ["Lady Gaga"]
+                },
+                {
+                    "type": "regular",
+                    "string": "Which country won Eurovision first?",
+                    "trueAns": ["Switzerland"],
+                    "falseAns": ["Ukraine", "USSR", "USA"]
+                },
+                {
+                    "type": "regular",
+                    "string": "Which country has won Eurovision the most?",
+                    "trueAns": ["Ireland"],
+                    "falseAns": ["Iceland", "United Kingdom"]
+                },
+                {
+                    "type": "regular",
+                    "string": "Which country won Eurovision in 2017?",
+                    "trueAns": ["Portugal"],
+                    "falseAns": ["Ukraine"]
+                }
+              ]
+            },
+            {
+              "subject": "Eurovision in the World",
+              "questions": [
+                {
+                  "type": "norisk",
+                  "string": "In which film did Verka Serdyuchka act after participating in Eurovision?",
+                  "trueAns": ["Spy"],
+                  "falseAns": [""]
+                },
+                {
+                    "type": "gamble",
+                    "string": "In what year was the feature film for Eurovision made?",
+                    "trueAns": ["2020"],
+                    "falseAns": ["1", "3", "100"]
+                },
+                {
+                    "type": "regular",
+                    "string": "Why was Eurovision created?",
+                    "trueAns": ["To unite all countries after the Second World War"],
+                    "falseAns": ["For all countries to become the USSR"]
+                },
+                {
+                    "type": "regular",
+                    "string": "Which country is participating in Eurovision, even though it is not in Europe?",
+                    "trueAns": ["Australia"],
+                    "falseAns": ["Russia"]
+                },
+                {
+                    "type": "regular",
+                    "string": "In which country did you decide to hold an analogue of Eurovision, where different parts of the country will perform instead of countries?",
+                    "trueAns": ["USA"],
+                    "falseAns": ["Ukraine"]
+                }
+              ]
+            },
+            {
+                "subject": "Culture of countries at Eurovision",
+                "questions": [
+                  {
+                    "type": "final",
+                    "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
+                    "trueAns": ["3"],
+                    "falseAns": ["2"]
+                  }
+                ]
+            },
+            {
+                "subject": "Ukraine at Eurovision",
+                "questions": [
+                  {
+                    "type": "final",
+                    "string": "Ukraine s first Eurovision winner",
+                    "trueAns": ["Ruslana"],
+                    "falseAns": ["Jamala"]}
+                  ]
+                },
+                {
+                  "subject": "Strange Eurovision",
+                  "questions": [
+                    {
+                      "type": "final",
+                      "string": "With which song did Lithuania take its highest place at Eurovision?",
+                      "trueAns": ["We are the winners"],
+                      "falseAns": ["The best"]
+                    }
+                    ]
+                  },
+                  {
+                    "subject": "Eurovision winners",
+                    "questions": [
+                      {
+                        "type": "final",
+                        "string": "How many times has Ukraine won Eurovision?",
+                        "trueAns": ["2"],
+                        "falseAns": ["3", "0"]
+                      }
+                    ]
+                  },
+                  {
+                    "subject": "Eurovision in the World",
+                    "questions": [
+                      {
+                        "type": "final",
+                        "string": "In which film did Verka Serdyuchka act after participating in Eurovision?",
+                        "trueAns": ["Spy"],
+                        "falseAns": [""]
+                      }
+                    ]
+                  },
+                  {
+                    "subject": "Eurovision winners",
+                    "questions": [
+                      {
+                        "type": "final",
+                        "string": "How many times has Ukraine won Eurovision?",
+                        "trueAns": ["2"],
+                        "falseAns": ["3", "0"]
+                      }
+                    ]
+                  },
+                  {
+                    "subject": "Eurovision in the World",
+                    "questions": [
+                      {
+                        "type": "final",
+                        "string": "In which film did Verka Serdyuchka act after participating in Eurovision?",
+                        "trueAns": ["Spy"],
+                        "falseAns": [""]
+                      }
+                    ]
+                  }
+        
+    ]
+}

@@ -6,7 +6,7 @@ import promisifySocketMSG from './gameLogic/promosifySocketMSG.js';
 import submitBundleEditor from './gameLogic/submitBundleEditor.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import { loadView, changeHash } from './spa/spaControl.js';
-import { changeLanguage } from './changeLanguage.js';
+import { changeLanguage, language } from './changeLanguage.js';
 import { getRandomIntInclusive } from './utils.js';
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
@@ -25,6 +25,7 @@ let roomId = undefined;
 const socketHandleConfig = mType => ({
   'usersOnline': data => console.log(data),
   'messageToGameChat': data => sendMessageToGameChat(data),
+  'returnAllGames': data => updateGames(data),
 })[mType];
 
 //executes function returned by socketHandleConfig
@@ -77,30 +78,54 @@ const createGame = () => {
     for (const bundle of allBundles) {
       if (bundle.title === bundleTitle) {
         data.bundle = new Bundle(bundle);
-        console.log(data.bundle);
         break;
       }
     }
-    changeHash('simpleLobby')();
     const game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
     };
-    socket.send(JSON.stringify(msg));
+    promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+      roomId = msg.data.id;
+      changeHash('simpleLobby')();
+    });
   } else {
-    for (let c = 0; c < 5; c++) {
-      const bundle = allBundles[getRandomIntInclusive(0, allBundles.length)];
-      //const 
+    const bundleData = {
+      author: 'autogen',
+      language: language.json.code,
+      title: 'autogen',
+      decks: [],
+    };
+    // get 15 regular decks
+    for (let c = 0; c < 15; c++) {
+      let bundle = undefined;  
+      do {
+        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
+      } while (bundle.langcode === bundleData.language);
+      const deck = bundle.decks[getRandomIntInclusive(0, 14)];
+      bundleData.decks.push(deck);
     }
-    for (const bundle of allBundles) {
-      if (bundle.title === bundleTitle) {
-        data.bundle = new Bundle(bundle);
-        console.log(data.bundle);
-        break;
-      }
+    // get 7 final decks
+    for (let c = 0; c < 7; c++) {
+      let bundle = undefined;  
+      do {
+        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
+      } while (bundle.langcode === bundleData.language);
+      const deck = bundle.decks[getRandomIntInclusive(15, 21)];
+      bundleData.decks.push(deck);
     }
-    changeHash('simpleLobby')();
+    console.log(bundleData.decks);
+    data.bundle = new Bundle(bundleData);
+    const game = new Game(data.bundle, data.settings);
+    const msg = {
+      'mType': 'newGameLobby',
+      data,
+    };
+    promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+      roomId = msg.data.id;
+      changeHash('simpleLobby')();
+    });
   }
 
 };
@@ -151,7 +176,6 @@ const sendMessageRoom = e => {
   const inputFieldData = document.getElementById('message-input').value;
   const reg = /.+/; //--------------------------------------------------------------------------
   if (!reg.test(inputFieldData)) return;
-  console.log(roomId);
   socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, 'room': roomId}}));
   document.getElementById('message-input').value = '';
 }
@@ -177,10 +201,33 @@ const handleClick = evt => ({
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
   'startGame': [createGame],
-  'join-btn': [ () => changeHash('lobbySearch')()],
+  'join-btn': [ () => joinLobby()],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
+
+//joins lobby and sends request to server for
+const joinLobby = () => {
+  changeHash('lobbySearch')();
+  socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
+}
+
+//update games in lobby
+const updateGames = data => {
+  const games = data.data;
+  const gamesSearchField = document.getElementById('games-search');
+  gamesSearchField.innerHTML = '';
+  for (const gameId of Object.keys(games)) {
+    const game = games[gameId];
+    const gameDiv = document.createElement('div');
+    gameDiv.addEventListener('click', () => {
+      //do something on click
+    });
+    gameDiv.innerHTML = game.settings.roomName;
+    gamesSearchField.appendChild(gameDiv);
+  }
+  console.log(data);
+}
 
 //this func handles keydowns on elements
 const handleKeydown = evt => ({

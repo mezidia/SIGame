@@ -2,7 +2,7 @@
 
 //start with default language
 import { de } from '../localization/de.js'
-let language = { json: de};
+let language = { json: de };
 
 //this function changes language according to json files and data-localize attribute
 const changeLanguage = (lang = null) => () => {
@@ -21,4 +21,4 @@ const changeLanguage = (lang = null) => () => {
   }
 }
 
-export { changeLanguage };
+export { changeLanguage, language };
