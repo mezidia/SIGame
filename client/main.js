@@ -252,6 +252,29 @@ document.addEventListener('keydown', evt => {
   handleKeydown(evt).forEach(x => x(evt));
 });
 
+document.addEventListener('change', (evt) => {
+  if (evt.target.id === 'questionBundle') {
+    const fileInput = document.getElementById('bundle-file');
+    const textInput = document.getElementById('bundleSearch-input');
+    switch (evt.target.value) {
+      case 'random':
+        fileInput.style.display = 'none';
+        textInput.style.display = 'none';
+        break;
+      case 'download':
+        fileInput.style.display = 'block';
+        textInput.style.display = 'none';
+        break;
+      case 'findByName':
+        fileInput.style.display = 'none';
+        textInput.style.display = 'block';
+        break;
+      default:
+        break;
+    }
+  }
+});
+
 //opens main page
 loadView();
 //switches pages 

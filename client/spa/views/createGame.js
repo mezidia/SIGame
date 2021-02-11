@@ -11,22 +11,22 @@ const view = () => {
       <input id="roomPassword" type="text" required>
       
       <h2 data-localize="question-bundle-word">Question bundle</h2>
-      <select id="questionBundle" class="form-control" id="select-question">
-        <option data-localize="random-word">Random</option>
-        <option data-localize="download-word">Download</option>
-        <option data-localize="findBundleByName-word">Find bundle by name</option>
+      <select id="questionBundle" class="form-control">
+        <option data-localize="random-word" value="random">Random</option>
+        <option data-localize="download-word" value="download">Download</option>
+        <option data-localize="findBundleByName-word" value="findByName">Find bundle by name</option>
       </select>    
-      <input id="bundle-file" type="file" accept=".json" />
-      <input id="bundleSearch-input" type="text" />
+      <input style="display: none; margin-top: 10px" id="bundle-file" type="file" accept=".json" />
+      <input style="display: none; margin-top: 10px" id="bundleSearch-input" type="text" />
       
       <h2 data-localize="game-type-word">Game type</h2>
-      <select id="gameMode" class="form-control" id="select-game-type">
+      <select id="gameMode" class="form-control">
         <option data-localize="classic-word">Classic</option>
         <option data-localize="simple-word">Simple</option>
       </select>
       
       <h2 data-localize="role-word">Role</h2>
-      <select id="role" class="form-control" id="select-role">
+      <select id="role" class="form-control">
         <option data-localize="player-word">Player</option>
         <option data-localize="game-master-word">Game master</option>
       </select>
