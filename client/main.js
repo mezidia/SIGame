@@ -20,6 +20,7 @@ const bundleEditor = new BundleEditor();
 let socket = undefined;
 let allBundles = undefined;
 let roomId = undefined;
+let allGames = {};
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -102,7 +103,7 @@ const createGame = () => {
       let bundle = undefined;  
       do {
         bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode === bundleData.language);
+      } while (bundle.langcode !== bundleData.language);
       const deck = bundle.decks[getRandomIntInclusive(0, 14)];
       bundleData.decks.push(deck);
     }
@@ -111,7 +112,7 @@ const createGame = () => {
       let bundle = undefined;  
       do {
         bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode === bundleData.language);
+      } while (bundle.langcode !== bundleData.language);
       const deck = bundle.decks[getRandomIntInclusive(15, 21)];
       bundleData.decks.push(deck);
     }
@@ -214,19 +215,23 @@ const joinLobby = () => {
 
 //update games in lobby
 const updateGames = data => {
-  const games = data.data;
-  const gamesSearchField = document.getElementById('games-search');
-  gamesSearchField.innerHTML = '';
-  for (const gameId of Object.keys(games)) {
-    const game = games[gameId];
-    const gameDiv = document.createElement('div');
-    gameDiv.addEventListener('click', () => {
-      //do something on click
-    });
-    gameDiv.innerHTML = game.settings.roomName;
-    gamesSearchField.appendChild(gameDiv);
-  }
-  console.log(data);
+  setTimeout(() => {
+    const games = data.data;
+    const gamesSearchField = document.getElementById('games-search');
+    allGames = data;
+    if (!gamesSearchField) return;
+    gamesSearchField.innerHTML = '';
+    for (const gameId of Object.keys(games)) {
+      const game = games[gameId];
+      const gameDiv = document.createElement('div');
+      gameDiv.addEventListener('click', () => {
+        //do something on click
+      });
+      gameDiv.innerHTML = game.settings.roomName;
+      gamesSearchField.appendChild(gameDiv);
+    }
+  }, 100);
+  
 }
 
 //this func handles keydowns on elements

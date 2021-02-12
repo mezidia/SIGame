@@ -2,8 +2,7 @@
 
 const view = () => {
   return `<div class="row" style="height: 100%; margin: 0 0 0 0;">
-    <div class="col-sm-3" style="background-color: #6f42c1; padding: 0 0 0 0;" id="games-search">
-    </div>
+    <div id="games-search" class="col-sm-3" style="background-color: #6f42c1; padding: 0 0 0 0;"></div>
     <div class="col-sm-9" style="padding: 0 0 0 30px;">
       <h1 class="text-white spaced-text" style="margin-left: -30px; padding-left: 30px; background-color: #008cba">
         <span id="search-title"></span>

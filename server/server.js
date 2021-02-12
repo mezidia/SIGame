@@ -3,7 +3,8 @@ const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
-//const bundle = require('../exampleBundle.json');
+//const bundleua = require('../exampleBundle_ua.json');
+//const bundlede = require('../exampleBundle_de.json');
 
 const fileManager = new FileManager();
 const idGenerator = new IDGenerator();
@@ -28,7 +29,6 @@ class Server {
   //saves {room: [id1, id2, .....]}
   _games = {};
   _users = {};
-  _usersInLobby = [];
 
   constructor(port, database) {
     this.database = database;
@@ -111,7 +111,8 @@ class Server {
       'id': this.getIdByConnection(connection),
       'data': request.data,
     });
-    //this.database.insertBundle(bundle);
+    //this.database.insertBundle(bundleua);
+    //this.database.insertBundle(bundlede);
   }
 
   //gets all bundles from database
@@ -141,7 +142,7 @@ class Server {
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;
     this.sendToUser(data.id, {mType: 'newChatId', data: {id: id}});
-    for (let user of this._usersInLobby) {
+    for (let user of Object.keys(this._users)) {
       this.sendToUser(user, {mType: 'returnAllGames', data: this._games});
     }
     console.log(this._games);
@@ -150,7 +151,6 @@ class Server {
   //returns all game ids
   returnAllGames(data) {
     const id = data.id;
-    this._usersInLobby.push(id);
     this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
   }
 
@@ -161,7 +161,6 @@ class Server {
     const message = data.data;
     this._games[message.gameId].players.push(id);
     const gameData = this._games[message.gameId];
-    if(this._usersInLobby.includes(id)) this._usersInLobby.splice(this._usersInLobby.lastIndexOf(id), 1);
     this.sendToUser(id, {mType: 'joinGame', data: {bundle: gameData.bundle, settings: gameData.settings, players: gameData.players}});
   }
 
