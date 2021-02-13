@@ -56,7 +56,10 @@ const de = {
   },
   "input-category": {
     "placeholder": "Category"
-  }
+  },
+  "owner": "Owner",
+  "game-master": "Game master",
+  
 
 };
 
