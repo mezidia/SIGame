@@ -55,7 +55,8 @@ const createGame = () => {
     totalPlayers,
     ppl,
   };
-  if (questionBundle.value === 'Download') {
+  console.log(questionBundle.value);
+  if (questionBundle.value === 'download') {
     const bundleFileImport = document.getElementById('bundle-file');
     const file = bundleFileImport.files[0];
     if (!file) return;
@@ -74,11 +75,11 @@ const createGame = () => {
       });
     }
     f.readAsText(file);
-  } else if (questionBundle.value === 'Find bundle by name') {
+  } else if (questionBundle.value === 'findByName') {
     const bundleTitle = document.getElementById('bundleSearch-input').value;
     for (const bundle of allBundles) {
       if (bundle.title === bundleTitle) {
-        data.bundle = new Bundle(bundle);
+        data.bundle = bundle;
         break;
       }
     }
