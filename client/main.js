@@ -258,24 +258,16 @@ document.addEventListener('keydown', evt => {
 
 document.addEventListener('change', (evt) => {
   if (evt.target.id === 'questionBundle') {
-    const fileInput = document.getElementById('bundle-file');
-    const textInput = document.getElementById('bundleSearch-input');
-    switch (evt.target.value) {
-      case 'random':
-        fileInput.style.display = 'none';
-        textInput.style.display = 'none';
-        break;
-      case 'download':
-        fileInput.style.display = 'block';
-        textInput.style.display = 'none';
-        break;
-      case 'findByName':
-        fileInput.style.display = 'none';
-        textInput.style.display = 'block';
-        break;
-      default:
-        break;
+    let fileInputDisplay = document.getElementById('bundle-file');
+    let textInputDisplay = document.getElementById('bundleSearch-input');
+    const caseConfig = {
+      'random': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'none'; },
+      'download': () => { fileInputDisplay.style.display = 'block'; textInputDisplay.style.display = 'none'; },
+      'findByName': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'block'; },
     }
+    const handler = caseConfig[evt.target.value];
+    if (!handler) return;
+    handler();
   }
 });
 
