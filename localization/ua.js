@@ -56,7 +56,9 @@ const ua = {
   },
   "input-category": {
     "placeholder": "Категорія"
-  }
+  },
+  "owner": "Власник",
+  "game-master": "Ведучий",
 
 }
 

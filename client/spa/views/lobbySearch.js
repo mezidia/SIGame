@@ -7,12 +7,12 @@ const view = () => {
       <h1 class="text-white spaced-text" style="margin-left: -30px; padding-left: 30px; background-color: #008cba">
         <span id="search-title"></span>
       </h1>
-      <h3 class="spaced-text">Owner: <span id="search-owner"></span></h3>
-      <h3 class="spaced-text">Mode: <span id="search-mode"></span></h3>
-      <h3 class="spaced-text">Question bundle: <span id="search-question-bundle"></span></h3>
-      <h3 class="spaced-text">Game master: <span id="search-gm"></span></h3>
-      <h3 class="spaced-text">Players: <span id="search-players"></span></h3>
-      <h3 class="spaced-text">Password: <input type="password" id="search-password" style="max-width: 70vw"></h3>
+      <h3 class="spaced-text"><span data-localize="owner">Owner</span>: <span id="search-owner"></span></h3>
+      <h3 class="spaced-text"><span data-localize="mode">Mode</span>: <span id="search-mode"></span></h3>
+      <h3 class="spaced-text"><span data-localize="question-bundle-word">Question Bundle</span>: <span id="search-question-bundle"></span></h3>
+      <h3 class="spaced-text"><span data-localize="game-master>Game master</span>: <span id="search-gm"></span></h3>
+      <h3 class="spaced-text"><span data-localize="players-word">Players</span>: <span id="search-players"></span></h3>
+      <h3 class="spaced-text"><span data-localize="password-word">Password</span>: <input type="password" id="search-password" style="max-width: 70vw"></h3>
       
       <div class="search-btns">
         <button class="btn btn-primary game-button" style="width: 50%" id="join-gm">Join as Game Master</button>
