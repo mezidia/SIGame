@@ -153,6 +153,7 @@ const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
   socket.onopen = () => {
+    socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
       //disconnect();
       console.log('closed');
@@ -202,16 +203,10 @@ const handleClick = evt => ({
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
   'startGame': [createGame],
-  'join-btn': [ () => joinLobby()],
+  'join-btn': [ () => changeHash('lobbySearch')(), () => updateGames(allGames)],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
-
-//joins lobby and sends request to server for
-const joinLobby = () => {
-  changeHash('lobbySearch')();
-  socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
-}
 
 //update games in lobby
 const updateGames = data => {
@@ -225,7 +220,10 @@ const updateGames = data => {
       const game = games[gameId];
       const gameDiv = document.createElement('div');
       gameDiv.addEventListener('click', () => {
-        //do something on click
+        console.log(game.settings.roomName);
+        document.getElementById('search-title').innerHTML = game.settings.roomName;
+        document.getElementById('search-mode').innerHTML = game.settings.gameMode;
+        document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
       });
       gameDiv.innerHTML = game.settings.roomName;
       gamesSearchField.appendChild(gameDiv);
