@@ -39,6 +39,7 @@ class Server {
       'returnAllGames': data => this.returnAllGames(data),
       'joinGame': data => this.joinGame(data),
       'insertBundle': data => this.insertBundle(data),
+      'broadcastInRoom': data => this.broadcastInRoom(data),
 
     };
 
@@ -153,6 +154,16 @@ class Server {
     this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
   }
 
+  //broadcast for all people in room
+  broadcastInRoom(data) {
+    const roomId = data.data.roomId;
+    const players = this._games[roomId].players;
+    for (let player in players) {
+      this.sendToUser(player, {mType: 'broadcastedEvent', data: data});
+    }
+    
+  }
+
   // in {mType: , data: {id: , }}
   // returns nothing yet
   joinGame(data) {
@@ -160,7 +171,10 @@ class Server {
     const message = data.data;
     this._games[message.id].players.push(id);
     const gameData = this._games[message.id];
-    this.sendToUser(id, {mType: 'joinGame', data: {bundle: gameData.bundle, settings: gameData.settings, players: gameData.players}});
+    for (let player in gameData.players) {
+      this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players.name}});
+    }
+    this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
   }
 
   //inserts bundle to database
