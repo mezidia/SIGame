@@ -167,12 +167,12 @@ class Server {
   // in {mType: , data: {id: , }}
   // returns nothing yet
   joinGame(data) {
-    console.log(data);
     const id = data.id;
     const message = data.data;
     this._games[message.id].players.push(id);
     const gameData = this._games[message.id];
-    for (let player in gameData.players) {
+    for (let player of gameData.players) {
+      console.log(player);
       this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players.name}});
     }
     this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
