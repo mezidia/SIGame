@@ -1,7 +1,5 @@
 'use strict';
 
-const gameDisplay = document.getElementById('game-display');
-
 export default class GameField {
   constructor() {
     if (!GameField._instance) {
@@ -11,6 +9,8 @@ export default class GameField {
   }
   // returns a game table used in classic mode
   drawTable() {
+    console.log(document);
+    const gameDisplay = document.getElementById('game-display');
     const drawCells = () => {
       const res = [];
       for(let i = 1; i<=5; ++i) {
@@ -40,6 +40,7 @@ export default class GameField {
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
   drawQuestion(str) {
+    const gameDisplay = document.getElementById('game-display');
     // noinspection CssInvalidPropertyValue
     gameDisplay.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}

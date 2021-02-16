@@ -12,15 +12,15 @@ async function loadMainView() {
   engine.render(view.default);
 }
 
-const changeHash = (hash) => () => {
+const changeHash = (hash) => async() => {
   router.change(hash);
-  loadView();
+  await loadView();
 };
 
-const loadView = () => {
+const loadView = async () => {
   const { viewName } = router.getState();
   engine.loader();
-  import(`./views/${viewName}.js`)
+  await import(`./views/${viewName}.js`)
     .then((viewModel) => {      
       engine.render(viewModel.default);
     })
@@ -32,6 +32,7 @@ const loadView = () => {
       console.log(reason);
     })
     .finally(changeLanguage());
+    console.log('done');
 };
 
 export { loadView, changeHash };

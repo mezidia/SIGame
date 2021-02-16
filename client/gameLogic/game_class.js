@@ -10,13 +10,17 @@ export default class Game {
   }
 
   constructor(bundle, settings) {
+    this._id = undefined;
     this.master = settings.socket;
     this.bundle = bundle;
     this.players = [];
     this.gameField = new GameField();
     this._setupEventListeners();
     console.log('new Game');
-    //this.gameField.drawQuestion('улюлю');
+  }
+
+  init() {
+    this.gameField.drawTable();
   }
 
   addPlayer() {
@@ -28,11 +32,14 @@ export default class Game {
   }
 
   pause() {
-
+   
   }
 
   gameLoop() {
 
   }
 
+  setID(id) {
+    if (id) this._id = id;
+  }
 }
