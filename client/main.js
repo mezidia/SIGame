@@ -240,6 +240,7 @@ const updateGames = data => {
     gameDiv.addEventListener('click', () => {
       gameData = {game: game, id: gameId};
       document.getElementById('join-player').removeEventListener('click', joinGame);
+      document.getElementById('search-players').innerHTML = game.players.length + ' / ' + game.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = game.settings.roomName;
       document.getElementById('search-mode').innerHTML = game.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
@@ -255,9 +256,8 @@ function joinHandle (game) {
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = game.game.settings.password;
   if (passwordInput !== passwordGame) return;
-  console.log(roomId);
   changeHash(`simpleLobby/roomID=${game.id}`)();
-  socket.send(JSON.stringify({mType: 'joinGame', data: {id: roomId}}));
+  socket.send(JSON.stringify({mType: 'joinGame', data: {id: game.id}}));
 }
 
 //this func handles keydowns on elements
