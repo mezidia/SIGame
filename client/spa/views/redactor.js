@@ -26,7 +26,7 @@ const view = () => {
         <h3 data-localize="category">Category ${i}</h3>
         <div class="collapse show">
           <h4 data-localize="category-name">Category name</h4>
-          <input type="text" id="category-name-${roundNumber}-${i}" required>
+          <input value="final" type="text" id="category-name-${roundNumber}-${i}" required>
           ${questionList(roundNumber, i)}
         </div>
         <br>

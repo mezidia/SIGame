@@ -1,5 +1,7 @@
 'use strict';
 
+import { de } from "../../localization/de.js";
+import { ua } from "../../localization/ua.js";
 import Bundle from "./bundle_class.js";
 import Deck from "./deck_class.js";
 import Question from "./question_class.js";
@@ -26,6 +28,17 @@ function getDomElemVal(elem) {
     throw new Error(`failed reg test on ${elem.id}`);
   }
   return val;
+}
+
+function toLangCode(language) {
+  const lowLang = language.toLowerCase();
+  const codeConfig = {
+    'german': 'de',
+    'ukrainian': 'ua',
+  };
+  const res = codeConfig[lowLang];
+  if (!res) return false;
+  return res;
 }
 
 function getMainFields() {
@@ -66,7 +79,7 @@ export default class BundleEditor {
 
   parseBundle(obj) {
     const decks = obj.decks;
-    const language = obj.langcode;
+    const langcode = obj.langcode;
     const author = obj.author;
     const title = obj.title;
     const res = [];
@@ -81,7 +94,7 @@ export default class BundleEditor {
     const bundleData = { 
       'decks': res,
       title,
-      language,
+      langcode,
       author,
       
     };
@@ -94,16 +107,13 @@ export default class BundleEditor {
     if (!mainBundleFields) return false;
     const bundleData = {
       decks: [],
-      'language': undefined,
+      'langcode': undefined,
       'author': undefined,
       'title': undefined,
     };
-    let i = 0;
-    for (const key in bundleData) {
-      if (key === 'decks') continue;
-      bundleData[key] = mainBundleFields[i];
-      i++;
-    }
+    bundleData.langcode = toLangCode(mainBundleFields[0]);
+    bundleData.author = mainBundleFields[1];
+    bundleData.title = mainBundleFields[2];
     try {
       for (let r = 1; r < 4; r++) { //round
         for (let c = 1; c <= 5; c++) { //category
