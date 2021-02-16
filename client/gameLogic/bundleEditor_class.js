@@ -3,6 +3,8 @@
 import Bundle from "./bundle_class.js";
 import Deck from "./deck_class.js";
 import Question from "./question_class.js";
+import User from "./user_class.js";
+
 
 function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;
@@ -10,10 +12,10 @@ function getQData(r, c, q) {
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
   const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
-  if (!reg.test(string) || !reg.test(trueAns) 
-  || !reg.test(falseAns) || !reg.test(type)) {
-    throw new Error(`failed reg test on ${r}-${c}-${q}`);
-  }
+  if (!reg.test(string)) throw new Error(`failed reg test on string ${r}-${c}-${q}`);
+  if (!reg.test(trueAns)) throw new Error(`failed reg test on trueAns ${r}-${c}-${q}`);
+  if (falseAns.length > 0) if(!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
+  if (!reg.test(type)) throw new Error(`failed reg test on type ${r}-${c}-${q}`);
   return {string, trueAns, falseAns, type};
 }
 
@@ -87,8 +89,8 @@ export default class BundleEditor {
   }
 
   submitBundleEditor() {
+    const iSBundleToSave = document.getElementById('saveBundle-checkBox').checked;
     const mainBundleFields = getMainFields();
-    console.log(mainBundleFields);
     if (!mainBundleFields) return false;
     const bundleData = {
       decks: [],
@@ -115,7 +117,6 @@ export default class BundleEditor {
             const qstn = new Question(getQData(r, c, q)); // submiting 3 rounds
             deck.questions.push(qstn);
           }
-          console.log(deck);
           bundleData.decks.push(new Deck(deck));
         }
       }
@@ -136,6 +137,14 @@ export default class BundleEditor {
     }
     console.log(bundleData);
     downloadAsFile(JSON.stringify(new Bundle(bundleData), null, '\t'));
+    if (iSBundleToSave) {
+      const socket = new User().socket;
+      const msg = {
+        'mType': 'saveBundleToDB',
+        data: bundleData,
+      };
+      socket.send(JSON.stringify(msg, null, '\t'));
+    }
     return true;
   }
 
