@@ -167,6 +167,7 @@ class Server {
   // in {mType: , data: {id: , }}
   // returns nothing yet
   joinGame(data) {
+    console.log(data);
     const id = data.id;
     const message = data.data;
     this._games[message.id].players.push(id);

@@ -2,12 +2,10 @@
 
 import Game from './gameLogic/game_class.js';
 import Bundle from './gameLogic/bundle_class.js';
-import promisifySocketMSG from './gameLogic/promosifySocketMSG.js';
-import submitBundleEditor from './gameLogic/submitBundleEditor.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import { loadView, changeHash } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
-import { getRandomIntInclusive } from './utils.js';
+import { getRandomIntInclusive, promisifySocketMSG } from './utils.js';
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
 
@@ -130,7 +128,15 @@ const createGame = () => {
     promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
       roomId = msg.data.id;
       await changeHash(`simpleLobby/roomID=${roomId}`)();
+      game.setID(msg.data.id);
       game.init();
+      /*socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
+        event: {
+        eventType: 'ur Turn',
+        round: 3,
+      },
+      roomID: roomId,
+    }})); */
     });
   }
 
@@ -210,7 +216,7 @@ const handleClick = evt => ({
   'startGame': [createGame],
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
-  'submitBundleEditor-btn': [submitBundleEditor],
+  'submitBundleEditor-btn': [bundleEditor.submitBundleEditor],
 })[evt.target.id];
 
 //join-btn click handle
@@ -249,6 +255,7 @@ function joinHandle (game) {
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = game.game.settings.password;
   if (passwordInput !== passwordGame) return;
+  console.log(roomId);
   changeHash(`simpleLobby/roomID=${game.id}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: roomId}}));
 }
