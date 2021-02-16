@@ -208,14 +208,19 @@ const handleClick = evt => ({
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
   'startGame': [createGame],
-  'join-btn': [() => updateGames(allGames)],
+  'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
 
-//update games in lobby
-const updateGames = async (data) => {
+//join-btn click handle
+const joinLobby = async () => {
   await changeHash('lobbySearch')();
+  updateGames(allGames);
+}
+
+//update games in lobby
+const updateGames = data => {
   const games = data.data;
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
