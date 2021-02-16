@@ -9,7 +9,7 @@ export default class Game {
     this._socket = socket;
     this.master = settings.socket;
     this.bundle = bundle;
-    this.players = [];
+    this.players = {};
     this.gameField = new GameField();
     console.log('new Game');
   }
@@ -21,8 +21,8 @@ export default class Game {
   broadcast() {
 
   }
-  addPlayer() {
-
+  addPlayer(name) {
+    this.players.name = name;
   }
 
   kikcPlayer() {

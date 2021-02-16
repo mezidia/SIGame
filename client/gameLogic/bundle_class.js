@@ -10,7 +10,7 @@ export default class Bundle {
 
   constructor(data) {
     this.decks = data.decks;
-    this.language = data.language;
+    this.langcode = data.langcode;
     this.author = data.author;
     this.title = data.title;
     this._setupRounds();
