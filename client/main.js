@@ -131,13 +131,13 @@ const createGame = () => {
       await changeHash(`simpleLobby/roomID=${roomId}`)();
       game.setID(msg.data.id);
       game.init();
-      /*socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
+      socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
         event: {
         eventType: 'ur Turn',
         round: 3,
       },
       roomID: roomId,
-    }})); */
+    }})); 
     });
   }
 
