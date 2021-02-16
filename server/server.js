@@ -131,7 +131,7 @@ class Server {
     }
   }
 
-  //creates new game and puts it to game
+  //creates new game and puts it to games
   createNewGame(data) {
     const message = data.data;
     const id = idGenerator.getID();
@@ -141,7 +141,7 @@ class Server {
     this._games[id].players.push(data.id);
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;
-    this.sendToUser(data.id, {mType: 'newChatId', data: {id: id}});
+    this.sendToUser(data.id, {mType: 'newLobbyId', data: {id: id}});
     for (let user of Object.keys(this._users)) {
       this.sendToUser(user, {mType: 'returnAllGames', data: this._games});
     }

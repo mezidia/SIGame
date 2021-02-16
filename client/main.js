@@ -20,6 +20,7 @@ const bundleEditor = new BundleEditor();
 let socket = undefined;
 let allBundles = undefined;
 let roomId = undefined;
+let game = undefined;
 let allGames = {};
 
 //this config function returns function by mType of message, that came from socket
@@ -48,7 +49,7 @@ const createGame = () => {
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(roomName)) return;
   data.settings = {
-    roomName, 
+    roomName,
     password,
     gameMode,
     role,
@@ -64,14 +65,15 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       data.bundle = bundleEditor.parseBundle(bundleObj);
-      const game = new Game(data.bundle, data.settings);
+      game = new Game(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
         data,
       };
-      promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+      promisifySocketMSG(msg, 'newLobbyId', socket).then((msg) => {
         roomId = msg.data.id;
-        changeHash('simpleLobby')();
+        changeHash(`simpleLobby/roomID=${roomId}`)();
+        game.init();
       });
     }
     f.readAsText(file);
@@ -83,14 +85,15 @@ const createGame = () => {
         break;
       }
     }
-    const game = new Game(data.bundle, data.settings);
+    game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
     };
-    promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+    promisifySocketMSG(msg, 'newLobbyId', socket).then((msg) => {
       roomId = msg.data.id;
-      changeHash('simpleLobby')();
+      changeHash(`simpleLobby/roomID=${roomId}`)();
+      game.init();
     });
   } else {
     const bundleData = {
@@ -119,14 +122,15 @@ const createGame = () => {
     }
     console.log(bundleData.decks);
     data.bundle = new Bundle(bundleData);
-    const game = new Game(data.bundle, data.settings);
+    game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
     };
-    promisifySocketMSG(msg, 'newChatId', socket).then((msg) => {
+    promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
       roomId = msg.data.id;
-      changeHash('simpleLobby')();
+      await changeHash(`simpleLobby/roomID=${roomId}`)();
+      game.init();
     });
   }
 
@@ -204,33 +208,31 @@ const handleClick = evt => ({
   'de': [changeLanguage(de)],
   'ua': [changeLanguage(ua)],
   'startGame': [createGame],
-  'join-btn': [ () => changeHash('lobbySearch')(), () => updateGames(allGames)],
+  'join-btn': [() => updateGames(allGames)],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [submitBundleEditor],
 })[evt.target.id];
 
 //update games in lobby
-const updateGames = data => {
-  setTimeout(() => {
-    const games = data.data;
-    const gamesSearchField = document.getElementById('games-search');
-    allGames = data;
-    if (!gamesSearchField) return;
-    gamesSearchField.innerHTML = '';
-    for (const gameId of Object.keys(games)) {
-      const game = games[gameId];
-      const gameDiv = document.createElement('div');
-      gameDiv.addEventListener('click', () => {
-        console.log(game.settings.roomName);
-        document.getElementById('search-title').innerHTML = game.settings.roomName;
-        document.getElementById('search-mode').innerHTML = game.settings.gameMode;
-        document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
-      });
-      gameDiv.innerHTML = game.settings.roomName;
-      gamesSearchField.appendChild(gameDiv);
-    }
-  }, 100);
-  
+const updateGames = async (data) => {
+  await changeHash('lobbySearch')();
+  const games = data.data;
+  const gamesSearchField = document.getElementById('games-search');
+  allGames = data;
+  if (!gamesSearchField) return;
+  gamesSearchField.innerHTML = '';
+  for (const gameId in games) {
+    const game = games[gameId];
+    const gameDiv = document.createElement('div');
+    gameDiv.addEventListener('click', () => {
+      console.log(game.settings.roomName);
+      document.getElementById('search-title').innerHTML = game.settings.roomName;
+      document.getElementById('search-mode').innerHTML = game.settings.gameMode;
+      document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
+    });
+    gameDiv.innerHTML = game.settings.roomName;
+    gamesSearchField.appendChild(gameDiv);
+  }
 }
 
 //this func handles keydowns on elements
@@ -275,3 +277,5 @@ document.addEventListener('change', (evt) => {
 loadView();
 //switches pages 
 window.onhashchange = loadView;
+
+document.onstalled = () => console.log('onchange');
