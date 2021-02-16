@@ -47,7 +47,7 @@ const view = () => {
       <br>
       <div class="form-check disabled">
         <label class="form-check-label">
-          <input class="form-check-input" type="checkbox" value="">
+          <input id="saveBundle-checkBox" class="form-check-input" type="checkbox" value="">
           <h4>Save your bundle to the DJU database</h4>
         </label>
       </div>
@@ -69,7 +69,7 @@ const view = () => {
         ${finalQuestionList()}
       </div>
 
-      <button id="submitBundleEditor-btn" type="button" class="btn btn-primary btn-lg btn-block" style="margin-top: 40px" data-localize="bundle">Create bundle</button>
+      <button id="submitBundleEditor-btn" type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 40px" data-localize="bundle">Create bundle</button>
       <div style="height: 40px">      
     </form>
   </div>

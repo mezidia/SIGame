@@ -8,6 +8,7 @@ import { changeLanguage, language } from './changeLanguage.js';
 import { getRandomIntInclusive, promisifySocketMSG } from './utils.js';
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+import User from './gameLogic/user_class.js';
 
 const bundleEditor = new BundleEditor();
 
@@ -164,6 +165,7 @@ const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
   socket.onopen = () => {
+    new User(name, socket);
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
       //disconnect();
@@ -181,6 +183,19 @@ const openEditor = () => {
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(name)) return;
   changeHash('redactor')();
+  socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
+  socket.onopen = () => {
+    new User(name, socket);
+    socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
+    socket.onclose = () => {
+      //disconnect();
+      console.log('closed');
+    };
+    socket.onmessage = msg => {
+      console.log(JSON.parse(msg.data));
+      socketHandle(JSON.parse(msg.data));
+    };
+  };
 }
 
 //this func sends message to other members of room
@@ -303,4 +318,4 @@ loadView();
 //switches pages 
 window.onhashchange = loadView;
 
-document.onstalled = () => console.log('onchange');
+//document.onclick = () => console.log(new User());
