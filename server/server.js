@@ -40,7 +40,7 @@ class Server {
       'joinGame': data => this.joinGame(data),
       'insertBundle': data => this.insertBundle(data),
       'broadcastInRoom': data => this.broadcastInRoom(data),
-
+      'saveBundleToDB': data => this.saveBundleToDB(data),
     };
 
     if (!Server._instance) {
@@ -156,9 +156,9 @@ class Server {
 
   //broadcast for all people in room
   broadcastInRoom(data) {
-    const roomId = data.data.roomId;
-    const players = this._games[roomId].players;
-    for (let player in players) {
+    const roomID = data.data.roomID;
+    const players = this._games[roomID].players;
+    for (let player of players) {
       this.sendToUser(player, {mType: 'broadcastedEvent', data: data});
     }
     
@@ -170,12 +170,17 @@ class Server {
     const id = data.id;
     const message = data.data;
     this._games[message.id].players.push(id);
+    this.sendToAll({mType: 'returnAllGames', data: this._games});
     const gameData = this._games[message.id];
     for (let player of gameData.players) {
-      console.log(player);
       this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players.name}});
     }
     this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
+  }
+
+  //saves bundle to db
+  saveBundleToDB(data) {
+    this.database.insertBundle(data.data);
   }
 
   //inserts bundle to database

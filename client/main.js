@@ -3,7 +3,7 @@
 import Game from './gameLogic/game_class.js';
 import Bundle from './gameLogic/bundle_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
-import { loadView, changeHash } from './spa/spaControl.js';
+import { loadView, changeHash, checkView } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { getRandomIntInclusive, promisifySocketMSG } from './utils.js';
 import { de } from '../localization/de.js';
@@ -255,6 +255,7 @@ const updateGames = data => {
     gameDiv.addEventListener('click', () => {
       gameData = {game: game, id: gameId};
       document.getElementById('join-player').removeEventListener('click', joinGame);
+      document.getElementById('search-players').innerHTML = game.players.length + ' / ' + game.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = game.settings.roomName;
       document.getElementById('search-mode').innerHTML = game.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
@@ -270,9 +271,8 @@ function joinHandle (game) {
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = game.game.settings.password;
   if (passwordInput !== passwordGame) return;
-  console.log(roomId);
   changeHash(`simpleLobby/roomID=${game.id}`)();
-  socket.send(JSON.stringify({mType: 'joinGame', data: {id: roomId}}));
+  socket.send(JSON.stringify({mType: 'joinGame', data: {id: game.id}}));
 }
 
 //this func handles keydowns on elements
@@ -313,9 +313,14 @@ document.addEventListener('change', (evt) => {
   }
 });
 
+function checkHash() {
+  const name = checkView();
+}
+
 //opens main page
 loadView();
 //switches pages 
 window.onhashchange = loadView;
+window.onpopstate = checkHash;
 
 //document.onclick = () => console.log(new User());

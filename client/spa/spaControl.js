@@ -35,4 +35,9 @@ const loadView = async () => {
     console.log('done');
 };
 
-export { loadView, changeHash };
+const checkView = () => {
+  const { viewName } = router.getState();
+  return viewName;
+}
+
+export { loadView, changeHash, checkView };
