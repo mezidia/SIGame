@@ -40,7 +40,7 @@ class Server {
       'joinGame': data => this.joinGame(data),
       'insertBundle': data => this.insertBundle(data),
       'broadcastInRoom': data => this.broadcastInRoom(data),
-      'saveBundleToDB': data => this.saveBundleToDB(data);
+      'saveBundleToDB': data => this.saveBundleToDB(data),
     };
 
     if (!Server._instance) {
