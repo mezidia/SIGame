@@ -65,7 +65,7 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       data.bundle = bundleEditor.parseBundle(bundleObj);
-      game = new Game(data.bundle, data.settings);
+      game = new Game(data.bundle, data.settings, socket);
       const msg = {
         'mType': 'newGameLobby',
         data,
@@ -85,7 +85,7 @@ const createGame = () => {
         break;
       }
     }
-    game = new Game(data.bundle, data.settings);
+    game = new Game(data.bundle, data.settings, socket);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -122,7 +122,7 @@ const createGame = () => {
     }
     console.log(bundleData.decks);
     data.bundle = new Bundle(bundleData);
-    game = new Game(data.bundle, data.settings);
+    game = new Game(data.bundle, data.settings, socket);
     const msg = {
       'mType': 'newGameLobby',
       data,

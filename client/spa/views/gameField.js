@@ -9,7 +9,6 @@ export default class GameField {
   }
   // returns a game table used in classic mode
   drawTable() {
-    console.log(document);
     const gameDisplay = document.getElementById('game-display');
     const drawCells = () => {
       const res = [];

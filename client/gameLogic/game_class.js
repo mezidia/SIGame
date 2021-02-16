@@ -9,8 +9,9 @@ export default class Game {
     });
   }
 
-  constructor(bundle, settings) {
+  constructor(bundle, settings, socket) {
     this._id = undefined;
+    this._socket = socket;
     this.master = settings.socket;
     this.bundle = bundle;
     this.players = [];
@@ -21,8 +22,19 @@ export default class Game {
 
   init() {
     this.gameField.drawTable();
+    this.gameField.drawQuestion('я працюю нормально');
+    this.broadcast();
   }
 
+  broadcast() {
+    this._socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
+      event: {
+      eventType: 'ur Turn',
+      round: 3,
+    },
+    roomID: roomId,
+  }}));
+  }
   addPlayer() {
 
   }
