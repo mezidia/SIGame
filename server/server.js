@@ -81,7 +81,6 @@ class Server {
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
     this._users[id] = {connection: connection, name: req.url.slice(11)};
-    //this._games[2000].players.push(id);
   }
 
   //send message to everyone
@@ -142,9 +141,7 @@ class Server {
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;
     this.sendToUser(data.id, {mType: 'newChatId', data: {id: id}});
-    for (let user of Object.keys(this._users)) {
-      this.sendToUser(user, {mType: 'returnAllGames', data: this._games});
-    }
+    this.sendToAll({mType: 'returnAllGames', data: this._games});
     console.log(this._games);
   }
 
@@ -154,13 +151,13 @@ class Server {
     this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
   }
 
-  // in {mType: , data: {gameId: , }}
+  // in {mType: , data: {id: , }}
   // returns nothing yet
   joinGame(data) {
     const id = data.id;
     const message = data.data;
-    this._games[message.gameId].players.push(id);
-    const gameData = this._games[message.gameId];
+    this._games[message.id].players.push(id);
+    const gameData = this._games[message.id];
     this.sendToUser(id, {mType: 'joinGame', data: {bundle: gameData.bundle, settings: gameData.settings, players: gameData.players}});
   }
 

@@ -217,20 +217,33 @@ const updateGames = data => {
     allGames = data;
     if (!gamesSearchField) return;
     gamesSearchField.innerHTML = '';
-    for (const gameId of Object.keys(games)) {
+    let gameData = null;
+    const joinGame = () => joinHandle(gameData);
+    for (const gameId in games) {
       const game = games[gameId];
       const gameDiv = document.createElement('div');
       gameDiv.addEventListener('click', () => {
-        console.log(game.settings.roomName);
+        gameData = {game: game, id: gameId};
+        document.getElementById('join-player').removeEventListener('click', joinGame);
         document.getElementById('search-title').innerHTML = game.settings.roomName;
         document.getElementById('search-mode').innerHTML = game.settings.gameMode;
         document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
+        document.getElementById('join-player').addEventListener('click', joinGame);
       });
       gameDiv.innerHTML = game.settings.roomName;
       gamesSearchField.appendChild(gameDiv);
     }
   }, 100);
   
+}
+
+//this is handle, which is being called when join to game
+function joinHandle (game) {
+  const passwordInput = document.getElementById('search-password').value;
+  const passwordGame = game.game.settings.password;
+  if (passwordInput !== passwordGame) return;
+  changeHash(`simpleLobby/roomID=${game.id}`)();
+  socket.send(JSON.stringify({mType: 'joinGame', data: {id: roomId}}));
 }
 
 //this func handles keydowns on elements
