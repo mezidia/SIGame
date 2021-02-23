@@ -73,6 +73,7 @@ const createGame = () => {
         roomId = msg.data.id;
         changeHash(`simpleLobby/roomID=${roomId}`)();
         game.init();
+        game.setID(msg.data.id);
       });
     }
     f.readAsText(file);
@@ -93,6 +94,7 @@ const createGame = () => {
       roomId = msg.data.id;
       changeHash(`simpleLobby/roomID=${roomId}`)();
       game.init();
+      game.setID(msg.data.id);
     });
   } else {
     const bundleData = {
@@ -131,13 +133,7 @@ const createGame = () => {
       await changeHash(`simpleLobby/roomID=${roomId}`)();
       game.setID(msg.data.id);
       game.init();
-      socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
-        event: {
-        eventType: 'ur Turn',
-        round: 3,
-      },
-      roomID: roomId,
-    }})); 
+      console.log(game);
     });
   }
 

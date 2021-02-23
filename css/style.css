@@ -90,3 +90,16 @@
     margin-top: 15vh;
     padding: 0 0 0 0;
 }
+
+.gm-popup {
+    background-color: white;
+    z-index: 5;
+    position: absolute;
+    top: 10vh;
+    left: 0;
+    margin-left: calc(20px + 2vw);
+    max-width: 500px;
+    display: grid;
+    grid-template-rows: 70px 1fr;
+    grid-template-columns: 1fr;
+}

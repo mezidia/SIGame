@@ -50,7 +50,9 @@ function getMainFields() {
     bundleAuthorInput,
     bundleTitleInput,
   ];
-  for (let i = 0; i < mainBundleFields.length; i++) {
+  const option = bundleLangSelect.options[bundleLangSelect.selectedIndex];
+  mainBundleFields[0] = option.attributes['data-localize'].textContent;
+  for (let i = 1; i < mainBundleFields.length; i++) {
     try {
       mainBundleFields[i] = getDomElemVal(mainBundleFields[i]); 
     } catch (err) {
