@@ -162,6 +162,11 @@ class Server {
     const players = this._games[roomID].players;
     const playerId = players.indexOf(id);
     this._games[roomID].players.splice(playerId, 1);
+    //remove comments on production
+    //if (this._games[roomID].players.length === 0) {
+    //  delete this._games[roomID];
+    //  idGenerator.removeID(roomID);
+    //}
     this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
   }
 
