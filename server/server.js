@@ -157,6 +157,7 @@ class Server {
 
   //on user leaves game
   leaveGame(data) {
+    console.log(data)
     const id = data.id;
     const roomID = data.data.roomID;
     const players = this._games[roomID].players;

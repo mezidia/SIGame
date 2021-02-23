@@ -32,7 +32,6 @@ const loadView = async () => {
       console.log(reason);
     })
     .finally(changeLanguage());
-    console.log('done');
 };
 
 const checkView = () => {

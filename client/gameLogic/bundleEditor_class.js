@@ -1,7 +1,5 @@
 'use strict';
 
-import { de } from "../../localization/de.js";
-import { ua } from "../../localization/ua.js";
 import Bundle from "./bundle_class.js";
 import Deck from "./deck_class.js";
 import Question from "./question_class.js";

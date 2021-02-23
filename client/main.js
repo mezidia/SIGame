@@ -42,18 +42,15 @@ const createGame = () => {
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
   const gameMode = document.getElementById('gameMode').value;
-  //const role = document.getElementById('role').value;
   const totalPlayers = document.getElementById('totalPlayers').value;
-  //const ppl = document.getElementById('ppl').value;
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(roomName)) return;
   data.settings = {
     roomName,
     password,
     gameMode,
-    //role,
     totalPlayers,
-    //ppl,
+    name: new User().name,
   };
   console.log(questionBundle.value);
   if (questionBundle.value === 'download') {
@@ -274,18 +271,13 @@ function joinHandle (game) {
   changeHash(`simpleLobby/roomID=${game.id}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: game.id}}));
   roomId = game.id;
+  console.log(game);
 }
 
 //this func handles keydowns on elements
 const handleKeydown = evt => ({
   'message-input': [sendMessageRoom],
 })[evt.target.id];
-
-document.addEventListener('animationend', (evt) => {
-  if (evt.target.id === 'last-letter') {
-    alert('Victory!!')
-  }
-})
 
 // it runs click handler if it exists
 document.addEventListener('click', evt => {
