@@ -316,8 +316,9 @@ document.addEventListener('change', (evt) => {
 
 function checkHash() {
   const name = checkView();
+  console.log(name);
   if (name === 'lobbySearch' || name === 'createGame') {
-    history.back();
+    changeHash('chooseMode')();
     socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
     roomId = undefined;
   }

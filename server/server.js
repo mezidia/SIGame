@@ -204,6 +204,14 @@ class Server {
     let n = 0;
     this.ws.clients.forEach(() => n++);
     this.sendToAll({mType: 'usersOnline', data: n});
+    const id = this.getIdByConnection(connection);
+    for (let idGame in this._games) {
+      const game = this._games[idGame];
+      const players = game.players;
+      if (players.includes(id)) this.leaveGame({id: id, data: {roomID: idGame}})
+    }
+    delete this._users[id];
+    idGenerator.removeID(id);
   }
 
   // gets users id by connection
