@@ -41,6 +41,7 @@ class Server {
       'insertBundle': data => this.insertBundle(data),
       'broadcastInRoom': data => this.broadcastInRoom(data),
       'saveBundleToDB': data => this.saveBundleToDB(data),
+      'leaveGame': data => this.leaveGame(data),
     };
 
     if (!Server._instance) {
@@ -151,6 +152,17 @@ class Server {
   //returns all game ids
   returnAllGames(data) {
     const id = data.id;
+    this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
+  }
+
+  //on user leaves game
+  leaveGame(data) {
+    const id = data.id;
+    const roomID = data.data.roomID;
+    //console.log(roomID);
+    const players = this._games[roomID].players;
+    const playerId = players.indexOf(id);
+    this._games[roomID].players.slice(playerId, 1);
     this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
   }
 

@@ -242,6 +242,7 @@ const joinLobby = async () => {
 
 //update games in lobby
 const updateGames = data => {
+  console.log(data);
   const games = data.data;
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
@@ -265,6 +266,9 @@ const updateGames = data => {
     gamesSearchField.appendChild(gameDiv);
   };
 }
+
+//add info about games
+//function addGa
 
 //this is handle, which is being called when join to game
 function joinHandle (game) {
@@ -315,6 +319,12 @@ document.addEventListener('change', (evt) => {
 
 function checkHash() {
   const name = checkView();
+  if (name === 'lobbySearch' || name === 'createGame') {
+    history.back();
+    //console.log(game.id);
+    //socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: game.id }}));
+    //roomId = undefined;
+  }
 }
 
 //opens main page
@@ -322,5 +332,3 @@ loadView();
 //switches pages 
 window.onhashchange = loadView;
 window.onpopstate = checkHash;
-
-//document.onclick = () => console.log(new User());
