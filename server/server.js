@@ -159,10 +159,9 @@ class Server {
   leaveGame(data) {
     const id = data.id;
     const roomID = data.data.roomID;
-    //console.log(roomID);
     const players = this._games[roomID].players;
     const playerId = players.indexOf(id);
-    this._games[roomID].players.slice(playerId, 1);
+    this._games[roomID].players.splice(playerId, 1);
     this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
   }
 

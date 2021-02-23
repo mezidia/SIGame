@@ -42,18 +42,18 @@ const createGame = () => {
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
   const gameMode = document.getElementById('gameMode').value;
-  const role = document.getElementById('role').value;
+  //const role = document.getElementById('role').value;
   const totalPlayers = document.getElementById('totalPlayers').value;
-  const ppl = document.getElementById('ppl').value;
+  //const ppl = document.getElementById('ppl').value;
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(roomName)) return;
   data.settings = {
     roomName,
     password,
     gameMode,
-    role,
+    //role,
     totalPlayers,
-    ppl,
+    //ppl,
   };
   console.log(questionBundle.value);
   if (questionBundle.value === 'download') {
@@ -273,6 +273,7 @@ function joinHandle (game) {
   if (passwordInput !== passwordGame) return;
   changeHash(`simpleLobby/roomID=${game.id}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: game.id}}));
+  roomId = game.id;
 }
 
 //this func handles keydowns on elements
@@ -317,9 +318,8 @@ function checkHash() {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame') {
     history.back();
-    //console.log(game.id);
-    //socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: game.id }}));
-    //roomId = undefined;
+    socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
+    roomId = undefined;
   }
 }
 
