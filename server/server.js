@@ -126,8 +126,8 @@ class Server {
   messageToGameChat(message) {
     const data = message.data;
     const id = message.id;
+    data.name = this._users[id].name;
     for (let userId of this._games[data.room].players) {
-      data.name = this._users[id].name;
       this.sendToUser(userId, {mType: 'messageToGameChat', data: data });
     }
   }
@@ -137,9 +137,9 @@ class Server {
     const message = data.data;
     const id = idGenerator.getID();
     this._games[id] = {
-      players: [],
+      players: {},
     };
-    this._games[id].players.push(data.id);
+    this._games[id].players[data.id] = this._users[data.id];
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;
     this.sendToUser(data.id, {mType: 'newLobbyId', data: {id: id}});
@@ -160,8 +160,7 @@ class Server {
     const id = data.id;
     const roomID = data.data.roomID;
     const players = this._games[roomID].players;
-    const playerId = players.indexOf(id);
-    this._games[roomID].players.splice(playerId, 1);
+    delete players[id];
     //remove comments on production
     //if (this._games[roomID].players.length === 0) {
     //  delete this._games[roomID];
@@ -174,7 +173,7 @@ class Server {
   broadcastInRoom(data) {
     const roomID = data.data.roomID;
     const players = this._games[roomID].players;
-    for (let player of players) {
+    for (let player in players) {
       this.sendToUser(player, {mType: 'broadcastedEvent', data: data});
     }
     
@@ -185,11 +184,11 @@ class Server {
   joinGame(data) {
     const id = data.id;
     const message = data.data;
-    this._games[message.id].players.push(id);
+    this._games[message.id].players[id] = this._users[id];
     this.sendToAll({mType: 'returnAllGames', data: this._games});
     const gameData = this._games[message.id];
-    for (let player of gameData.players) {
-      this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players.name}});
+    for (let player in gameData.players) {
+      this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player]}});
     }
     this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
   }
@@ -213,7 +212,7 @@ class Server {
     for (let idGame in this._games) {
       const game = this._games[idGame];
       const players = game.players;
-      if (players.includes(id)) this.leaveGame({id: id, data: {roomID: idGame}})
+      if (players.hasOwnProperty(id)) this.leaveGame({id: id, data: {roomID: idGame}})
     }
     delete this._users[id];
     idGenerator.removeID(id);

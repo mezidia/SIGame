@@ -252,7 +252,7 @@ const updateGames = data => {
     gameDiv.addEventListener('click', () => {
       gameData = {game: game, id: gameId};
       document.getElementById('join-player').removeEventListener('click', joinGame);
-      document.getElementById('search-players').innerHTML = game.players.length + ' / ' + game.settings.totalPlayers;
+      document.getElementById('search-players').innerHTML = Object.keys(game.players).length + ' / ' + game.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = game.settings.roomName;
       document.getElementById('search-mode').innerHTML = game.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
