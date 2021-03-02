@@ -57,7 +57,7 @@ export default class GameField {
   switchGameMode(isGm) {
     document.getElementById('reply').innerHTML = isGm ? '' : `<input id="input-answer" type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
       <button id="btn-answer" class="btn btn-primary game-button" style="width: 100px; height: 100%"></button>`;
-    document.getElementsByClassName('game-container')[0].style.gridTemplateRows = isGm ? '1fr 80px 0': '1fr 80px 50px';
+    document.getElementsByClassName('game-container')[0].style.gridTemplateRows = isGm ? '1fr auto 0': '1fr auto 50px';
     document.getElementById('change-sums-btn').style.display = isGm ? 'block': 'none';
     document.getElementById('report-btn').style.gridColumnStart = isGm ? '2': '1';
   }
@@ -101,7 +101,7 @@ export default class GameField {
     playerIcon.className = 'player-display'
     playerIcon.innerHTML = `<p>${data.name}</p>
       <p id="${data.id}-score">0</p>`
-    document.getElementById('players-icons').prepend(playerIcon);
+    document.getElementById('players-icons').append(playerIcon);
   }
 
 }
