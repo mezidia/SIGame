@@ -94,4 +94,14 @@ export default class GameField {
     document.getElementById('reply').innerHTML = '';
   }
 
+  // display the new player joined the game
+  addPlayer(data) {
+    const playerIcon = document.createElement('div');
+    playerIcon.id = data.id;
+    playerIcon.className = 'player-display'
+    playerIcon.innerHTML = `<p>${data.name}</p>
+      <p id="${data.id}-score">0</p>`
+    document.getElementById('players-icons').prepend(playerIcon);
+  }
+
 }

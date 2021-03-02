@@ -103,3 +103,11 @@
     grid-template-rows: 70px 1fr;
     grid-template-columns: 1fr;
 }
+
+.player-display {
+    background-color: #514c4c;
+    color: white;
+    text-align: center;
+    flex-grow: 1;
+    min-width: 80px;
+}
