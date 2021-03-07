@@ -6,6 +6,10 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function servGameToFrontGame(data) {
+  
+}
+
 const promisifySocketMSG = (msg, awaitMsgType, socket, timeout = 222030203) => {
   return new Promise((resolve, reject) => {
     let timer = undefined;

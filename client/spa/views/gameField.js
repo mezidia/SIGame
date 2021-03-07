@@ -63,24 +63,24 @@ export default class GameField {
   }
 
   // draws popup to grade players' answers
-  gmPopUp(/*args*/) {
+  gmPopUp(who, ans, t, f) {
     document.getElementById('reply').innerHTML = `<div class="container gm-popup">
         <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
-          <span class="badge badge-primary" id="answer-author">дова<!-- author from args --></span>
+          <span class="badge badge-primary" id="answer-author">${who}</span>
           <br>
-          <span id="answer-text">ываыва <!-- answer text from args --> </span>
+          <span id="answer-text">${ans}</span>
         </div>
         <div class="row">
         
           <div class="col-sm-6">
             <h2 class="text-primary">Correct answers</h2>
-            <p id="correct-answer-text"> ывафвыафыва<!-- correct answers from args --> </p>
+            <p id="correct-answer-text">${t.split(',').join('/n')}</p>
             <div class="btn btn-primary game-button btn-50" style="width: 100px">Correct</div>
           </div>
           
           <div class="col-sm-6">
             <h2 class="text-primary">Wrong answers</h2>
-            <p id="wrong-answer-text"> фывафывавывывы<!-- correct answers from args --> </p>
+            <p id="wrong-answer-text">${f.split(',').join('/n')}</p>
             <div class="btn btn-primary game-button btn-50" style="width: 100px">Wrong</div>
           </div>
           
@@ -95,13 +95,14 @@ export default class GameField {
   }
 
   // display the new player joined the game
-  addPlayer(data) {
+  addPlayer(name, score = 0) {
     const playerIcon = document.createElement('div');
-    playerIcon.id = data.id;
+    playerIcon.id = name + '-score';
     playerIcon.className = 'player-display'
-    playerIcon.innerHTML = `<p>${data.name}</p>
-      <p id="${data.id}-score">0</p>`
+    playerIcon.innerHTML = `<p>${name}</p>
+      <p id="${name}-score">${score}</p>`
     document.getElementById('players-icons').append(playerIcon);
   }
+
 
 }
