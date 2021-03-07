@@ -3,7 +3,7 @@
 import Game from './gameLogic/game_class.js';
 import Bundle from './gameLogic/bundle_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
-import { loadView, changeHash, checkView } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, loadMainView } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { getRandomIntInclusive, promisifySocketMSG } from './utils.js';
 import { de } from '../localization/de.js';
@@ -323,8 +323,13 @@ function checkHash() {
   }
 }
 
+const loadViewSocket = () => {
+  if(socket) loadView();
+  else loadMainView();
+}
+
 //opens main page
-loadView();
+loadViewSocket();
 //switches pages 
-window.onhashchange = loadView;
+window.onhashchange = loadViewSocket;
 window.onpopstate = checkHash;

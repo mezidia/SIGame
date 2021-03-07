@@ -39,4 +39,4 @@ const checkView = () => {
   return viewName;
 }
 
-export { loadView, changeHash, checkView };
+export { loadView, changeHash, checkView, loadMainView };
