@@ -178,6 +178,12 @@ export default class Game {
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
+    'correct': 'correct',
+    'uncorrect': 'uncorrect',
+    'exit': this.exit,
+    'report': 'report',
+    'pause': 'pause',
+    'resume': 'resume',
   };
 
   clickHandler = (e) => {
