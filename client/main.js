@@ -245,18 +245,18 @@ const updateGames = data => {
   let gameData = null;
   const joinGame = () => joinHandle(gameData);
   for (const gameId in games) {
-    const game = games[gameId];
+    const gm = games[gameId];
     const gameDiv = document.createElement('div');
     gameDiv.addEventListener('click', () => {
-      gameData = {game: game, id: gameId};
+      gameData = {game: gm, id: gameId};
       document.getElementById('join-player').removeEventListener('click', joinGame);
-      document.getElementById('search-players').innerHTML = Object.keys(game.players).length + ' / ' + game.settings.totalPlayers;
-      document.getElementById('search-title').innerHTML = game.settings.roomName;
-      document.getElementById('search-mode').innerHTML = game.settings.gameMode;
-      document.getElementById('search-question-bundle').innerHTML = game.bundle.title;
+      document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
+      document.getElementById('search-title').innerHTML = gm.settings.roomName;
+      document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
+      document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
       document.getElementById('join-player').addEventListener('click', joinGame);
     });
-    gameDiv.innerHTML = game.settings.roomName;
+    gameDiv.innerHTML = gm.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
   }
 }
@@ -265,13 +265,19 @@ const updateGames = data => {
 //function addGa
 
 //this is handle, which is being called when join to game
-function joinHandle (game) {
+async function joinHandle(gameData) {
+  const gm = gameData.game;
+  const gmId = gameData.id;
+  console.log(gameData);
   const passwordInput = document.getElementById('search-password').value;
-  const passwordGame = game.game.settings.password;
+  const passwordGame = gm.settings.password;
   if (passwordInput !== passwordGame) return;
-  changeHash(`simpleLobby/roomID=${game.id}`)();
-  socket.send(JSON.stringify({mType: 'joinGame', data: {id: game.id}}));
-  roomId = game.id;
+  await changeHash(`simpleLobby/roomID=${gmId}`)();
+  socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
+  roomId = gmId;
+  game = new Game(gm.bundle, gm.settings);
+  game.setID(gmId);
+  game.join();
   console.log(game);
 }
 

@@ -2,6 +2,7 @@
 
 import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
+import { changeHash } from "../spa/spaControl.js";
 
 
 
@@ -32,12 +33,13 @@ export default class Game {
     this._setListeners();
     this.currentQuestion = undefined;
     this.turnTimerID = undefined;
-    console.log('new Game');
+    console.log('new Game', this);
   }
 
   onLeaveGame = evt => {
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
+    this.gameField.removePlayer(evt.name);
   }
 
   onTurnOrder = evt => {
@@ -51,11 +53,29 @@ export default class Game {
 
   onJoinGame = evt => {
     this.players.push(evt.name);
+    this.gameField.addPlayer(evt.name);
   }
 
   onPoints = evt => {
     this.points = evt.points;
-    //updatePoints();
+    updatePoints();
+  }
+
+  onSetGM = evt => {
+    this.master = evt.name;
+  }
+
+  onShowQuestion = evt => {
+    this.gameField.drawQuestion(evt.question.string);
+    this.currentQuestion = evt.question;
+  }
+
+  onAnswerCheck = evt => {
+    if (this.master !== new User().name) return;
+    console.log(this.currentQuestion);
+    const t = this.currentQuestion.trueAns;
+    const f = this.currentQuestion.falseAns;
+    this.gameField.gmPopUp(evt.who, evt.answer, t, f);
   }
 
   eventsConfig = {
@@ -63,6 +83,9 @@ export default class Game {
     'turnOrder': this.onTurnOrder,
     'join': this.onJoinGame,
     'points': this.onPoints,
+    'setGM': this.onSetGM,
+    'showQuestion': this.onShowQuestion,
+    'answerCheck': this.onAnswerCheck,
   };
 
   socketHandler = (msg) => {
@@ -74,16 +97,19 @@ export default class Game {
     handler(event);
   }
 
-  exit() {
+  exit = () => {
     this._removeListeners();
     const event = {
       eType: 'leave',
       name: new User().name,
     };
     this.broadcast(event);
+    changeHash('chooseMode')();
   }
 
   join() {
+    this.gameField.drawTable(this.bundle.round_1);
+    for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
       eType: 'join',
       name: new User().name,
@@ -91,12 +117,17 @@ export default class Game {
     this.broadcast(event);
   }
 
-  showQuestion = (e) => {
+  onQuestionClick = (e) => {
     const target = e.target;
     const splitedID = target.id.split('-');
     const i = splitedID[1] - 1;
     const j = splitedID[2] - 1;
     const q = this.bundle.decks[i].questions[j];
+    const event = {
+      eType: 'showQuestion',
+      question: q,
+    };
+    this.broadcast(event);
     console.log(q);
     this.gameField.drawQuestion(q.string);
     this.currentQuestion = q;
@@ -114,8 +145,16 @@ export default class Game {
   }
 
   answer = () => {
-    clearTimeout(this.turnTimerID);
     const ans = document.getElementById('answerInput');
+    if (!ans.value) return;
+    clearTimeout(this.turnTimerID);
+    document.getElementById('answer-btn').disabled = true;
+    const event = {
+      eType: 'answerCheck',
+      answer: ans.value,
+      who: new User().name,
+    };
+    this.broadcast(event);
     console.log(ans.value);
 
   }
@@ -139,20 +178,37 @@ export default class Game {
 
   }
 
+  correct = () => {
+    this.gameField.gmPopHide();
+    const event = {
+      eType: 'turnOrder',
+      who: this.players,
+    };
+    this.broadcast(event);
+  }
+
   clickConfig = {
-    'cell': this.showQuestion,
+    'cell': this.onQuestionClick,
     'answer': this.raiseHand,
+    'correct': this.correct,
+    'uncorrect': 'uncorrect',
+    'exit': this.exit,
+    'report': 'report',
+    'pause': 'pause',
+    'resume': 'resume',
   };
 
   clickHandler = (e) => {
     const id = e.target.id.split('-')[0];
     const handler = this.clickConfig[id];
-    if (!handler) return console.log(`no handler for this |${id}| button`);
+    if (!handler) return console.log(`no handler for this |id:${id}| button`);
     handler(e);
   }
 
   init() {
     this.gameField.drawTable(this.bundle.round_1);
+    this.gameField.addPlayer(new User().name);
+    this.gameField.switchGameMode(true);
   }
 
   setupQuestiones() {
