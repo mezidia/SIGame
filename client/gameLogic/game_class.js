@@ -27,8 +27,8 @@ export default class Game {
     this.password = settings.password;
     this.gameMode = settings.gameMode;
     this.bundle = bundle;
-    this.players = [ settings.name, 'test' ];
-    this.points = { [settings.name]: 0, 'test': 0 };
+    this.players = [settings.name];
+    this.points = {[settings.name]: 0};
     this.gameField = new GameField();
     this._setListeners();
     this.currentQuestion = undefined;
@@ -40,6 +40,7 @@ export default class Game {
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
     this.gameField.removePlayer(evt.name);
+    delete this.points[evt.name];
   }
 
   onTurnOrder = evt => {
@@ -53,12 +54,14 @@ export default class Game {
 
   onJoinGame = evt => {
     this.players.push(evt.name);
+    this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
   }
 
   onPoints = evt => {
     this.points = evt.points;
-    updatePoints();
+    console.log(evt.points);
+    this.gameField.updatePoits(evt.points);
   }
 
   onSetGM = evt => {
@@ -103,6 +106,7 @@ export default class Game {
       eType: 'leave',
       name: new User().name,
     };
+    this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
     changeHash('chooseMode')();
   }

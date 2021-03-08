@@ -135,13 +135,25 @@ class Server {
 
   //games to send to client 
   prepareGamesForClient() {
-    const gamesSend = JSON.parse(JSON.stringify(this._games));
-    console.log('objects ', this._games, gamesSend);
+    const getCircularReplacer = () => {
+      const seen = new WeakSet();
+      return (k, val) => {
+        if (typeof val === 'object' && val !== null) {
+          if (seen.has(val)) {
+            return;
+          }
+          seen.add(val);
+        }
+        return val;
+      };
+    }
+    const gamesSend = JSON.parse(JSON.stringify(this._games, getCircularReplacer()));
     for (let j in gamesSend) {
       const players = gamesSend[j].players;
       for (let i in players) {
         gamesSend[j].players[i].connection = null;
       }
+      //console.log('objects ', this._games[j].players, gamesSend[j].players);
     }
     return gamesSend;
   }
@@ -160,7 +172,6 @@ class Server {
     for (let id of Object.keys(this._users)) {
       this.returnAllGames({id: id});
     }
-    console.log(this._games);
   }
 
   //returns all games
@@ -172,7 +183,6 @@ class Server {
 
   //on user leaves game
   leaveGame(data) {
-    console.log(data)
     const id = data.id;
     const roomID = data.data.roomID;
     const players = this._games[roomID].players;
@@ -205,7 +215,7 @@ class Server {
     this.sendToAll({mType: 'returnAllGames', data: gamesSend});
     const gameData = this._games[message.id];
     for (let player in gameData.players) {
-      this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player]}});
+      this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player].name}});
     }
     this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
   }
