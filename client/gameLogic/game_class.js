@@ -33,7 +33,7 @@ export default class Game {
     this._setListeners();
     this.currentQuestion = undefined;
     this.turnTimerID = undefined;
-    console.log('new Game');
+    console.log('new Game', this);
   }
 
   onLeaveGame = evt => {
@@ -58,7 +58,7 @@ export default class Game {
 
   onPoints = evt => {
     this.points = evt.points;
-    //updatePoints();
+    updatePoints();
   }
 
   onSetGM = evt => {
@@ -104,7 +104,7 @@ export default class Game {
       name: new User().name,
     };
     this.broadcast(event);
-    changeHash('');
+    changeHash('chooseMode')();
   }
 
   join() {

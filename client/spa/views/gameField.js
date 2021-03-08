@@ -109,6 +109,12 @@ export default class GameField {
       const container = document.getElementById('players-icons');
       if (!container.hasChildNodes()) return 'this room is empty';
       const childs = container.childNodes;
+      for (const child of childs) {
+        if (child.id === name) {
+          child.removeChild();
+          break;
+        }
+      }
       console.log(childs);
     }
 
