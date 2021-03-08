@@ -2,6 +2,7 @@
 
 import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
+import { changeHash } from "../spa/spaControl.js";
 
 
 
@@ -38,6 +39,7 @@ export default class Game {
   onLeaveGame = evt => {
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
+    this.gameField.removePlayer(evt.name);
   }
 
   onTurnOrder = evt => {
@@ -95,13 +97,14 @@ export default class Game {
     handler(event);
   }
 
-  exit() {
+  exit = () => {
     this._removeListeners();
     const event = {
       eType: 'leave',
       name: new User().name,
     };
     this.broadcast(event);
+    changeHash('');
   }
 
   join() {
@@ -175,10 +178,19 @@ export default class Game {
 
   }
 
+  correct = () => {
+    this.gameField.gmPopHide();
+    const event = {
+      eType: 'turnOrder',
+      who: this.players,
+    };
+    this.broadcast(event);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
-    'correct': 'correct',
+    'correct': this.correct,
     'uncorrect': 'uncorrect',
     'exit': this.exit,
     'report': 'report',

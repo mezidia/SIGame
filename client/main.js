@@ -162,7 +162,6 @@ const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
       //disconnect();
-      game.exit();
       console.log('closed');
     };
     socket.onmessage = msg => {

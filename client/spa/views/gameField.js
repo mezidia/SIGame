@@ -104,5 +104,13 @@ export default class GameField {
     document.getElementById('players-icons').append(playerIcon);
   }
 
+    // display the new player joined the game
+    removePlayer(name) {
+      const container = document.getElementById('players-icons');
+      if (!container.hasChildNodes()) return 'this room is empty';
+      const childs = container.childNodes;
+      console.log(childs);
+    }
+
 
 }
