@@ -15,7 +15,7 @@
 
 .game-container {
     display: grid;
-    grid-template-rows: 1fr 80px 50px;
+    grid-template-rows: 1fr auto 50px;
 }
 
 .game-button {
@@ -102,4 +102,12 @@
     display: grid;
     grid-template-rows: 70px 1fr;
     grid-template-columns: 1fr;
+}
+
+.player-display {
+    background-color: #514c4c;
+    color: white;
+    text-align: center;
+    flex-grow: 1;
+    min-width: 100px;
 }
