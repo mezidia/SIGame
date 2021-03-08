@@ -144,6 +144,7 @@ class Server {
     this._games[id].settings = message.settings;
     this.sendToUser(data.id, {mType: 'newLobbyId', data: {id: id}});
     for (let user of Object.keys(this._users)) {
+      console.log(this._games);
       this.sendToUser(user, {mType: 'returnAllGames', data: this._games});
     }
     console.log(this._games);
