@@ -17,6 +17,8 @@ const changeHash = (hash) => async() => {
   await loadView();
 };
 
+const getHash = () => router.getHash()
+
 const loadView = async () => {
   const { viewName } = router.getState();
   engine.loader();
@@ -39,4 +41,10 @@ const checkView = () => {
   return viewName;
 }
 
-export { loadView, changeHash, checkView, loadMainView };
+export {
+  loadView,
+  changeHash,
+  checkView,
+  loadMainView,
+  getHash,
+};

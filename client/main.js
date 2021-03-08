@@ -3,7 +3,7 @@
 import Game from './gameLogic/game_class.js';
 import Bundle from './gameLogic/bundle_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
-import { loadView, changeHash, checkView, loadMainView } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, loadMainView, getHash } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { getRandomIntInclusive, promisifySocketMSG } from './utils.js';
 import { de } from '../localization/de.js';
@@ -225,6 +225,7 @@ const handleClick = evt => ({
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [bundleEditor.submitBundleEditor],
+  'go-up-btn': [scrollToStart()]
 })[evt.target.id];
 
 //join-btn click handle
@@ -257,7 +258,7 @@ const updateGames = data => {
     });
     gameDiv.innerHTML = game.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
-  };
+  }
 }
 
 //add info about games
@@ -316,13 +317,30 @@ function checkHash() {
   }
 }
 
+const scrollToElem = id => () => {
+  document.getElementById(id.split('_')[1]).scrollIntoView();
+}
+
+const scrollToStart = () => {
+  window.scrollTo(0, 0)
+}
+
+// won't pass user to other than main and help pages if socket is not connected
 const loadViewSocket = () => {
-  if(socket) loadView();
-  else loadMainView();
+  if(getHash() === 'help') {
+    loadView();
+    return;
+  }
+
+  if(socket) {
+    loadView();
+  } else {
+    loadView();
+  }
 }
 
 //opens main page
-loadViewSocket();
+loadView();
 //switches pages 
-window.onhashchange = loadViewSocket;
+window.onhashchange = loadView();
 window.onpopstate = checkHash;
