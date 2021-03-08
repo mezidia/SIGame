@@ -96,6 +96,7 @@ class Server {
 
   //send to specific user 
   sendToUser(id, message) {
+    console.log(this._users[id]);
     const user = this._users[id].connection;
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify(message));
@@ -132,6 +133,19 @@ class Server {
     }
   }
 
+  //games to send to client 
+  prepareGamesForClient() {
+    const gamesSend = JSON.parse(JSON.stringify(this._games));
+    console.log('objects ', this._games, gamesSend);
+    for (let j in gamesSend) {
+      const players = gamesSend[j].players;
+      for (let i in players) {
+        gamesSend[j].players[i].connection = null;
+      }
+    }
+    return gamesSend;
+  }
+
   //creates new game and puts it to games
   createNewGame(data) {
     const message = data.data;
@@ -143,16 +157,17 @@ class Server {
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;
     this.sendToUser(data.id, {mType: 'newLobbyId', data: {id: id}});
-    for (let user of Object.keys(this._users)) {
-      this.sendToUser(user, {mType: 'returnAllGames', data: this._games});
+    for (let id of Object.keys(this._users)) {
+      this.returnAllGames({id: id});
     }
     console.log(this._games);
   }
 
-  //returns all game ids
+  //returns all games
   returnAllGames(data) {
     const id = data.id;
-    this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
+    const gamesSend = this.prepareGamesForClient();
+    this.sendToUser(id, {mType: 'returnAllGames', data: gamesSend});
   }
 
   //on user leaves game
@@ -167,7 +182,7 @@ class Server {
     //  delete this._games[roomID];
     //  idGenerator.removeID(roomID);
     //}
-    this.sendToUser(id, {mType: 'returnAllGames', data: this._games});
+    this.returnAllGames({id: id});
   }
 
   //broadcast for all people in room
@@ -186,7 +201,8 @@ class Server {
     const id = data.id;
     const message = data.data;
     this._games[message.id].players[id] = this._users[id];
-    this.sendToAll({mType: 'returnAllGames', data: this._games});
+    const gamesSend = this.prepareGamesForClient();
+    this.sendToAll({mType: 'returnAllGames', data: gamesSend});
     const gameData = this._games[message.id];
     for (let player in gameData.players) {
       this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player]}});
