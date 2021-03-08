@@ -32,6 +32,7 @@ export default class Game {
     this.gameField = new GameField();
     this._setListeners();
     this.currentQuestion = undefined;
+    this.currentTurn = undefined;
     this.turnTimerID = undefined;
     console.log('new Game', this);
   }
@@ -182,7 +183,10 @@ export default class Game {
 
   }
 
-  correct = () => {
+  correct = evt => {
+    const name = document.getElementById('answer-author').textContent;
+    this.points[name] += this.currentQuestion.cost;
+    this.updatePoints();
     this.gameField.gmPopHide();
     const event = {
       eType: 'turnOrder',
@@ -191,11 +195,24 @@ export default class Game {
     this.broadcast(event);
   }
 
+  uncorrect = evt => {
+    const name = document.getElementById('answer-author').textContent;
+    this.points[name] -= +this.currentQuestion.cost;
+    this.updatePoints();
+    this.gameField.gmPopHide();
+    const event = {
+      eType: 'turnOrder',
+      who: this.players,
+    };
+    this.broadcast(event);
+    this.gameField.drawTable(this.bundle.round_1);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
     'correct': this.correct,
-    'uncorrect': 'uncorrect',
+    'uncorrect': this.uncorrect,
     'exit': this.exit,
     'report': 'report',
     'pause': 'pause',

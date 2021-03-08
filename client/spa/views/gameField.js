@@ -75,13 +75,13 @@ export default class GameField {
           <div class="col-sm-6">
             <h2 class="text-primary">Correct answers</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div class="btn btn-primary game-button btn-50" style="width: 100px">Correct</div>
+            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px">Correct</div>
           </div>
           
           <div class="col-sm-6">
             <h2 class="text-primary">Wrong answers</h2>
             <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div class="btn btn-primary game-button btn-50" style="width: 100px">Wrong</div>
+            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px">Wrong</div>
           </div>
           
         </div>
