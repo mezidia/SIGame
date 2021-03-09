@@ -27,11 +27,12 @@ export default class Game {
     this.password = settings.password;
     this.gameMode = settings.gameMode;
     this.bundle = bundle;
-    this.players = [ settings.name, 'test' ];
-    this.points = { [settings.name]: 0, 'test': 0 };
+    this.players = [settings.name];
+    this.points = {[settings.name]: 0};
     this.gameField = new GameField();
     this._setListeners();
     this.currentQuestion = undefined;
+    this.currentTurn = undefined;
     this.turnTimerID = undefined;
     console.log('new Game', this);
   }
@@ -40,6 +41,7 @@ export default class Game {
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
     this.gameField.removePlayer(evt.name);
+    delete this.points[evt.name];
   }
 
   onTurnOrder = evt => {
@@ -53,12 +55,15 @@ export default class Game {
 
   onJoinGame = evt => {
     this.players.push(evt.name);
+    this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
+    if (new User().name === this.master) this.updatePoints();
   }
 
   onPoints = evt => {
     this.points = evt.points;
-    updatePoints();
+    console.log(evt.points);
+    this.gameField.updatePlayers(this.players, this.points);
   }
 
   onSetGM = evt => {
@@ -103,6 +108,7 @@ export default class Game {
       eType: 'leave',
       name: new User().name,
     };
+    this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
     changeHash('chooseMode')();
   }
@@ -178,20 +184,37 @@ export default class Game {
 
   }
 
-  correct = () => {
+  correct = evt => {
+    const name = document.getElementById('answer-author').textContent;
+    this.points[name] += this.currentQuestion.cost;
+    this.updatePoints();
     this.gameField.gmPopHide();
     const event = {
       eType: 'turnOrder',
       who: this.players,
     };
     this.broadcast(event);
+    //this.gameField.drawTable(this.bundle.round_1); TODO
+  }
+
+  uncorrect = evt => {
+    const name = document.getElementById('answer-author').textContent;
+    this.points[name] -= +this.currentQuestion.cost;
+    this.updatePoints();
+    this.gameField.gmPopHide();
+    const event = {
+      eType: 'turnOrder',
+      who: this.players,
+    };
+    this.broadcast(event);
+    //this.gameField.drawTable(this.bundle.round_1); TODO
   }
 
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
     'correct': this.correct,
-    'uncorrect': 'uncorrect',
+    'uncorrect': this.uncorrect,
     'exit': this.exit,
     'report': 'report',
     'pause': 'pause',

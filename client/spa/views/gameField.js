@@ -75,13 +75,13 @@ export default class GameField {
           <div class="col-sm-6">
             <h2 class="text-primary">Correct answers</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div class="btn btn-primary game-button btn-50" style="width: 100px">Correct</div>
+            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px">Correct</div>
           </div>
           
           <div class="col-sm-6">
             <h2 class="text-primary">Wrong answers</h2>
             <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div class="btn btn-primary game-button btn-50" style="width: 100px">Wrong</div>
+            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px">Wrong</div>
           </div>
           
         </div>
@@ -97,26 +97,44 @@ export default class GameField {
   // display the new player joined the game
   addPlayer(name, score = 0) {
     const playerIcon = document.createElement('div');
-    playerIcon.id = name + '-score';
+    playerIcon.id = name + '-icon';
     playerIcon.className = 'player-display'
     playerIcon.innerHTML = `<p>${name}</p>
       <p id="${name}-score">${score}</p>`
     document.getElementById('players-icons').append(playerIcon);
   }
 
-    // display the new player joined the game
+    // remove the player from players bar
     removePlayer(name) {
       const container = document.getElementById('players-icons');
       if (!container.hasChildNodes()) return 'this room is empty';
       const childs = container.childNodes;
+      const playerID = name + '-icon';
       for (const child of childs) {
-        if (child.id === name) {
-          child.removeChild();
+        if (child.id === playerID) {
+          child.remove();
           break;
         }
       }
-      console.log(childs);
+    }
+    
+    updatePlayers(palyers, points) {
+      const container = document.getElementById('players-icons');
+      container.innerHTML = '';
+      for (const name of palyers) {
+        this.addPlayer(name, points[name]);
+      }
     }
 
+    updatePoits(points) {
+      const container = document.getElementById('players-icons');
+      if (!container.hasChildNodes()) return 'this room is empty';
+      const childs = container.childNodes;
+      for (const child of childs) {
+        const name = child.id.split('-')[0];
+        child.innerHTML = `<p>${name}</p>
+        <p id="${name}-score">${points[name]}</p>`;
+      }
+    }
 
 }
