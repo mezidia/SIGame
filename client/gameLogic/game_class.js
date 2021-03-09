@@ -57,12 +57,13 @@ export default class Game {
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
+    if (new User().name === this.master) this.updatePoints();
   }
 
   onPoints = evt => {
     this.points = evt.points;
     console.log(evt.points);
-    this.gameField.updatePoits(evt.points);
+    this.gameField.updatePlayers(this.players, this.points);
   }
 
   onSetGM = evt => {
@@ -193,6 +194,7 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
+    //this.gameField.drawTable(this.bundle.round_1); TODO
   }
 
   uncorrect = evt => {
@@ -205,7 +207,7 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
-    this.gameField.drawTable(this.bundle.round_1);
+    //this.gameField.drawTable(this.bundle.round_1); TODO
   }
 
   clickConfig = {

@@ -96,7 +96,6 @@ class Server {
 
   //send to specific user 
   sendToUser(id, message) {
-    console.log(this._users[id]);
     const user = this._users[id].connection;
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify(message));
@@ -153,7 +152,6 @@ class Server {
       for (let i in players) {
         gamesSend[j].players[i].connection = null;
       }
-      //console.log('objects ', this._games[j].players, gamesSend[j].players);
     }
     return gamesSend;
   }
@@ -217,6 +215,7 @@ class Server {
     for (let player in gameData.players) {
       this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player].name}});
     }
+    console.log('games:', this._games[message.id].players);
     this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
   }
 

@@ -278,7 +278,7 @@ async function joinHandle(gameData) {
   game = new Game(gm.bundle, gm.settings);
   game.setID(gmId);
   game.join();
-  console.log(game);
+  console.log('joined game', game);
 }
 
 //this func handles keydowns on elements

@@ -118,6 +118,14 @@ export default class GameField {
       }
     }
     
+    updatePlayers(palyers, points) {
+      const container = document.getElementById('players-icons');
+      container.innerHTML = '';
+      for (const name of palyers) {
+        this.addPlayer(name, points[name]);
+      }
+    }
+
     updatePoits(points) {
       const container = document.getElementById('players-icons');
       if (!container.hasChildNodes()) return 'this room is empty';
