@@ -224,7 +224,7 @@ const handleClick = evt => ({
   'startGame': [createGame],
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
-  'submitBundleEditor-btn': [bundleEditor.submitBundleEditor],
+  'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
   'go-up-btn': [scrollToStart()]
 })[evt.target.id];
 
@@ -287,15 +287,21 @@ const handleKeydown = evt => ({
 })[evt.target.id];
 
 // it runs click handler if it exists
-document.addEventListener('click', evt => {
+document.addEventListener('click', async evt => {
   if (!handleClick(evt)) return;
-  handleClick(evt).forEach(x => x());
+  for await(const clickEvent of handleClick(evt)) {
+    clickEvent()
+  }
+  // handleClick(evt).forEach(x => x());
 });
 
 // it runs keydown handler if it exists
-document.addEventListener('keydown', evt => {
+document.addEventListener('keydown', async evt => {
   if (!handleKeydown(evt)) return;
-  handleKeydown(evt).forEach(x => x(evt));
+  for await(const keyDownEvent of handleKeydown(evt)) {
+    keyDownEvent();
+  }
+  // handleKeydown(evt).forEach(x => x(evt));
 });
 
 document.addEventListener('change', (evt) => {
@@ -341,12 +347,12 @@ const loadViewSocket = () => {
   if(socket) {
     loadView();
   } else {
-    loadView();
+    loadMainView();
   }
 }
 
 //opens main page
-loadView();
-//switches pages 
-window.onhashchange = loadView();
-window.onpopstate = checkHash;
+loadViewSocket();
+//switches pages
+window.addEventListener('hashchange', loadViewSocket)
+window.addEventListener('popstate', checkHash);
