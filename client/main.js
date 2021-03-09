@@ -61,7 +61,7 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       data.bundle = bundleEditor.parseBundle(bundleObj);
-      game = new Game(data.bundle, data.settings, socket);
+      game = new Game(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
         data,
@@ -82,7 +82,7 @@ const createGame = () => {
         break;
       }
     }
-    game = new Game(data.bundle, data.settings, socket);
+    game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -120,7 +120,7 @@ const createGame = () => {
     }
     console.log(bundleData.decks);
     data.bundle = new Bundle(bundleData);
-    game = new Game(data.bundle, data.settings, socket);
+    game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -275,10 +275,11 @@ async function joinHandle(gameData) {
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
-  game = new Game(gm.bundle, gm.settings);
+  console.log('gameData', gameData);
+  game = new Game(gm.bundle, gm.settings, gm.players);
   game.setID(gmId);
   game.join();
-  console.log(game);
+  console.log('joined game', game);
 }
 
 //this func handles keydowns on elements
