@@ -147,10 +147,12 @@ class Server {
       };
     }
     const gamesSend = JSON.parse(JSON.stringify(this._games, getCircularReplacer()));
-    for (let j in gamesSend) {
-      const players = gamesSend[j].players;
-      for (let i in players) {
-        gamesSend[j].players[i].connection = null;
+    for (const gameID in gamesSend) {
+      const players = gamesSend[gameID].players;
+      gamesSend[gameID].players = [];
+      for (const playerID in players) {
+        const plName = players[playerID].name;
+        gamesSend[gameID].players.push(plName);
       }
     }
     return gamesSend;

@@ -16,5 +16,7 @@ export default class Bundle {
     this._setupRounds();
   }
 
+  removeQuestion(q) {
+  }
 
 }

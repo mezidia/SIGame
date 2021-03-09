@@ -18,7 +18,7 @@ export default class Game {
     this._socket.removeEventListener('message', this.socketHandler);
   }
 
-  constructor(bundle, settings) {
+  constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
     this.master = settings.name;
@@ -27,7 +27,7 @@ export default class Game {
     this.password = settings.password;
     this.gameMode = settings.gameMode;
     this.bundle = bundle;
-    this.players = [settings.name];
+    this.players = players ? players : [settings.name];
     this.points = {[settings.name]: 0};
     this.gameField = new GameField();
     this._setListeners();
@@ -45,6 +45,7 @@ export default class Game {
   }
 
   onTurnOrder = evt => {
+    if (this.master === new User().name) return;
     if (evt.who.includes(new User().name)) {
       document.getElementById('answer-btn').disabled = false;
     } else {
@@ -54,6 +55,7 @@ export default class Game {
   }
 
   onJoinGame = evt => {
+    console.log(this.players);
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
