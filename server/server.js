@@ -135,7 +135,7 @@ class Server {
 
   //games to send to client 
   prepareGamesForClient() {
-    const gamesSend = JSON.parse(JSON.stringify(this._games));
+    const gamesSend = Object.assign({}, this._games);
     console.log('objects ', this._games, gamesSend);
     for (let j in gamesSend) {
       const players = gamesSend[j].players;
