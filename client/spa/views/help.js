@@ -1,7 +1,7 @@
 'use strict';
 
 const view = () => {
-  return `<div class="container" style="margin-top: 50px; margin-bottom: 100px">
+  return `<div class="container" style="margin-top: 20px;">
     <h1 data-localize="help-page">Help page</h1>
     <div id="go-up-btn"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M23.245 20l-11.245-14.374-11.219 14.374-.781-.619 12-15.381 12 15.391-.755.609z"/></svg></div>
     <ul>
@@ -42,6 +42,7 @@ Curabitur vestibulum accumsan facilisis. Morbi laoreet efficitur tempus. Proin s
 
 Quisque porttitor tellus quis arcu sollicitudin rhoncus. Curabitur elit ligula, lacinia sed risus et, euismod varius erat. Sed dui purus, porta egestas accumsan vel, tincidunt nec ipsum. Vivamus augue ante, hendrerit id dolor nec, finibus imperdiet eros. Quisque ut justo erat. Morbi semper, metus eu fringilla sodales, orci massa tincidunt urna, id varius arcu erat feugiat nisi. In vel aliquet ipsum. Sed nisl nisi, euismod nec luctus sit amet, lobortis vitae orci. Nullam sed vehicula eros, tincidunt rhoncus ante. Integer non volutpat libero. Aliquam vitae tincidunt justo. Integer eget erat semper, congue turpis faucibus, accumsan massa. Morbi vestibulum viverra risus facilisis dignissim. Integer quis euismod orci, vel aliquet dui. Aenean sodales ut neque a varius. </p>
   </div>
+  <div style="height: 75px; background-color: #2f6473"></div>
   `
 };
 

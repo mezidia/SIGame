@@ -198,7 +198,10 @@ const handleClick = evt => ({
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
-  'go-up-btn': [scrollToStart()]
+  'go-up-btn': [scrollToStart()],
+  'ref_help-rules': [scrollToElem('ref_help-rules')],
+  'ref_help-questions': [scrollToElem('ref_help-questions')],
+  'ref_help-bug': [scrollToElem('ref_help-bug')],
 })[evt.target.id];
 
 //join-btn click handle
@@ -306,8 +309,10 @@ const scrollToElem = id => () => {
   document.getElementById(id.split('_')[1]).scrollIntoView();
 }
 
+// made recursive to be triggered on clicking both div and svg picture
 const scrollToStart = () => {
   window.scrollTo(0, 0)
+  return scrollToStart;
 }
 
 // won't pass user to other than main and help pages if socket is not connected
@@ -324,8 +329,20 @@ const loadViewSocket = () => {
   }
 }
 
+const checkGoUp = () => {
+  if(!document.getElementById('go-up-btn')) {
+    return
+  }
+  if(window.scrollY >= 20) {
+    document.getElementById('go-up-btn').style.display = 'flex';
+  } else {
+    document.getElementById('go-up-btn').style.display = 'none';
+  }
+}
+
 //opens main page
 loadViewSocket();
 //switches pages
 window.addEventListener('hashchange', loadViewSocket)
 window.addEventListener('popstate', checkHash);
+window.addEventListener('scroll', checkGoUp)
