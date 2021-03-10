@@ -124,11 +124,12 @@
     bottom: 50px;
     left: calc(50% - 25px);
     background-color: white;
-    display: flex;
+    display: none;
     border-radius: 25px;
+    border: 1px solid black;
 }
 
 #go-up-btn svg {
-    margin: 13px 13px 13px 13px;
+    margin: auto;
     background-color: white;
 }

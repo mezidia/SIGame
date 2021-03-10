@@ -225,7 +225,10 @@ const handleClick = evt => ({
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
   'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
-  'go-up-btn': [scrollToStart()]
+  'go-up-btn': [scrollToStart()],
+  'ref_help-rules': [scrollToElem('ref_help-rules')],
+  'ref_help-questions': [scrollToElem('ref_help-questions')],
+  'ref_help-bug': [scrollToElem('ref_help-bug')],
 })[evt.target.id];
 
 //join-btn click handle
@@ -352,8 +355,20 @@ const loadViewSocket = () => {
   }
 }
 
+const checkGoUp = () => {
+  if(!document.getElementById('go-up-btn')) {
+    return
+  }
+  if(window.scrollY >= 20) {
+    document.getElementById('go-up-btn').style.display = 'flex';
+  } else {
+    document.getElementById('go-up-btn').style.display = 'none';
+  }
+}
+
 //opens main page
 loadViewSocket();
 //switches pages
 window.addEventListener('hashchange', loadViewSocket)
 window.addEventListener('popstate', checkHash);
+window.addEventListener('scroll', checkGoUp)
