@@ -35,6 +35,7 @@ export default class Game {
     this.rounds = this.bundle.getRoundsArr();
     this.currentQuestion = undefined;
     this.currentRound = 0;
+    this.answerCounter = 0;
     this.turnTimerID = undefined;
     console.log('new Game', this);
   }
@@ -94,7 +95,8 @@ export default class Game {
         console.log(decks[dIndex].questions[qIndex]);
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
           console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
-          decks[dIndex].questions.splice(qIndex, 1);
+          //decks[dIndex].questions.splice(qIndex, 1);
+          decks[dIndex].questions[qIndex] = null;
           break;
         }
       }
@@ -284,8 +286,12 @@ export default class Game {
     this.gameField.switchGameMode(true);
   }
 
-  setupQuestiones() {
-
+  checkAnswerCounter() {
+    this.answerCounter++;
+    if (this.answerCounter < 15) {
+      this.answerCounter = 0;
+      this.currentRound++;
+    }
   }
 
   updatePoints() {
