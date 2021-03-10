@@ -16,9 +16,11 @@ export default class GameField {
       const res = [];
       for(let i = 1; i <= deck.length; ++i) {
         for(let j = 1; j <= deck[i - 1].questions.length; ++j) {
-          let questionCost = deck[i - 1].questions[j - 1].cost;
-          if (!questionCost) questionCost = '';
-          res.push(`<div class="centred-text q-cell" id="cell-${i}-${j}">${questionCost}</div>`)
+          if (deck[i-1].questions[j-1]) {
+            let questionCost = deck[i - 1].questions[j - 1].cost;
+            if (!questionCost) questionCost = '';
+            res.push(`<div class="centred-text q-cell" id="cell-${i}-${j}" style="grid-column: ${j} / ${j + 1}; grid-row: ${i} / ${i + 1}">${questionCost}</div>`)
+          }
         }
       }
       return res.join('\n');
