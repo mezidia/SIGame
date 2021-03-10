@@ -14,8 +14,8 @@ export default class GameField {
     const drawCells = (deck) => {
       console.log(deck[0]);
       const res = [];
-      for(let i = 1; i <= 5; ++i) {
-        for(let j = 1; j <= 5; ++j) {
+      for(let i = 1; i <= deck.length; ++i) {
+        for(let j = 1; j <= deck[i - 1].questions.length; ++j) {
           let questionCost = deck[i - 1].questions[j - 1].cost;
           if (!questionCost) questionCost = '';
           res.push(`<div class="centred-text q-cell" id="cell-${i}-${j}">${questionCost}</div>`)
