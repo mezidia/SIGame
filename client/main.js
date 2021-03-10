@@ -1,21 +1,19 @@
 'use strict';
 
 import Game from './gameLogic/game_class.js';
-import Bundle from './gameLogic/bundle_class.js';
+import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import { loadView, changeHash, checkView, loadMainView, getHash } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
-import { getRandomIntInclusive, promisifySocketMSG } from './utils.js';
+import { promisifySocketMSG } from './utils.js';
+
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
-import User from './gameLogic/user_class.js';
 
+//singleton
 const bundleEditor = new BundleEditor();
 
-//messages from server
-//client.send(JSON.stringify({mType: 'usersOnline', data: n}));
-//{mType: 'newChatId', data: {id: id}}
-
+//storage
 let socket = undefined;
 let allBundles = undefined;
 let roomId = undefined;
@@ -94,32 +92,7 @@ const createGame = () => {
       game.setID(msg.data.id);
     });
   } else {
-    const bundleData = {
-      author: 'autogen',
-      langcode: language.json.code,
-      title: 'autogen',
-      decks: [],
-    };
-    // get 15 regular decks
-    for (let c = 0; c < 15; c++) {
-      let bundle = undefined;  
-      do {
-        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.langcode);
-      const deck = bundle.decks[getRandomIntInclusive(0, 14)];
-      bundleData.decks.push(deck);
-    }
-    // get 7 final decks
-    for (let c = 0; c < 7; c++) {
-      let bundle = undefined;  
-      do {
-        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.langcode);
-      const deck = bundle.decks[getRandomIntInclusive(15, 21)];
-      bundleData.decks.push(deck);
-    }
-    console.log(bundleData.decks);
-    data.bundle = new Bundle(bundleData);
+    data.bundle = bundleEditor.getRandomBundleFrom(allBundles, language.json.code);
     game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
@@ -142,10 +115,10 @@ const createGameLobby = () => {
   };
   promisifySocketMSG(msg, 'allBundles', socket).then(msg => {
     allBundles = msg.data;
-    console.log(allBundles);
-    for (const bundleObj of allBundles) {
-      console.log(bundleEditor.parseBundle(bundleObj));
+    for (const i in allBundles) {
+      allBundles[i] = bundleEditor.parseBundle(allBundles[i]);
     }
+    console.log(allBundles);
     changeHash('createGame')();
   });
 }
@@ -300,7 +273,7 @@ document.addEventListener('click', async evt => {
 document.addEventListener('keydown', async evt => {
   if (!handleKeydown(evt)) return;
   for await(const keyDownEvent of handleKeydown(evt)) {
-    keyDownEvent();
+    keyDownEvent(evt);
   }
   // handleKeydown(evt).forEach(x => x(evt));
 });
@@ -322,7 +295,6 @@ document.addEventListener('change', (evt) => {
 
 function checkHash() {
   const name = checkView();
-  console.log(name);
   if (name === 'lobbySearch' || name === 'createGame') {
     changeHash('chooseMode')();
     socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
