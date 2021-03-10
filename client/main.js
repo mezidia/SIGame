@@ -66,9 +66,9 @@ const createGame = () => {
         'mType': 'newGameLobby',
         data,
       };
-      promisifySocketMSG(msg, 'newLobbyId', socket).then((msg) => {
+      promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
         roomId = msg.data.id;
-        changeHash(`simpleLobby/roomID=${roomId}`)();
+        await changeHash(`simpleLobby/roomID=${roomId}`)();
         game.init();
         game.setID(msg.data.id);
       });
@@ -87,16 +87,16 @@ const createGame = () => {
       'mType': 'newGameLobby',
       data,
     };
-    promisifySocketMSG(msg, 'newLobbyId', socket).then((msg) => {
+    promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
       roomId = msg.data.id;
-      changeHash(`simpleLobby/roomID=${roomId}`)();
+      await changeHash(`simpleLobby/roomID=${roomId}`)();
       game.init();
       game.setID(msg.data.id);
     });
   } else {
     const bundleData = {
       author: 'autogen',
-      language: language.json.code,
+      langcode: language.json.code,
       title: 'autogen',
       decks: [],
     };
@@ -105,7 +105,7 @@ const createGame = () => {
       let bundle = undefined;  
       do {
         bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.language);
+      } while (bundle.langcode !== bundleData.langcode);
       const deck = bundle.decks[getRandomIntInclusive(0, 14)];
       bundleData.decks.push(deck);
     }
@@ -114,7 +114,7 @@ const createGame = () => {
       let bundle = undefined;  
       do {
         bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.language);
+      } while (bundle.langcode !== bundleData.langcode);
       const deck = bundle.decks[getRandomIntInclusive(15, 21)];
       bundleData.decks.push(deck);
     }
