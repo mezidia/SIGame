@@ -14,7 +14,7 @@ function getQData(r, c, q) {
   const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(string)) throw new Error(`failed reg test on string ${r}-${c}-${q}`);
   if (!reg.test(trueAns)) throw new Error(`failed reg test on trueAns ${r}-${c}-${q}`);
-  if (falseAns.length > 0) if(!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
+  if (falseAns.length > 0) if (!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
   if (!reg.test(type)) throw new Error(`failed reg test on type ${r}-${c}-${q}`);
   return {string, trueAns, falseAns, type};
 }
