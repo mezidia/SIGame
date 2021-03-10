@@ -3,6 +3,7 @@
 import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
 import { changeHash } from "../spa/spaControl.js";
+import Bundle from "./bundle_class.js";
 
 
 
@@ -18,7 +19,7 @@ export default class Game {
     this._socket.removeEventListener('message', this.socketHandler);
   }
 
-  constructor(bundle, settings) {
+  constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
     this.master = settings.name;
@@ -26,13 +27,15 @@ export default class Game {
     this.maxPpl = settings.ppl;
     this.password = settings.password;
     this.gameMode = settings.gameMode;
-    this.bundle = bundle;
-    this.players = [settings.name];
+    this.bundle = new Bundle(bundle);
+    this.players = players ? players : [settings.name];
     this.points = {[settings.name]: 0};
     this.gameField = new GameField();
     this._setListeners();
+    this.rounds = this.bundle.getRoundsArr();
     this.currentQuestion = undefined;
-    this.currentTurn = undefined;
+    this.currentRound = 0;
+    this.answerCounter = 0;
     this.turnTimerID = undefined;
     console.log('new Game', this);
   }
@@ -42,9 +45,16 @@ export default class Game {
     this.players.splice(index, 1);
     this.gameField.removePlayer(evt.name);
     delete this.points[evt.name];
+    if (evt.name === this.master) {
+      this.master = this.players[0];
+    }
+    if (this.master === new User().name) {
+      this.gameField.switchGameMode(true);
+    }
   }
 
   onTurnOrder = evt => {
+    if (this.master === new User().name) return console.log('i am game master' + this.master);
     if (evt.who.includes(new User().name)) {
       document.getElementById('answer-btn').disabled = false;
     } else {
@@ -54,6 +64,7 @@ export default class Game {
   }
 
   onJoinGame = evt => {
+    console.log(this.players);
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
@@ -75,6 +86,26 @@ export default class Game {
     this.currentQuestion = evt.question;
   }
 
+  onNextTurn = evt => {
+    const decks = this.rounds[this.currentRound];
+    console.log(this.currentQuestion.string);
+    for (const dIndex in decks) {
+      for (const qIndex in decks[dIndex].questions) {
+        console.log(dIndex, qIndex);
+        console.log(decks[dIndex].questions[qIndex]);
+        if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
+          console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
+          //decks[dIndex].questions.splice(qIndex, 1);
+          decks[dIndex].questions[qIndex] = null;
+          break;
+        }
+      }
+    }
+    console.log(this.rounds[this.currentRound]);
+    console.log(decks);
+    this.gameField.drawTable(this.rounds[this.currentRound]);
+  }
+
   onAnswerCheck = evt => {
     if (this.master !== new User().name) return;
     console.log(this.currentQuestion);
@@ -91,6 +122,7 @@ export default class Game {
     'setGM': this.onSetGM,
     'showQuestion': this.onShowQuestion,
     'answerCheck': this.onAnswerCheck,
+    'nextTurn': this.onNextTurn,
   };
 
   socketHandler = (msg) => {
@@ -108,13 +140,26 @@ export default class Game {
       eType: 'leave',
       name: new User().name,
     };
+    if (this.master === new User().name) {
+      const index = this.players.indexOf(this.master);
+      this.players.splice(index, 1);
+      const msg = {
+        mType: 'newGameMaster',
+        data: {
+          roomID: this._id,
+          newGM: this.players[0],
+        }
+      };
+      this._socket.send(JSON.stringify(msg));
+    }
     this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
     changeHash('chooseMode')();
+    delete this;
   }
 
   join() {
-    this.gameField.drawTable(this.bundle.round_1);
+    this.gameField.drawTable(this.rounds[this.currentRound]);
     for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
       eType: 'join',
@@ -194,7 +239,14 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
-    //this.gameField.drawTable(this.bundle.round_1); TODO
+    this.nextTurn();
+  }
+
+  nextTurn() {
+    const event = {
+      eType: 'nextTurn',
+    };
+    this.broadcast(event);
   }
 
   uncorrect = evt => {
@@ -207,7 +259,7 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
-    //this.gameField.drawTable(this.bundle.round_1); TODO
+    this.nextTurn();
   }
 
   clickConfig = {
@@ -229,13 +281,17 @@ export default class Game {
   }
 
   init() {
-    this.gameField.drawTable(this.bundle.round_1);
+    this.gameField.drawTable(this.rounds[this.currentRound]);
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
   }
 
-  setupQuestiones() {
-
+  checkAnswerCounter() {
+    this.answerCounter++;
+    if (this.answerCounter < 15) {
+      this.answerCounter = 0;
+      this.currentRound++;
+    }
   }
 
   updatePoints() {
@@ -254,7 +310,7 @@ export default class Game {
   }
 
   addPlayer(name) {
-    this.players.name = name;
+    this.players.push(name);
   }
 
   kikcPlayer() {
@@ -263,10 +319,6 @@ export default class Game {
 
   pause() {
    
-  }
-
-  gameLoop() {
-
   }
 
   setMaster(master) {

@@ -6,6 +6,7 @@ export default class Deck {
       if (!q.cost) q.cost = ++i * 100;
     });
   }
+
   constructor(data) {
     this.subject = data.subject;
     this.questions = data.questions;

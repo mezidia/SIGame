@@ -16,5 +16,16 @@ export default class Bundle {
     this._setupRounds();
   }
 
+  getRoundsArr() {
+    return [this.round_1, this.round_2, this.round_3, this.final];
+  }
+
+  getRegularDecks() {
+    return [].concat(this.round_1, this.round_2, this.round_3);
+  }
+
+  getFinalDecks() {
+    return this.final;
+  }
 
 }

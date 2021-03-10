@@ -1,21 +1,19 @@
 'use strict';
 
 import Game from './gameLogic/game_class.js';
-import Bundle from './gameLogic/bundle_class.js';
+import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import { loadView, changeHash, checkView, loadMainView, getHash } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
-import { getRandomIntInclusive, promisifySocketMSG } from './utils.js';
+import { promisifySocketMSG } from './utils.js';
+
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
-import User from './gameLogic/user_class.js';
 
+//singleton
 const bundleEditor = new BundleEditor();
 
-//messages from server
-//client.send(JSON.stringify({mType: 'usersOnline', data: n}));
-//{mType: 'newChatId', data: {id: id}}
-
+//storage
 let socket = undefined;
 let allBundles = undefined;
 let roomId = undefined;
@@ -61,14 +59,14 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       data.bundle = bundleEditor.parseBundle(bundleObj);
-      game = new Game(data.bundle, data.settings, socket);
+      game = new Game(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
         data,
       };
-      promisifySocketMSG(msg, 'newLobbyId', socket).then((msg) => {
+      promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
         roomId = msg.data.id;
-        changeHash(`simpleLobby/roomID=${roomId}`)();
+        await changeHash(`simpleLobby/roomID=${roomId}`)();
         game.init();
         game.setID(msg.data.id);
       });
@@ -82,45 +80,20 @@ const createGame = () => {
         break;
       }
     }
-    game = new Game(data.bundle, data.settings, socket);
+    game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
     };
-    promisifySocketMSG(msg, 'newLobbyId', socket).then((msg) => {
+    promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
       roomId = msg.data.id;
-      changeHash(`simpleLobby/roomID=${roomId}`)();
+      await changeHash(`simpleLobby/roomID=${roomId}`)();
       game.init();
       game.setID(msg.data.id);
     });
   } else {
-    const bundleData = {
-      author: 'autogen',
-      language: language.json.code,
-      title: 'autogen',
-      decks: [],
-    };
-    // get 15 regular decks
-    for (let c = 0; c < 15; c++) {
-      let bundle = undefined;  
-      do {
-        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.language);
-      const deck = bundle.decks[getRandomIntInclusive(0, 14)];
-      bundleData.decks.push(deck);
-    }
-    // get 7 final decks
-    for (let c = 0; c < 7; c++) {
-      let bundle = undefined;  
-      do {
-        bundle = allBundles[getRandomIntInclusive(0, allBundles.length - 1)];
-      } while (bundle.langcode !== bundleData.language);
-      const deck = bundle.decks[getRandomIntInclusive(15, 21)];
-      bundleData.decks.push(deck);
-    }
-    console.log(bundleData.decks);
-    data.bundle = new Bundle(bundleData);
-    game = new Game(data.bundle, data.settings, socket);
+    data.bundle = bundleEditor.getRandomBundleFrom(allBundles, language.json.code);
+    game = new Game(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -142,10 +115,10 @@ const createGameLobby = () => {
   };
   promisifySocketMSG(msg, 'allBundles', socket).then(msg => {
     allBundles = msg.data;
-    console.log(allBundles);
-    for (const bundleObj of allBundles) {
-      console.log(bundleEditor.parseBundle(bundleObj));
+    for (const i in allBundles) {
+      allBundles[i] = bundleEditor.parseBundle(allBundles[i]);
     }
+    console.log(allBundles);
     changeHash('createGame')();
   });
 }
@@ -224,8 +197,11 @@ const handleClick = evt => ({
   'startGame': [createGame],
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
-  'submitBundleEditor-btn': [bundleEditor.submitBundleEditor],
-  'go-up-btn': [scrollToStart()]
+  'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
+  'go-up-btn': [scrollToStart()],
+  'ref_help-rules': [scrollToElem('ref_help-rules')],
+  'ref_help-questions': [scrollToElem('ref_help-questions')],
+  'ref_help-bug': [scrollToElem('ref_help-bug')],
 })[evt.target.id];
 
 //join-btn click handle
@@ -275,7 +251,8 @@ async function joinHandle(gameData) {
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
-  game = new Game(gm.bundle, gm.settings);
+  console.log('gameData', gameData);
+  game = new Game(gm.bundle, gm.settings, gm.players);
   game.setID(gmId);
   game.join();
   console.log('joined game', game);
@@ -287,15 +264,21 @@ const handleKeydown = evt => ({
 })[evt.target.id];
 
 // it runs click handler if it exists
-document.addEventListener('click', evt => {
+document.addEventListener('click', async evt => {
   if (!handleClick(evt)) return;
-  handleClick(evt).forEach(x => x());
+  for await(const clickEvent of handleClick(evt)) {
+    clickEvent()
+  }
+  // handleClick(evt).forEach(x => x());
 });
 
 // it runs keydown handler if it exists
-document.addEventListener('keydown', evt => {
+document.addEventListener('keydown', async evt => {
   if (!handleKeydown(evt)) return;
-  handleKeydown(evt).forEach(x => x(evt));
+  for await(const keyDownEvent of handleKeydown(evt)) {
+    keyDownEvent(evt);
+  }
+  // handleKeydown(evt).forEach(x => x(evt));
 });
 
 document.addEventListener('change', (evt) => {
@@ -315,7 +298,6 @@ document.addEventListener('change', (evt) => {
 
 function checkHash() {
   const name = checkView();
-  console.log(name);
   if (name === 'lobbySearch' || name === 'createGame') {
     changeHash('chooseMode')();
     socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
@@ -327,8 +309,10 @@ const scrollToElem = id => () => {
   document.getElementById(id.split('_')[1]).scrollIntoView();
 }
 
+// made recursive to be triggered on clicking both div and svg picture
 const scrollToStart = () => {
   window.scrollTo(0, 0)
+  return scrollToStart;
 }
 
 // won't pass user to other than main and help pages if socket is not connected
@@ -341,12 +325,24 @@ const loadViewSocket = () => {
   if(socket) {
     loadView();
   } else {
-    loadView();
+    loadMainView();
+  }
+}
+
+const checkGoUp = () => {
+  if(!document.getElementById('go-up-btn')) {
+    return
+  }
+  if(window.scrollY >= 20) {
+    document.getElementById('go-up-btn').style.display = 'flex';
+  } else {
+    document.getElementById('go-up-btn').style.display = 'none';
   }
 }
 
 //opens main page
-loadView();
-//switches pages 
-window.onhashchange = loadView();
-window.onpopstate = checkHash;
+loadViewSocket();
+//switches pages
+window.addEventListener('hashchange', loadViewSocket)
+window.addEventListener('popstate', checkHash);
+window.addEventListener('scroll', checkGoUp)
