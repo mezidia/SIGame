@@ -106,37 +106,37 @@ export default class GameField {
     document.getElementById('players-icons').append(playerIcon);
   }
 
-    // remove the player from players bar
-    removePlayer(name) {
-      const container = document.getElementById('players-icons');
-      if (!container.hasChildNodes()) return 'this room is empty';
-      const childs = container.childNodes;
-      const playerID = name + '-icon';
-      for (const child of childs) {
-        if (child.id === playerID) {
-          child.remove();
-          break;
-        }
+  // remove the player from players bar
+  removePlayer(name) {
+    const container = document.getElementById('players-icons');
+    if (!container.hasChildNodes()) return 'this room is empty';
+    const childs = container.childNodes;
+    const playerID = name + '-icon';
+    for (const child of childs) {
+      if (child.id === playerID) {
+        child.remove();
+        break;
       }
     }
+  }
     
-    updatePlayers(palyers, points) {
-      const container = document.getElementById('players-icons');
-      container.innerHTML = '';
-      for (const name of palyers) {
-        this.addPlayer(name, points[name]);
-      }
+  updatePlayers(palyers, points) {
+    const container = document.getElementById('players-icons');
+    container.innerHTML = '';
+    for (const name of palyers) {
+      this.addPlayer(name, points[name]);
     }
+  }
 
-    updatePoits(points) {
-      const container = document.getElementById('players-icons');
-      if (!container.hasChildNodes()) return 'this room is empty';
-      const childs = container.childNodes;
-      for (const child of childs) {
-        const name = child.id.split('-')[0];
-        child.innerHTML = `<p>${name}</p>
-        <p id="${name}-score">${points[name]}</p>`;
-      }
+  updatePoits(points) {
+    const container = document.getElementById('players-icons');
+    if (!container.hasChildNodes()) return 'this room is empty';
+    const childs = container.childNodes;
+    for (const child of childs) {
+      const name = child.id.split('-')[0];
+      child.innerHTML = `<p>${name}</p>
+      <p id="${name}-score">${points[name]}</p>`;
     }
+  }
 
 }
