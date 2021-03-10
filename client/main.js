@@ -337,8 +337,10 @@ const scrollToElem = id => () => {
   document.getElementById(id.split('_')[1]).scrollIntoView();
 }
 
+// made recursive to be triggered on clicking both div and svg picture
 const scrollToStart = () => {
   window.scrollTo(0, 0)
+  return scrollToStart;
 }
 
 // won't pass user to other than main and help pages if socket is not connected
