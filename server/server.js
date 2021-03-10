@@ -127,7 +127,8 @@ class Server {
     const data = message.data;
     const id = message.id;
     data.name = this._users[id].name;
-    for (let userId of this._games[data.room].players) {
+    for (let userId in this._games[data.room].players) {
+      console.log(userId, this._games[data.room].players);
       this.sendToUser(userId, {mType: 'messageToGameChat', data: data });
     }
   }
@@ -210,12 +211,15 @@ class Server {
     const message = data.data;
     this._games[message.id].players[id] = this._users[id];
     const gamesSend = this.prepareGamesForClient();
+    console.log('games send: ', gamesSend);
     this.sendToAll({mType: 'returnAllGames', data: gamesSend});
     const gameData = this._games[message.id];
     for (let player in gameData.players) {
+      console.log(player);
       this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player].name}});
     }
-    console.log('games:', this._games[message.id].players);
+    console.log('games1:', gameData.players);
+    console.log('users:', this._users);
     this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
   }
 
