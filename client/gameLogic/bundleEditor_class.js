@@ -4,7 +4,7 @@ import Bundle from "./bundle_class.js";
 import Deck from "./deck_class.js";
 import Question from "./question_class.js";
 import User from "./user_class.js";
-
+import { getRandomIntInclusive } from '../utils.js';
 
 function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;
@@ -101,6 +101,45 @@ export default class BundleEditor {
     return new Bundle(bundleData);
   }
 
+  getRandomBundleFrom(allBundles, langcode) {
+    const bundleData = {
+      author: 'autogen',
+      langcode: langcode,
+      title: 'autogen',
+      decks: [],
+    };
+    const bundlesByLang = this.getBundlesByLangcode(allBundles, langcode);
+    // get 15 regular decks
+    const usedDecksSubjects = [];
+    for (let c = 0; c < 15; c++) {
+      const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
+      const allRegularDecks = bundle.getRegularDecks();
+      const allRegularUnusedDecks = allRegularDecks.filter(deck => !usedDecksSubjects.includes(deck.subject));
+      const deck = allRegularUnusedDecks[getRandomIntInclusive(0, allRegularUnusedDecks.length - 1)];
+      if (!deck) throw Error('not enough unique decks');
+
+       //usedDecksSubjects.push(deck.subject); !!! remove on production !!!
+
+      bundleData.decks.push(deck);
+    }
+    // get 7 final decks
+    usedDecksSubjects.length = 0;
+    console.log(usedDecksSubjects);
+    for (let c = 0; c < 7; c++) {
+      const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
+      const finalDecks = bundle.getFinalDecks();
+      const uniqueFinalDecks = finalDecks.filter(deck => !usedDecksSubjects.includes(deck.subject));
+      const deck = uniqueFinalDecks[getRandomIntInclusive(0, uniqueFinalDecks.length - 1)];
+      if (!deck) throw Error('not enough unique decks');
+
+      //usedDecksSubjects.push(deck.subject); !!! remove on production !!!
+
+      bundleData.decks.push(deck);
+    }
+    console.log(bundleData.decks);
+    return new Bundle(bundleData);
+  }
+
   submitBundleEditor() {
     const iSBundleToSave = document.getElementById('saveBundle-checkBox').checked;
     const mainBundleFields = getMainFields();
@@ -158,5 +197,8 @@ export default class BundleEditor {
     return true;
   }
 
+  getBundlesByLangcode(bundles, code) {
+    return bundles.filter(b => b.langcode === code);
+  }
   
 }

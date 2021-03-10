@@ -20,10 +20,12 @@ export default class Bundle {
     return [this.round_1, this.round_2, this.round_3, this.final];
   }
 
-  removeQuestion(string, roundNubmer) {
-    const round = this.getRoundsArr()[roundNubmer];
-    const index = round.indexOf(q => q.string === string);
-    console.log(index);
-    this.players.splice(index, 1);
+  getRegularDecks() {
+    return [].concat(this.round_1, this.round_2, this.round_3);
   }
+
+  getFinalDecks() {
+    return this.final;
+  }
+
 }
