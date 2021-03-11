@@ -87,12 +87,14 @@ export default class Game {
   }
 
   onNextTurn = evt => {
+    this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
     console.log(this.currentQuestion.string);
     for (const dIndex in decks) {
       for (const qIndex in decks[dIndex].questions) {
         console.log(dIndex, qIndex);
         console.log(decks[dIndex].questions[qIndex]);
+        if (!decks[dIndex].questions[qIndex]) continue;
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
           console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
           //decks[dIndex].questions.splice(qIndex, 1);
