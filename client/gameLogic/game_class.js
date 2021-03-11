@@ -6,7 +6,7 @@ import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
 
 
-
+const ANSWERTIME = 5000;
 
 export default class Game {
   _setListeners() {
@@ -22,14 +22,14 @@ export default class Game {
   constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
-    this.master = settings.name;
+    this.master = settings.master;
     this.roomName = settings.roomName;
     this.maxPpl = settings.ppl;
     this.password = settings.password;
     this.gameMode = settings.gameMode;
     this.bundle = new Bundle(bundle);
-    this.players = players ? players : [settings.name];
-    this.points = {[settings.name]: 0};
+    this.players = players ? players : [settings.master];
+    this.points = {[settings.master]: 0};
     this.gameField = new GameField();
     this._setListeners();
     this.rounds = this.bundle.getRoundsArr();
@@ -87,12 +87,14 @@ export default class Game {
   }
 
   onNextTurn = evt => {
+    this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
     console.log(this.currentQuestion.string);
     for (const dIndex in decks) {
       for (const qIndex in decks[dIndex].questions) {
         console.log(dIndex, qIndex);
         console.log(decks[dIndex].questions[qIndex]);
+        if (!decks[dIndex].questions[qIndex]) continue;
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
           console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
           //decks[dIndex].questions.splice(qIndex, 1);
@@ -102,7 +104,7 @@ export default class Game {
       }
     }
     console.log(this.rounds[this.currentRound]);
-    console.log(decks);
+    this.checkAnswerCounter();
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
 
@@ -152,6 +154,7 @@ export default class Game {
       };
       this._socket.send(JSON.stringify(msg));
     }
+    console.log('leave game-id ' + this._id);
     this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
     changeHash('chooseMode')();
@@ -225,7 +228,7 @@ export default class Game {
       };
       this.broadcast(event);
       this.updatePoints();
-    }, 5000);
+    }, ANSWERTIME);
 
   }
 
@@ -288,7 +291,7 @@ export default class Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.answerCounter < 15) {
+    if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;
     }

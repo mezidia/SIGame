@@ -48,7 +48,7 @@ const createGame = () => {
     password,
     gameMode,
     totalPlayers,
-    name: new User().name,
+    master: new User().name,
   };
   console.log(questionBundle.value);
   if (questionBundle.value === 'download') {
@@ -129,9 +129,10 @@ const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
   changeHash('chooseMode')();
-  socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
+  socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
     new User(name, socket);
+    socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
       //disconnect();
@@ -228,6 +229,7 @@ const updateGames = data => {
       document.getElementById('join-player').removeEventListener('click', joinGame);
       document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = gm.settings.roomName;
+      document.getElementById('search-gm').innerHTML = gm.settings.master;
       document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
       document.getElementById('join-player').addEventListener('click', joinGame);
@@ -244,14 +246,13 @@ const updateGames = data => {
 async function joinHandle(gameData) {
   const gm = gameData.game;
   const gmId = gameData.id;
-  console.log(gameData);
+  console.log('game data ', gameData);
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = gm.settings.password;
   if (passwordInput !== passwordGame) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
-  console.log('gameData', gameData);
   game = new Game(gm.bundle, gm.settings, gm.players);
   game.setID(gmId);
   game.join();
@@ -300,7 +301,7 @@ function checkHash() {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame') {
     changeHash('chooseMode')();
-    socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
+    if (roomId) socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
     roomId = undefined;
   }
 }
