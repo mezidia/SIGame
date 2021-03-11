@@ -48,7 +48,7 @@ const view = () => {
       <div class="form-check disabled">
         <label class="form-check-label">
           <input id="saveBundle-checkBox" class="form-check-input" type="checkbox" value="">
-          <h4>Save your bundle to the DJU database</h4>
+          <h4 data-localize="save-to-db">Save your bundle to the database</h4>
         </label>
       </div>
       <br>

@@ -18,10 +18,10 @@ const view = () => {
       <div id="chat-input" style="background-color: #8c8c8c;">
         <input type="text" style="width: 100%; height: 50px;" id="message-input">
         <div class="game-button-placeholder">
-          <button class="btn btn-primary game-button" id="change-sums-btn" style="display: none;">Change sums</button>
-          <button class="btn btn-primary game-button" id="report-btn" style="grid-column: 1 / 3; grid-row: 1 / 2">Report</button>
-          <button class="btn btn-primary game-button" id="pause-btn">Pause</button>
-          <button class="btn btn-primary game-button" id="exit-btn">Exit</button>
+          <button class="btn btn-primary game-button" id="change-sums-btn" style="display: none;" data-localize="change-sums">Change sums</button>
+          <button class="btn btn-primary game-button" id="report-btn" style="grid-column: 1 / 3; grid-row: 1 / 2" data-localize="report">Report</button>
+          <button class="btn btn-primary game-button" id="pause-btn" data-localize="pause">Pause</button>
+          <button class="btn btn-primary game-button" id="exit-btn" data-localize="exit">Exit</button>
         </div>
       </div>
     </div>
