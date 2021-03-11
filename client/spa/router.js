@@ -1,10 +1,12 @@
+'use strict';
+
 export default class Router {
 
   getHash() {
     return window.location.hash.split('#')[1];
   }
 
-  changeURL(url) {
+  change(url) {
     globalThis.history.pushState({}, null, `#${url}`);
   }
 
@@ -18,8 +20,12 @@ export default class Router {
 
   getView(midURL) {
     return (endURL = '') => ({
+      redactor: {viewName: 'redactor'},
+      simpleLobby: {viewName: 'simpleLobby'},
       help: {viewName: 'help'},
-      createGame: {viewName: 'createGame'}
+      createGame: {viewName: 'createGame'},
+      chooseMode: {viewName: 'chooseMode'},
+      lobbySearch: {viewName: 'lobbySearch'}
     })[midURL] || {viewName: 'mainPage'};
   }
 

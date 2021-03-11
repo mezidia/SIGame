@@ -3,6 +3,8 @@ const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
+//const bundleua = require('../exampleBundle_ua.json');
+//const bundlede = require('../exampleBundle_de.json');
 
 const fileManager = new FileManager();
 const idGenerator = new IDGenerator();
@@ -24,9 +26,24 @@ const mime = {
 
 //class server singleton
 class Server {
+  //saves {room: [id1, id2, .....]}
+  _games = {};
   _users = {};
 
-  constructor(port) {
+  constructor(port, database) {
+    this.database = database;
+    this._messageConfig = {
+      'getAllBundles': data => this.getAllBundles(data),
+      'messageToGameChat': data => this.messageToGameChat(data),
+      'newGameLobby': data => this.createNewGame(data),
+      'returnAllGames': data => this.returnAllGames(data),
+      'joinGame': data => this.joinGame(data),
+      'insertBundle': data => this.insertBundle(data),
+      'broadcastInRoom': data => this.broadcastInRoom(data),
+      'saveBundleToDB': data => this.saveBundleToDB(data),
+      'leaveGame': data => this.leaveGame(data),
+    };
+
     if (!Server._instance) {
       Server._instance = this;
 
@@ -65,8 +82,7 @@ class Server {
     this.ws.clients.forEach(() => n++);
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
-    this._users[id] = [connection, req.url.slice(11)];
-    console.log(this._users);
+    this._users[id] = {connection: connection, name: req.url.slice(11)};
   }
 
   //send message to everyone
@@ -80,15 +96,143 @@ class Server {
 
   //send to specific user 
   sendToUser(id, message) {
-    const user = this._users[id][0];
+    const user = this._users[id].connection;
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify(message));
     }
   }
 
-  //executes on new message from client
-  connectionMessage(connection, message) {
-    console.log('new message');
+  //executes specific function on new message from client
+  async connectionMessage(connection, message) {
+    const request = JSON.parse(message);
+    const messageHandler = this._messageConfig[request.mType];
+    console.log(request);
+    if (!messageHandler) return;
+    await messageHandler({ 
+      'id': this.getIdByConnection(connection),
+      'data': request.data,
+    });
+    //this.database.insertBundle(bundleua);
+    //this.database.insertBundle(bundlede);
+  }
+
+  //gets all bundles from database
+  async getAllBundles(message) {
+    const bundles = await this.database.getAllBundles();
+    this.sendToUser(message.id, {mType: 'allBundles', data: bundles});
+  }
+
+  //sends message to everyone in game chat
+  messageToGameChat(message) {
+    const data = message.data;
+    const id = message.id;
+    data.name = this._users[id].name;
+    for (let userId in this._games[data.room].players) {
+      console.log(userId, this._games[data.room].players);
+      this.sendToUser(userId, {mType: 'messageToGameChat', data: data });
+    }
+  }
+
+  //games to send to client 
+  prepareGamesForClient() {
+    const getCircularReplacer = () => {
+      const seen = new WeakSet();
+      return (k, val) => {
+        if (typeof val === 'object' && val !== null) {
+          if (seen.has(val)) {
+            return;
+          }
+          seen.add(val);
+        }
+        return val;
+      };
+    }
+    const gamesSend = JSON.parse(JSON.stringify(this._games, getCircularReplacer()));
+    for (const gameID in gamesSend) {
+      const players = gamesSend[gameID].players;
+      gamesSend[gameID].players = [];
+      for (const playerID in players) {
+        const plName = players[playerID].name;
+        gamesSend[gameID].players.push(plName);
+      }
+    }
+    return gamesSend;
+  }
+
+  //creates new game and puts it to games
+  createNewGame(data) {
+    const message = data.data;
+    const id = idGenerator.getID();
+    this._games[id] = {
+      players: {},
+    };
+    this._games[id].players[data.id] = this._users[data.id];
+    this._games[id].bundle = message.bundle;
+    this._games[id].settings = message.settings;
+    this.sendToUser(data.id, {mType: 'newLobbyId', data: {id: id}});
+    for (let id of Object.keys(this._users)) {
+      this.returnAllGames({id: id});
+    }
+  }
+
+  //returns all games
+  returnAllGames(data) {
+    const id = data.id;
+    const gamesSend = this.prepareGamesForClient();
+    this.sendToUser(id, {mType: 'returnAllGames', data: gamesSend});
+  }
+
+  //on user leaves game
+  leaveGame(data) {
+    const id = data.id;
+    const roomID = data.data.roomID;
+    const players = this._games[roomID].players;
+    delete players[id];
+    //remove comments on production
+    //if (this._games[roomID].players.length === 0) {
+    //  delete this._games[roomID];
+    //  idGenerator.removeID(roomID);
+    //}
+    this.returnAllGames({id: id});
+  }
+
+  //broadcast for all people in room
+  broadcastInRoom(data) {
+    const roomID = data.data.roomID;
+    const players = this._games[roomID].players;
+    for (let player in players) {
+      this.sendToUser(player, {mType: 'broadcastedEvent', data: data});
+    }
+    
+  }
+
+  // in {mType: , data: {id: , }}
+  // returns nothing yet
+  joinGame(data) {
+    const id = data.id;
+    const message = data.data;
+    this._games[message.id].players[id] = this._users[id];
+    const gamesSend = this.prepareGamesForClient();
+    console.log('games send: ', gamesSend);
+    this.sendToAll({mType: 'returnAllGames', data: gamesSend});
+    const gameData = this._games[message.id];
+    for (let player in gameData.players) {
+      console.log(player);
+      this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player].name}});
+    }
+    console.log('games1:', gameData.players);
+    console.log('users:', this._users);
+    this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
+  }
+
+  //saves bundle to db
+  saveBundleToDB(data) {
+    this.database.insertBundle(data.data);
+  }
+
+  //inserts bundle to database
+  insertBundle(message) {
+    this.database.insertBundle(message.bundle);
   }
 
   //executes on user quitting
@@ -96,12 +240,20 @@ class Server {
     let n = 0;
     this.ws.clients.forEach(() => n++);
     this.sendToAll({mType: 'usersOnline', data: n});
+    const id = this.getIdByConnection(connection);
+    for (let idGame in this._games) {
+      const game = this._games[idGame];
+      const players = game.players;
+      if (players.hasOwnProperty(id)) this.leaveGame({id: id, data: {roomID: idGame}})
+    }
+    delete this._users[id];
+    idGenerator.removeID(id);
   }
 
   // gets users id by connection
   getIdByConnection(connection) {
     for (let [id, info] of Object.entries(this._users)) {
-      if (info[0] === connection) return id;
+      if (info.connection === connection) return id;
     }
   }
 }
