@@ -228,6 +228,7 @@ const updateGames = data => {
       document.getElementById('join-player').removeEventListener('click', joinGame);
       document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = gm.settings.roomName;
+      document.getElementById('search-gm').innerHTML = gm.settings.master;
       document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
       document.getElementById('join-player').addEventListener('click', joinGame);
