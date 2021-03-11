@@ -42,6 +42,8 @@ class Server {
       'broadcastInRoom': data => this.broadcastInRoom(data),
       'saveBundleToDB': data => this.saveBundleToDB(data),
       'leaveGame': data => this.leaveGame(data),
+      'newGameMaster': data => this.newGameMaster(data),
+      'sendName': data => this.sendName(data),
     };
 
     if (!Server._instance) {
@@ -82,7 +84,12 @@ class Server {
     this.ws.clients.forEach(() => n++);
     this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
-    this._users[id] = {connection: connection, name: req.url.slice(11)};
+    this._users[id] = {connection: connection, name: ''};
+  }
+
+  //write into this._users name
+  sendName(data) {
+    this._users[data.id].name = data.data.name;
   }
 
   //send message to everyone
@@ -106,7 +113,6 @@ class Server {
   async connectionMessage(connection, message) {
     const request = JSON.parse(message);
     const messageHandler = this._messageConfig[request.mType];
-    console.log(request);
     if (!messageHandler) return;
     await messageHandler({ 
       'id': this.getIdByConnection(connection),
@@ -233,6 +239,11 @@ class Server {
   //inserts bundle to database
   insertBundle(message) {
     this.database.insertBundle(message.bundle);
+  }
+
+  //on new game master
+  newGameMaster(data) {
+    console.log(data);
   }
 
   //executes on user quitting
