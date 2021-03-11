@@ -48,7 +48,7 @@ const createGame = () => {
     password,
     gameMode,
     totalPlayers,
-    name: new User().name,
+    master: new User().name,
   };
   console.log(questionBundle.value);
   if (questionBundle.value === 'download') {

@@ -7,7 +7,6 @@ const view = () => {
       <h1 class="text-white spaced-text" style="margin-left: -30px; padding-left: 30px; background-color: #008cba">
         <span id="search-title"></span>
       </h1>
-      <h3 class="spaced-text"><span data-localize="owner">Owner</span>: <span id="search-owner"></span></h3>
       <h3 class="spaced-text"><span data-localize="mode">Mode</span>: <span id="search-mode"></span></h3>
       <h3 class="spaced-text"><span data-localize="question-bundle-word">Question Bundle</span>: <span id="search-question-bundle"></span></h3>
       <h3 class="spaced-text"><span data-localize="game-master">Game master</span>: <span id="search-gm"></span></h3>

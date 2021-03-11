@@ -22,14 +22,14 @@ export default class Game {
   constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
-    this.master = settings.name;
+    this.master = settings.master;
     this.roomName = settings.roomName;
     this.maxPpl = settings.ppl;
     this.password = settings.password;
     this.gameMode = settings.gameMode;
     this.bundle = new Bundle(bundle);
-    this.players = players ? players : [settings.name];
-    this.points = {[settings.name]: 0};
+    this.players = players ? players : [settings.master];
+    this.points = {[settings.master]: 0};
     this.gameField = new GameField();
     this._setListeners();
     this.rounds = this.bundle.getRoundsArr();
@@ -102,7 +102,6 @@ export default class Game {
       }
     }
     console.log(this.rounds[this.currentRound]);
-    console.log(decks);
     this.checkAnswerCounter();
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
@@ -289,7 +288,7 @@ export default class Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.answerCounter = 14) {
+    if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;
     }
