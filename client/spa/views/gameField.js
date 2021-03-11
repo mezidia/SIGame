@@ -75,15 +75,15 @@ export default class GameField {
         <div class="row">
         
           <div class="col-sm-6">
-            <h2 class="text-primary">Correct answers</h2>
+            <h2 class="text-primary" data-localize="correct-answers">Correct answers</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px">Correct</div>
+            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="correct">Correct</div>
           </div>
           
           <div class="col-sm-6">
-            <h2 class="text-primary">Wrong answers</h2>
+            <h2 class="text-primary" data-localize="wrong-answers">Wrong answers</h2>
             <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px">Wrong</div>
+            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="wrong">Wrong</div>
           </div>
           
         </div>
@@ -98,6 +98,7 @@ export default class GameField {
 
   // display the new player joined the game
   addPlayer(name, score = 0) {
+    console.log(name + ' joined');
     const playerIcon = document.createElement('div');
     playerIcon.id = name + '-icon';
     playerIcon.className = 'player-display'

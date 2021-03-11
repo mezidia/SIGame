@@ -228,6 +228,7 @@ const updateGames = data => {
       document.getElementById('join-player').removeEventListener('click', joinGame);
       document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = gm.settings.roomName;
+      document.getElementById('search-gm').innerHTML = gm.settings.name;
       document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
       document.getElementById('join-player').addEventListener('click', joinGame);
@@ -244,14 +245,13 @@ const updateGames = data => {
 async function joinHandle(gameData) {
   const gm = gameData.game;
   const gmId = gameData.id;
-  console.log(gameData);
+  console.log('game data ', gameData);
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = gm.settings.password;
   if (passwordInput !== passwordGame) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
-  console.log('gameData', gameData);
   game = new Game(gm.bundle, gm.settings, gm.players);
   game.setID(gmId);
   game.join();

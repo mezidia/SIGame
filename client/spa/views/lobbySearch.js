@@ -14,7 +14,7 @@ const view = () => {
       <h3 class="spaced-text"><span data-localize="password-word">Password</span>: <input type="password" id="search-password" style="max-width: 70vw"></h3>
       
       <div class="search-btns">
-        <button class="btn btn-primary game-button" style="width: 100%;" id="join-player">Join</button>
+        <button class="btn btn-primary game-button" style="width: 100%;" id="join-player" data-localize="join">Join</button>
       </div>
     </div>
   </div>
