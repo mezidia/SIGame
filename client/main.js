@@ -301,7 +301,7 @@ function checkHash() {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame') {
     changeHash('chooseMode')();
-    socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
+    if (roomId) socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
     roomId = undefined;
   }
 }

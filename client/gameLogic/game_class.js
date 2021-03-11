@@ -154,6 +154,7 @@ export default class Game {
       };
       this._socket.send(JSON.stringify(msg));
     }
+    console.log('leave game-id ' + this._id);
     this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
     changeHash('chooseMode')();

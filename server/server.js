@@ -44,6 +44,7 @@ class Server {
       'leaveGame': data => this.leaveGame(data),
       'newGameMaster': data => this.newGameMaster(data),
       'sendName': data => this.sendName(data),
+      'removeUserFromServer': data => this.removeUserFromServer(data),
     };
 
     if (!Server._instance) {
@@ -112,6 +113,7 @@ class Server {
   //executes specific function on new message from client
   async connectionMessage(connection, message) {
     const request = JSON.parse(message);
+    console.log('request ', request);
     const messageHandler = this._messageConfig[request.mType];
     if (!messageHandler) return;
     await messageHandler({ 
@@ -134,7 +136,6 @@ class Server {
     const id = message.id;
     data.name = this._users[id].name;
     for (let userId in this._games[data.room].players) {
-      console.log(userId, this._games[data.room].players);
       this.sendToUser(userId, {mType: 'messageToGameChat', data: data });
     }
   }
@@ -188,6 +189,17 @@ class Server {
     this.sendToUser(id, {mType: 'returnAllGames', data: gamesSend});
   }
 
+  //remove all info about user from server
+  removeUserFromServer(data) {
+    const id = data.id;
+    const roomID = data.data.roomID;
+    if (roomID) this.leaveGame({id: id, roomID: roomID});
+    console.log('this._users[id] ', this._users[id]);
+    delete this._users[id];
+    console.log(this._users[id]);
+    idGenerator.removeID(roomID);
+  }
+
   //on user leaves game
   leaveGame(data) {
     const id = data.id;
@@ -195,11 +207,14 @@ class Server {
     const players = this._games[roomID].players;
     delete players[id];
     //remove comments on production
-    //if (this._games[roomID].players.length === 0) {
-    //  delete this._games[roomID];
-    //  idGenerator.removeID(roomID);
-    //}
-    this.returnAllGames({id: id});
+    console.log('in leavegame ', this._games[roomID].players);
+    if (Object.keys(this._games[roomID].players).length === 0) {
+      delete this._games[roomID];
+      idGenerator.removeID(roomID);
+    }
+    const gamesSend = this.prepareGamesForClient();
+    this.sendToAll({mType: 'returnAllGames', data: gamesSend});
+    console.log(this._games);
   }
 
   //broadcast for all people in room
@@ -219,15 +234,11 @@ class Server {
     const message = data.data;
     this._games[message.id].players[id] = this._users[id];
     const gamesSend = this.prepareGamesForClient();
-    console.log('games send: ', gamesSend);
     this.sendToAll({mType: 'returnAllGames', data: gamesSend});
     const gameData = this._games[message.id];
     for (let player in gameData.players) {
-      console.log(player);
       this.sendToUser(player, {mType: 'newJoin', data: {id: id, name: gameData.players[player].name}});
     }
-    console.log('games1:', gameData.players);
-    console.log('users:', this._users);
     this.sendToUser(id, {mType: 'joinGame', data: {id: message.id}});
   }
 
@@ -243,7 +254,9 @@ class Server {
 
   //on new game master
   newGameMaster(data) {
-    console.log(data);
+    this._games[data.data.roomID].settings.master = data.data.newGM;
+    const gamesSend = this.prepareGamesForClient();
+    this.sendToAll({mType: 'returnAllGames', data: gamesSend});
   }
 
   //executes on user quitting
@@ -255,7 +268,8 @@ class Server {
     for (let idGame in this._games) {
       const game = this._games[idGame];
       const players = game.players;
-      if (players.hasOwnProperty(id)) this.leaveGame({id: id, data: {roomID: idGame}})
+      console.log('players ', players[id]);
+      if (players.hasOwnProperty(id)) this.leaveGame({id: id, data: {roomID: idGame}});
     }
     delete this._users[id];
     idGenerator.removeID(id);
