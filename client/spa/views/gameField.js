@@ -54,6 +54,29 @@ export default class GameField {
     </span>`
   }
 
+  scoreAsInput = (toChange = true) => () => {
+    const divs = document.getElementsByClassName('player-display');
+    const btn = document.getElementById('change-sums-btn');
+    if (toChange) {
+      btn.innerHTML = 'Apply';
+    } else {
+      btn.innerHTML = 'Change sums';
+    }
+    for (const div of divs) {
+      const child = div.children[1];
+      div.removeChild(child);
+      const inp = document.createElement(`${toChange? 'input': 'p'}`);
+      inp.id = child.id;
+      if (toChange) {
+        inp.value = child.innerHTML;
+      } else {
+        inp.innerHTML = child.value;
+      }
+      div.append(inp);
+    }
+    toChange = !toChange;
+  }
+
   // switches layout between player and game master mode
   // if isGm is true, switches to GM mode
   switchGameMode(isGm) {
