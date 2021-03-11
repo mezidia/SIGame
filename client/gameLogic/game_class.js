@@ -6,7 +6,7 @@ import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
 
 
-
+const ANSWERTIME = 5000;
 
 export default class Game {
   _setListeners() {
@@ -103,6 +103,7 @@ export default class Game {
     }
     console.log(this.rounds[this.currentRound]);
     console.log(decks);
+    this.checkAnswerCounter();
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
 
@@ -225,7 +226,7 @@ export default class Game {
       };
       this.broadcast(event);
       this.updatePoints();
-    }, 5000);
+    }, ANSWERTIME);
 
   }
 
@@ -288,7 +289,7 @@ export default class Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.answerCounter < 15) {
+    if (this.answerCounter = 14) {
       this.answerCounter = 0;
       this.currentRound++;
     }
