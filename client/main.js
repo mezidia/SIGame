@@ -225,6 +225,8 @@ const updateGames = data => {
     const gm = games[gameId];
     const gameDiv = document.createElement('div');
     gameDiv.addEventListener('click', () => {
+      document.getElementById('picture-info-1').style.display = 'none';
+      document.getElementById('picture-info-2').style.display = 'block';
       gameData = {game: gm, id: gameId};
       document.getElementById('join-player').removeEventListener('click', joinGame);
       document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
