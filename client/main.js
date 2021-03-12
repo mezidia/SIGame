@@ -218,6 +218,10 @@ const updateGames = data => {
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
   if (!gamesSearchField) return;
+  if (Object.keys(allGames.data).length === 0) {
+    document.getElementById('picture-info-2').style.display = 'none';
+    document.getElementById('picture-info-1').style.display = 'block';
+  }
   gamesSearchField.innerHTML = '';
   let gameData = null;
   const joinGame = () => joinHandle(gameData);

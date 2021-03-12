@@ -6,10 +6,11 @@ class Database {
   constructor (config) {
     //connect to database
     this.con = mysql.createConnection(config);
-    this.con.connect( err => {
-      if (err) throw err;
-      console.log("Connected!");
-    });
+  }
+
+  //return connection
+  returnConnection() {
+    return this.con;
   }
 
   //create promise from sql query

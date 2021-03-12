@@ -3,6 +3,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
+const Database = require('../database/database').Database;
 //const bundleua = require('../exampleBundle_ua.json');
 //const bundlede = require('../exampleBundle_de.json');
 
@@ -30,15 +31,13 @@ class Server {
   _games = {};
   _users = {};
 
-  constructor(port, database) {
-    this.database = database;
+  constructor(port) {
     this._messageConfig = {
       'getAllBundles': data => this.getAllBundles(data),
       'messageToGameChat': data => this.messageToGameChat(data),
       'newGameLobby': data => this.createNewGame(data),
       'returnAllGames': data => this.returnAllGames(data),
       'joinGame': data => this.joinGame(data),
-      'insertBundle': data => this.insertBundle(data),
       'broadcastInRoom': data => this.broadcastInRoom(data),
       'saveBundleToDB': data => this.saveBundleToDB(data),
       'leaveGame': data => this.leaveGame(data),
@@ -125,9 +124,22 @@ class Server {
   }
 
   //gets all bundles from database
-  async getAllBundles(message) {
-    const bundles = await this.database.getAllBundles();
-    this.sendToUser(message.id, {mType: 'allBundles', data: bundles});
+  getAllBundles(message) {
+    const database = new Database({
+      host: 'db4free.net',
+      user: 'sigameadmin',
+      password: '#Ananas208',
+      database: 'sigame',
+    });
+    const connection = database.returnConnection();
+    connection.connect( async err => {
+      if (err) throw err;
+      console.log("Connected!");
+      const bundles = await database.getAllBundles();
+      this.sendToUser(message.id, {mType: 'allBundles', data: bundles});
+      connection.destroy();
+    });
+    
   }
 
   //sends message to everyone in game chat
@@ -244,12 +256,19 @@ class Server {
 
   //saves bundle to db
   saveBundleToDB(data) {
-    this.database.insertBundle(data.data);
-  }
-
-  //inserts bundle to database
-  insertBundle(message) {
-    this.database.insertBundle(message.bundle);
+    const database = new Database({
+      host: 'db4free.net',
+      user: 'sigameadmin',
+      password: '#Ananas208',
+      database: 'sigame',
+    });
+    const connection = database.returnConnection();
+    connection.connect( async err => {
+      if (err) throw err;
+      console.log("Connected!");
+      await database.insertBundle(data.data);
+      connection.destroy();
+    });
   }
 
   //on new game master
