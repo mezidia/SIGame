@@ -19,6 +19,7 @@ let allBundles = undefined;
 let roomId = undefined;
 let game = undefined;
 let allGames = {};
+const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -41,7 +42,6 @@ const createGame = () => {
   const questionBundle = document.getElementById('questionBundle');
   const gameMode = document.getElementById('gameMode').value;
   const totalPlayers = document.getElementById('totalPlayers').value;
-  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(roomName)) return;
   data.settings = {
     roomName,
@@ -125,7 +125,6 @@ const createGameLobby = () => {
 
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
-const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
   changeHash('chooseMode')();
@@ -147,7 +146,6 @@ const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
 
 const openEditor = () => {
   const name = document.getElementById('name-input').value;
-  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(name)) return;
   changeHash('redactor')();
   socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
