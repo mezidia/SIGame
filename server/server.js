@@ -30,22 +30,21 @@ class Server {
   //saves {room: [id1, id2, .....]}
   _games = {};
   _users = {};
+  _messageConfig = {
+    'getAllBundles': data => this.getAllBundles(data),
+    'messageToGameChat': data => this.messageToGameChat(data),
+    'newGameLobby': data => this.createNewGame(data),
+    'returnAllGames': data => this.returnAllGames(data),
+    'joinGame': data => this.joinGame(data),
+    'broadcastInRoom': data => this.broadcastInRoom(data),
+    'saveBundleToDB': data => this.saveBundleToDB(data),
+    'leaveGame': data => this.leaveGame(data),
+    'newGameMaster': data => this.newGameMaster(data),
+    'sendName': data => this.sendName(data),
+    'removeUserFromServer': data => this.removeUserFromServer(data),
+  };
 
   constructor(port) {
-    this._messageConfig = {
-      'getAllBundles': data => this.getAllBundles(data),
-      'messageToGameChat': data => this.messageToGameChat(data),
-      'newGameLobby': data => this.createNewGame(data),
-      'returnAllGames': data => this.returnAllGames(data),
-      'joinGame': data => this.joinGame(data),
-      'broadcastInRoom': data => this.broadcastInRoom(data),
-      'saveBundleToDB': data => this.saveBundleToDB(data),
-      'leaveGame': data => this.leaveGame(data),
-      'newGameMaster': data => this.newGameMaster(data),
-      'sendName': data => this.sendName(data),
-      'removeUserFromServer': data => this.removeUserFromServer(data),
-    };
-
     if (!Server._instance) {
       Server._instance = this;
 
