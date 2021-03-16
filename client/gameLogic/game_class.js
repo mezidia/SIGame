@@ -4,6 +4,7 @@ import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
 import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
+import { language } from "../changeLanguage.js";
 
 
 const ANSWERTIME = 5000;
@@ -157,7 +158,6 @@ export default class Game {
     console.log('leave game-id ' + this._id);
     this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
-    changeHash('chooseMode')();
     delete this;
   }
 
@@ -270,7 +270,7 @@ export default class Game {
     'answer': this.raiseHand,
     'correct': this.correct,
     'uncorrect': this.uncorrect,
-    'exit': this.exit,
+    'exit': changeHash('chooseMode'),
     'report': 'report',
     'pause': 'pause',
     'resume': 'resume',

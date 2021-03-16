@@ -187,8 +187,19 @@ const sendMessageToGameChat = mess => {
   chatField.appendChild(message);
 }
 
+const onHelp = () => {
+  changeHash('help')();
+}
+
+const onHome = () => {
+  changeHash('home')();
+}
+
 //config function returns handlers by id
 const handleClick = evt => ({
+  'help': [onHelp],
+  'home': [onHome],
+  'dju': [onHome],
   'create-game-btn': [createGameLobby],
   'play-btn': [connectToSIgame],
   'de': [changeLanguage(de)],
@@ -301,11 +312,14 @@ document.addEventListener('change', (evt) => {
   }
 });
 
-function checkHash() {
+function checkHash(e) {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame') {
     changeHash('chooseMode')();
-    if (roomId) socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
+    if (roomId) {
+      game.exit();
+      socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
+    }
     roomId = undefined;
   }
 }
@@ -321,7 +335,7 @@ const scrollToStart = () => {
 }
 
 // won't pass user to other than main and help pages if socket is not connected
-const loadViewSocket = () => {
+const loadViewSocket = e => {
   if(getHash() === 'help') {
     loadView();
     return;
@@ -330,7 +344,7 @@ const loadViewSocket = () => {
   if(socket) {
     loadView();
   } else {
-    loadMainView();
+    changeHash('home')();
   }
 }
 
@@ -348,6 +362,8 @@ const checkGoUp = () => {
 //opens main page
 loadViewSocket();
 //switches pages
-window.addEventListener('hashchange', loadViewSocket)
-window.addEventListener('popstate', checkHash);
-window.addEventListener('scroll', checkGoUp)
+window.addEventListener('hashchange', e => loadViewSocket(e));
+window.addEventListener('popstate', e => checkHash(e));
+window.addEventListener('scroll', checkGoUp);
+
+export { game };

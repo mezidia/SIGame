@@ -96,7 +96,7 @@ const de = {
   "wrong-answers": "Wrong answers",
   "correct": "Correct",
   "wrong": "Wrong",
-  
+  "onleave": "Do you really want to exit the game?",
 };
 
 export { de };

@@ -2,7 +2,8 @@
 
 import RenderEngine from './engine.js';
 import Router from './router.js';
-import { changeLanguage } from '../changeLanguage.js';
+import { changeLanguage, language } from '../changeLanguage.js';
+import { game } from '../main.js';
 
 const router = new Router();
 const engine = new RenderEngine();
@@ -12,12 +13,27 @@ async function loadMainView() {
   engine.render(view.default);
 }
 
+const getHash = () => router.getHash();
+
 const changeHash = (hash) => async() => {
+  let ask = false;
+  if (router.getHash()) {
+    const parts = router.getHash().split('/');
+    let hash1 = parts[0];
+    if (hash1 === 'simpleLobby') {
+      ask = true;
+    }
+  }
+  
+  if(ask) {
+    const exit = confirm(language.json['onleave']);
+    if(!exit) return;
+    if(game) game.exit();
+  }
+
   router.change(hash);
   await loadView();
 };
-
-const getHash = () => router.getHash()
 
 const loadView = async () => {
   const { viewName } = router.getState();

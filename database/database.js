@@ -4,12 +4,8 @@ const mysql = require('mysql');
 
 class Database {
   constructor (config) {
-    if (!Database._instance) {
-      Database._instance = this;
-      //connect to database
-      this.con = mysql.createConnection(config);
-    }
-    return Database._instance;
+    //connect to database
+    this.con = mysql.createConnection(config);
   }
 
   //return connection
