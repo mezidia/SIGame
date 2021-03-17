@@ -58,6 +58,11 @@ const loadView = async () => {
       console.log(reason);
     })
     .finally(() => {
+      console.log(viewName);
+      if (viewName === 'mainPage') {
+        const name = window.localStorage.getItem('name');
+        if (name) document.getElementById('name-input').value = name;
+      }
       const langcode = window.localStorage.getItem('language');
       if (langcode) changeLanguage(languages[langcode])();
     });
