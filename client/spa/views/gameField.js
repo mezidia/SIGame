@@ -1,5 +1,7 @@
 'use strict';
 
+import { language } from '../../changeLanguage.js';
+
 export default class GameField {
   constructor() {
     if (!GameField._instance) {
@@ -98,15 +100,15 @@ export default class GameField {
         <div class="row">
         
           <div class="col-sm-6">
-            <h2 class="text-primary" data-localize="correct-answers">Correct answers</h2>
+            <h2 class="text-primary" data-localize="correct-answers">${language.json["correct-answers"]}</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="correct">Correct</div>
+            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="correct">${language.json["correct"]}</div>
           </div>
           
           <div class="col-sm-6">
-            <h2 class="text-primary" data-localize="wrong-answers">Wrong answers</h2>
+            <h2 class="text-primary" data-localize="wrong-answers">${language.json["wrong-answers"]}</h2>
             <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="wrong">Wrong</div>
+            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="wrong">${language.json["wrong"]}</div>
           </div>
           
         </div>

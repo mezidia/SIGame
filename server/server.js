@@ -3,6 +3,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
+const Database = require('../database/database').Database;
 //const bundleua = require('../exampleBundle_ua.json');
 //const bundlede = require('../exampleBundle_de.json');
 
@@ -29,24 +30,21 @@ class Server {
   //saves {room: [id1, id2, .....]}
   _games = {};
   _users = {};
+  _messageConfig = {
+    'getAllBundles': data => this.getAllBundles(data),
+    'messageToGameChat': data => this.messageToGameChat(data),
+    'newGameLobby': data => this.createNewGame(data),
+    'returnAllGames': data => this.returnAllGames(data),
+    'joinGame': data => this.joinGame(data),
+    'broadcastInRoom': data => this.broadcastInRoom(data),
+    'saveBundleToDB': data => this.saveBundleToDB(data),
+    'leaveGame': data => this.leaveGame(data),
+    'newGameMaster': data => this.newGameMaster(data),
+    'sendName': data => this.sendName(data),
+    'removeUserFromServer': data => this.removeUserFromServer(data),
+  };
 
-  constructor(port, database) {
-    this.database = database;
-    this._messageConfig = {
-      'getAllBundles': data => this.getAllBundles(data),
-      'messageToGameChat': data => this.messageToGameChat(data),
-      'newGameLobby': data => this.createNewGame(data),
-      'returnAllGames': data => this.returnAllGames(data),
-      'joinGame': data => this.joinGame(data),
-      'insertBundle': data => this.insertBundle(data),
-      'broadcastInRoom': data => this.broadcastInRoom(data),
-      'saveBundleToDB': data => this.saveBundleToDB(data),
-      'leaveGame': data => this.leaveGame(data),
-      'newGameMaster': data => this.newGameMaster(data),
-      'sendName': data => this.sendName(data),
-      'removeUserFromServer': data => this.removeUserFromServer(data),
-    };
-
+  constructor(port) {
     if (!Server._instance) {
       Server._instance = this;
 
@@ -90,6 +88,12 @@ class Server {
 
   //write into this._users name
   sendName(data) {
+    if (!this._users.hasOwnProperty(data.id)) {
+      console.log('(sendName) no such id property in this._users: ', data.id);
+    }
+    if (!data.data.hasOwnProperty('name')) {
+      console.log('(sendName) no name property in data.data: ', data);
+    }
     this._users[data.id].name = data.data.name;
   }
 
@@ -104,6 +108,10 @@ class Server {
 
   //send to specific user 
   sendToUser(id, message) {
+    if (!this._users.hasOwnProperty(id) || !this._users[id].hasOwnProperty('connection')) {
+      console.log(('(sendToUser) user with id: ' + id + ' probably left before answer arrived'));
+      return;
+    }
     const user = this._users[id].connection;
     if (user.readyState === WebSocket.OPEN) {
       user.send(JSON.stringify(message));
@@ -114,8 +122,15 @@ class Server {
   async connectionMessage(connection, message) {
     const request = JSON.parse(message);
     console.log('request ', request);
+    if (!this._messageConfig.hasOwnProperty(request.mType)) {
+      console.log('(connectionMessage) should exist mType, wrong input: ', request);
+      return;
+    }
     const messageHandler = this._messageConfig[request.mType];
-    if (!messageHandler) return;
+    if (!messageHandler) {
+      console.log('(connectionMessage) no handle exists for mType: ' + request.mType);
+      return;
+    }
     await messageHandler({ 
       'id': this.getIdByConnection(connection),
       'data': request.data,
@@ -125,9 +140,27 @@ class Server {
   }
 
   //gets all bundles from database
-  async getAllBundles(message) {
-    const bundles = await this.database.getAllBundles();
-    this.sendToUser(message.id, {mType: 'allBundles', data: bundles});
+  getAllBundles(message) {
+    const database = new Database({
+      host: 'db4free.net',
+      user: 'sigameadmin',
+      password: '#Ananas208',
+      database: 'sigame',
+    });
+    const connection = database.returnConnection();
+    connection.connect( async err => {
+      if (err) throw err;
+      console.log("Connected!");
+      let bundles = null;
+      try {
+        bundles = await database.getAllBundles();
+      } catch (err) {
+        console.log(('(getAllBundles) error when awaiting bundles from db occured ', err));
+      }
+      this.sendToUser(message.id, {mType: 'allBundles', data: bundles});
+      connection.destroy();
+    });
+    
   }
 
   //sends message to everyone in game chat
@@ -196,7 +229,6 @@ class Server {
     if (roomID) this.leaveGame({id: id, roomID: roomID});
     console.log('this._users[id] ', this._users[id]);
     delete this._users[id];
-    console.log(this._users[id]);
     idGenerator.removeID(roomID);
   }
 
@@ -204,10 +236,13 @@ class Server {
   leaveGame(data) {
     const id = data.id;
     const roomID = data.data.roomID;
+    if (!this._games.hasOwnProperty(roomID)) {
+      console.log('(leaveGame) no such game with id ' + roomID);
+      return;
+    }
     const players = this._games[roomID].players;
     delete players[id];
     //remove comments on production
-    console.log('in leavegame ', this._games[roomID].players);
     if (Object.keys(this._games[roomID].players).length === 0) {
       delete this._games[roomID];
       idGenerator.removeID(roomID);
@@ -220,6 +255,10 @@ class Server {
   //broadcast for all people in room
   broadcastInRoom(data) {
     const roomID = data.data.roomID;
+    if (!this._games.hasOwnProperty(roomID)) {
+      console.log('(broadcast in room) no such game with id ' + roomID);
+      return;
+    }
     const players = this._games[roomID].players;
     for (let player in players) {
       this.sendToUser(player, {mType: 'broadcastedEvent', data: data});
@@ -244,12 +283,19 @@ class Server {
 
   //saves bundle to db
   saveBundleToDB(data) {
-    this.database.insertBundle(data.data);
-  }
-
-  //inserts bundle to database
-  insertBundle(message) {
-    this.database.insertBundle(message.bundle);
+    const database = new Database({
+      host: 'db4free.net',
+      user: 'sigameadmin',
+      password: '#Ananas208',
+      database: 'sigame',
+    });
+    const connection = database.returnConnection();
+    connection.connect( async err => {
+      if (err) throw err;
+      console.log("Connected!");
+      await database.insertBundle(data.data);
+      connection.destroy();
+    });
   }
 
   //on new game master
@@ -268,7 +314,6 @@ class Server {
     for (let idGame in this._games) {
       const game = this._games[idGame];
       const players = game.players;
-      console.log('players ', players[id]);
       if (players.hasOwnProperty(id)) this.leaveGame({id: id, data: {roomID: idGame}});
     }
     delete this._users[id];

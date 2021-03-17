@@ -9,6 +9,10 @@ import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+const languages = {
+  de: de,
+  ua: ua
+}
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -19,6 +23,7 @@ let allBundles = undefined;
 let roomId = undefined;
 let game = undefined;
 let allGames = {};
+const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -41,7 +46,6 @@ const createGame = () => {
   const questionBundle = document.getElementById('questionBundle');
   const gameMode = document.getElementById('gameMode').value;
   const totalPlayers = document.getElementById('totalPlayers').value;
-  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(roomName)) return;
   data.settings = {
     roomName,
@@ -125,7 +129,6 @@ const createGameLobby = () => {
 
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
-const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
   changeHash('chooseMode')();
@@ -147,7 +150,6 @@ const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
 
 const openEditor = () => {
   const name = document.getElementById('name-input').value;
-  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(name)) return;
   changeHash('redactor')();
   socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
@@ -189,12 +191,23 @@ const sendMessageToGameChat = mess => {
   chatField.appendChild(message);
 }
 
+const onHelp = () => {
+  changeHash('help')();
+}
+
+const onHome = () => {
+  changeHash('home')();
+}
+
 //config function returns handlers by id
 const handleClick = evt => ({
+  'help': [onHelp],
+  'home': [onHome],
+  'dju': [onHome],
   'create-game-btn': [createGameLobby],
   'play-btn': [connectToSIgame],
-  'de': [changeLanguage(de)],
-  'ua': [changeLanguage(ua)],
+  'de': [changeLanguage(languages.de)],
+  'ua': [changeLanguage(languages.ua)],
   'startGame': [createGame],
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
@@ -218,6 +231,10 @@ const updateGames = data => {
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
   if (!gamesSearchField) return;
+  if (Object.keys(allGames.data).length === 0) {
+    document.getElementById('picture-info-2').style.display = 'none';
+    document.getElementById('picture-info-1').style.display = 'block';
+  }
   gamesSearchField.innerHTML = '';
   let gameData = null;
   const joinGame = () => joinHandle(gameData);
@@ -299,11 +316,14 @@ document.addEventListener('change', (evt) => {
   }
 });
 
-function checkHash() {
+function checkHash(e) {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame') {
     changeHash('chooseMode')();
-    if (roomId) socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
+    if (roomId) {
+      game.exit();
+      socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
+    }
     roomId = undefined;
   }
 }
@@ -319,7 +339,7 @@ const scrollToStart = () => {
 }
 
 // won't pass user to other than main and help pages if socket is not connected
-const loadViewSocket = () => {
+const loadViewSocket = e => {
   if(getHash() === 'help') {
     loadView();
     return;
@@ -328,7 +348,7 @@ const loadViewSocket = () => {
   if(socket) {
     loadView();
   } else {
-    loadMainView();
+    changeHash('')();
   }
 }
 
@@ -346,6 +366,8 @@ const checkGoUp = () => {
 //opens main page
 loadViewSocket();
 //switches pages
-window.addEventListener('hashchange', loadViewSocket)
-window.addEventListener('popstate', checkHash);
-window.addEventListener('scroll', checkGoUp)
+window.addEventListener('hashchange', e => loadViewSocket(e));
+window.addEventListener('popstate', e => checkHash(e));
+window.addEventListener('scroll', checkGoUp);
+window.onload = changeLanguage(languages[localStorage.getItem('language')])();
+export { game };
