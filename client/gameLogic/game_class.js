@@ -4,8 +4,6 @@ import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
 import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
-import { language } from "../changeLanguage.js";
-
 
 const ANSWERTIME = 5000;
 

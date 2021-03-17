@@ -20,7 +20,7 @@ const changeHash = (hash) => async() => {
   if (router.getHash()) {
     const parts = router.getHash().split('/');
     let hash1 = parts[0];
-    if (hash1 === 'simpleLobby') {
+    if (hash1 === 'simpleLobby' && hash !== '') {
       ask = true;
     }
   }

@@ -344,7 +344,7 @@ const loadViewSocket = e => {
   if(socket) {
     loadView();
   } else {
-    changeHash('home')();
+    changeHash('')();
   }
 }
 
