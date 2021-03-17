@@ -316,7 +316,7 @@ document.addEventListener('change', (evt) => {
 
 function checkHash(e) {
   const name = checkView();
-  if (name === 'lobbySearch' || name === 'createGame') {
+  if (name === 'lobbySearch' || name === 'createGame' || name === 'simpleLobby') {
     changeHash('chooseMode')();
     if (roomId) {
       game.exit();

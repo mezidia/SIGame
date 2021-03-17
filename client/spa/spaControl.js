@@ -36,6 +36,7 @@ const changeHash = (hash) => async() => {
     const exit = confirm(language.json['onleave']);
     if(!exit) return;
     if(game) game.exit();
+    window.location.replace('#chooseMode');
   }
 
   router.change(hash);
