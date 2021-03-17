@@ -314,7 +314,7 @@ export default class Game {
     this.players.push(name);
   }
 
-  kikcPlayer() {
+  kickPlayer() {
 
   }
 

@@ -9,6 +9,10 @@ import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+const languages = {
+  de: de,
+  ua: ua
+}
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -202,8 +206,8 @@ const handleClick = evt => ({
   'dju': [onHome],
   'create-game-btn': [createGameLobby],
   'play-btn': [connectToSIgame],
-  'de': [changeLanguage(de)],
-  'ua': [changeLanguage(ua)],
+  'de': [changeLanguage(languages.de)],
+  'ua': [changeLanguage(languages.ua)],
   'startGame': [createGame],
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
@@ -365,5 +369,5 @@ loadViewSocket();
 window.addEventListener('hashchange', e => loadViewSocket(e));
 window.addEventListener('popstate', e => checkHash(e));
 window.addEventListener('scroll', checkGoUp);
-
+window.onload = changeLanguage(languages[localStorage.getItem('language')])();
 export { game };
