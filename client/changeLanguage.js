@@ -11,6 +11,7 @@ const changeLanguage = (lang = null) => () => {
   else language.json = lang;
   const localStorage = window.localStorage;
   localStorage.setItem('language', lang.code);
+  console.log(localStorage.getItem('language'));
   for (let el of allText) {
     const dataLocal = el.attributes['data-localize'].textContent;
     if (el.attributes.placeholder) {

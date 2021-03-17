@@ -17,6 +17,7 @@ const de = {
   "random-word": "Random",
   "download-word": "Download",
   "game-type-word": "Game type",
+  "findBundleByName-word": "Find bundle by name",
   "simple-word": "S1mple",
   "classic-word": "Classic",
   "role-word": "Role",

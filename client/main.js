@@ -9,10 +9,6 @@ import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
-const languages = {
-  de: de,
-  ua: ua
-}
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -131,6 +127,7 @@ const createGameLobby = () => {
 const connectToSIgame = () => {
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
+  window.localStorage.setItem('name', name);
   changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
@@ -151,6 +148,7 @@ const connectToSIgame = () => {
 const openEditor = () => {
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
+  window.localStorage.setItem('name', name);
   changeHash('redactor')();
   socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
   socket.onopen = () => {
@@ -206,8 +204,8 @@ const handleClick = evt => ({
   'dju': [onHome],
   'create-game-btn': [createGameLobby],
   'play-btn': [connectToSIgame],
-  'de': [changeLanguage(languages.de)],
-  'ua': [changeLanguage(languages.ua)],
+  'de': [changeLanguage(de)],
+  'ua': [changeLanguage(ua)],
   'startGame': [createGame],
   'join-btn': [joinLobby],
   'openEditor-btn': [openEditor],
@@ -369,5 +367,8 @@ loadViewSocket();
 window.addEventListener('hashchange', e => loadViewSocket(e));
 window.addEventListener('popstate', e => checkHash(e));
 window.addEventListener('scroll', checkGoUp);
-window.onload = changeLanguage(languages[localStorage.getItem('language')])();
+window.onload = () => {
+  const name = window.localStorage.getItem('name');
+  if (name) document.getElementById('name-input').value = name;
+}
 export { game };

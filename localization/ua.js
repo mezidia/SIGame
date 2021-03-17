@@ -21,6 +21,7 @@ const ua = {
   "classic-word": "Класична",
   "role-word": "Роль",
   "player-word": "Гравець",
+  "findBundleByName-word": "Знайти низку питань за ім'ям",
   "game-master-word": "Ведучий",
   "players-word": "Гравці",
   "total-word": "Всього",

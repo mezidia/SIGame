@@ -5,6 +5,13 @@ import Router from './router.js';
 import { changeLanguage, language } from '../changeLanguage.js';
 import { game } from '../main.js';
 
+import { de } from '../../localization/de.js';
+import { ua } from '../../localization/ua.js';
+const languages = {
+  de: de,
+  ua: ua
+}
+
 const router = new Router();
 const engine = new RenderEngine();
 
@@ -49,7 +56,10 @@ const loadView = async () => {
     .catch(reason => {
       console.log(reason);
     })
-    .finally(changeLanguage());
+    .finally(() => {
+      const langcode = window.localStorage.getItem('language');
+      if (langcode) changeLanguage(languages[langcode])();
+    });
 };
 
 const checkView = () => {
