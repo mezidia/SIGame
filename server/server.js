@@ -293,6 +293,7 @@ class Server {
     connection.connect( async err => {
       if (err) throw err;
       console.log("Connected!");
+      console.log('from saveBundle to db' , data.data);
       await database.insertBundle(data.data);
       connection.destroy();
     });

@@ -14,7 +14,6 @@ class Database {
       langcode_id int PRIMARY KEY,
       langcode_name varchar(10)
     );
-    ALTER TABLE langcode CONVERT TO CHARACTER SET utf8mb4;
     
     CREATE TABLE IF NOT EXISTS bundle (
       bundle_id int PRIMARY KEY,
@@ -25,7 +24,6 @@ class Database {
       REFERENCES langcode(langcode_id),
       bundle_title varchar(200)
     );
-    ALTER TABLE bundle CONVERT TO CHARACTER SET utf8mb4;
     
     CREATE TABLE IF NOT EXISTS deck (
       bundle_id int,
@@ -35,7 +33,6 @@ class Database {
       FOREIGN KEY (bundle_id)
       REFERENCES bundle(bundle_id)
     );
-    ALTER TABLE deck CONVERT TO CHARACTER SET utf8mb4;
     
     CREATE TABLE IF NOT EXISTS question (
       deck_id int,
@@ -46,8 +43,7 @@ class Database {
       CONSTRAINT fk_question_on_deck
       FOREIGN KEY (deck_id)
       REFERENCES deck(deck_id)
-    );
-    ALTER TABLE question CONVERT TO CHARACTER SET utf8mb4;`;
+    );`;
     await this.promisifyConQuery(dbschema)
     .catch(err => console.log(err));
   }
@@ -102,6 +98,7 @@ class Database {
     await this.promisifyConQuery(getDeckSqlStr)
     .catch(err => console.log(err))
     .then(rows => {
+      console.log(rows);
       const allBundles = [];
       let bundleId = 1;
       let deckId = 1;
@@ -147,7 +144,8 @@ class Database {
       }
       returnBundles = allBundles;
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err))
+    .finally(() => console.log('done'));
     return returnBundles;
   }
 
@@ -160,7 +158,8 @@ class Database {
     FROM langcode 
     WHERE langcode_name = '${bundle.langcode}')
     LIMIT 1`;
-    this.promisifyConQuery(insertLangcodeSqlStr)
+    await this.promisifyConQuery(insertLangcodeSqlStr)
+    .catch(err => console.log(err))
     .then(() => {
       const getlangIDSqlStr = `SELECT langcode_id FROM langcode WHERE langcode_name = '${bundle.langcode}'`;
       return this.promisifyConQuery(getlangIDSqlStr);
@@ -168,26 +167,30 @@ class Database {
     .catch(err => console.log(err))
     .then(rows => {
       const langcodeId = rows[0].langcode_id;
-      const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode) VALUES('${bundle.author}', '${bundle.title}', '${langcodeId}')`;
+      const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode) 
+                                  VALUES('${bundle.author.replace(/[']{1}/g, "''")}', '${bundle.title.replace(/[']{1}/g, "''")}', '${langcodeId}')`;
       return this.promisifyConQuery(insertBundleSqlStr);
     })
     .catch(err => console.log(err))
-    .then(rows => {
+    .then(async rows => {
       const bundleId = rows.insertId;
       for (const deck of bundle.decks) {
-        const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) VALUES('${deck.subject}', '${bundleId}')`;
-        this.promisifyConQuery(insertDeckSqlStr)
-        .then(rowsD => {
+        const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) 
+                                  VALUES('${deck.subject.replace(/[']{1}/g, "''")}', '${bundleId}')`;
+        await this.promisifyConQuery(insertDeckSqlStr)
+        .then(async rowsD => {
           for (const q of deck.questions) {
-            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) VALUES('${q.type}', '${q.string}', '${q.trueAns}', '${q.falseAns}', '${rowsD.insertId}')`;
-            this.promisifyConQuery(insertQuestionSqlStr)
+            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) 
+                                          VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${q.trueAns.replace(/[']{1}/g, "''")}', '${q.falseAns.replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
+            await this.promisifyConQuery(insertQuestionSqlStr)
             .catch(err => console.log(err));
           }
         })
         .catch(err => console.log(err));
       }
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err))
+    .finally(() => console.log('done'));
   }
 }
 
