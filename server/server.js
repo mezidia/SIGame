@@ -135,8 +135,6 @@ class Server {
       'id': this.getIdByConnection(connection),
       'data': request.data,
     });
-    //this.database.insertBundle(bundleua);
-    //this.database.insertBundle(bundlede);
   }
 
   //gets all bundles from database
@@ -153,6 +151,8 @@ class Server {
       console.log("Connected!");
       let bundles = null;
       try {
+        //await database.insertBundle(bundleua);
+        //await database.insertBundle(bundlede);
         bundles = await database.getAllBundles();
       } catch (err) {
         console.log(('(getAllBundles) error when awaiting bundles from db occured ', err));
@@ -293,6 +293,7 @@ class Server {
     connection.connect( async err => {
       if (err) throw err;
       console.log("Connected!");
+      console.log('from saveBundle to db' , data.data);
       await database.insertBundle(data.data);
       connection.destroy();
     });
