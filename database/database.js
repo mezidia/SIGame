@@ -8,6 +8,50 @@ class Database {
     this.con = mysql.createConnection(config);
   }
 
+  //check if needed tables exist and create if not
+  async checkExistance() {
+    const dbschema = `CREATE TABLE IF NOT EXISTS langcode (
+      langcode_id int PRIMARY KEY,
+      langcode_name varchar(10)
+    );
+    ALTER TABLE langcode CONVERT TO CHARACTER SET utf8mb4;
+    
+    CREATE TABLE IF NOT EXISTS bundle (
+      bundle_id int PRIMARY KEY,
+      bundle_author varchar(34),
+      bundle_langcode int,
+      CONSTRAINT fk_bundle_on_langcode
+      FOREIGN KEY (bundle_langcode)
+      REFERENCES langcode(langcode_id),
+      bundle_title varchar(200)
+    );
+    ALTER TABLE bundle CONVERT TO CHARACTER SET utf8mb4;
+    
+    CREATE TABLE IF NOT EXISTS deck (
+      bundle_id int,
+      deck_id int PRIMARY KEY,
+      deck_subject varchar(200),
+      CONSTRAINT fk_deck_on_bundle
+      FOREIGN KEY (bundle_id)
+      REFERENCES bundle(bundle_id)
+    );
+    ALTER TABLE deck CONVERT TO CHARACTER SET utf8mb4;
+    
+    CREATE TABLE IF NOT EXISTS question (
+      deck_id int,
+      question_type varchar(50),
+      question_string varchar(200),
+      question_trueans varchar(300),
+      question_falseans varchar(300),
+      CONSTRAINT fk_question_on_deck
+      FOREIGN KEY (deck_id)
+      REFERENCES deck(deck_id)
+    );
+    ALTER TABLE question CONVERT TO CHARACTER SET utf8mb4;`;
+    await this.promisifyConQuery(dbschema)
+    .catch(err => console.log(err));
+  }
+
   //return connection
   returnConnection() {
     return this.con;
@@ -29,6 +73,7 @@ class Database {
 
   //get all bundles from database
   async getAllBundles() {
+    await this.checkExistance();
     let bundle = {
       author: null,
       langcode: null,
@@ -107,7 +152,8 @@ class Database {
   }
 
   //insert new bundle to database
-  insertBundle(bundle) {
+  async insertBundle(bundle) {
+    await this.checkExistance();
     let insertLangcodeSqlStr = `INSERT INTO langcode (langcode_name)
     SELECT * FROM (SELECT '${bundle.langcode}') AS tmp
     WHERE NOT EXISTS ( SELECT langcode_name 
