@@ -87,6 +87,9 @@ class Database {
       falseAns: null
     };
     let returnBundles = [];
+    const dd = `SELECT * from bundle`;
+    await this.promisifyConQuery(dd).then((dd) => console.log(dd));
+
     const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
       FROM question q
       INNER JOIN deck d
@@ -98,7 +101,6 @@ class Database {
     await this.promisifyConQuery(getDeckSqlStr)
     .catch(err => console.log(err))
     .then(rows => {
-      console.log(rows);
       const allBundles = [];
       let bundleId = 1;
       let deckId = 1;
@@ -181,7 +183,7 @@ class Database {
         .then(async rowsD => {
           for (const q of deck.questions) {
             const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) 
-                                          VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${q.trueAns.replace(/[']{1}/g, "''")}', '${q.falseAns.replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
+                                          VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${q.trueAns.toString().replace(/[']{1}/g, "''")}', '${q.falseAns.toString().replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
             await this.promisifyConQuery(insertQuestionSqlStr)
             .catch(err => console.log(err));
           }
