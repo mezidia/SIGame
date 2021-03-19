@@ -4,8 +4,10 @@ import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
 import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
+import GameTimer from "./gameTimer_class.js";
 
-const ANSWERTIME = 5000;
+const ANSWERTIME = 5; //sec
+const GAMETIME = 25; //sec
 
 export default class Game {
   _setListeners() {
@@ -30,12 +32,14 @@ export default class Game {
     this.players = players ? players : [settings.master];
     this.points = {[settings.master]: 0};
     this.gameField = new GameField();
+    this.turnTimer = new GameTimer('answer-timer');
+    this.gameTimer = new GameTimer('game-timer');
     this._setListeners();
     this.rounds = this.bundle.getRoundsArr();
     this.currentQuestion = undefined;
     this.currentRound = 0;
     this.answerCounter = 0;
-    this.turnTimerID = undefined;
+    this.turnTimerID = null;
     console.log('new Game', this);
   }
 
@@ -212,6 +216,7 @@ export default class Game {
   }
 
   raiseHand = () => {
+    this.turnTimer.setTimer(ANSWERTIME);
     this.clickConfig.answer = this.answer;
     const event = {
       eType: 'turnOrder',
@@ -226,7 +231,7 @@ export default class Game {
       };
       this.broadcast(event);
       this.updatePoints();
-    }, ANSWERTIME);
+    }, ANSWERTIME * 1000);
 
   }
 
@@ -285,6 +290,7 @@ export default class Game {
     this.gameField.drawTable(this.rounds[this.currentRound]);
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
+    this.gameTimer.setTimer(GAMETIME);
   }
 
   checkAnswerCounter() {
@@ -303,11 +309,13 @@ export default class Game {
     this.broadcast(event);
   }
 
-  broadcast(event) {
-    this._socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
-      event: event,
-      roomID: this._id,
-    }})); 
+  broadcast(...events) {
+    for (const event of events) {
+      this._socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
+        event: event,
+        roomID: this._id,
+      }})); 
+    }
   }
 
   addPlayer(name) {
