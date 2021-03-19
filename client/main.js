@@ -252,6 +252,8 @@ const updateGames = data => {
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => {
+      const searchTitle = document.getElementById('search-title');
+      searchTitle.setAttribute('class', gameId);
       document.getElementById('picture-info-1').style.display = 'none';
       document.getElementById('picture-info-2').style.display = 'block';
       gameData = {game: gm, id: gameId};
@@ -266,6 +268,12 @@ const updateGames = data => {
     gameDiv.innerHTML = gm.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
   }
+  const searchTitle = document.getElementById('search-title');
+  if (!Object.keys(allGames).includes(searchTitle.classList[0])) {
+    document.getElementById('picture-info-2').style.display = 'none';
+    document.getElementById('picture-info-1').style.display = 'block';
+  }
+
 }
 
 //add info about games
@@ -279,6 +287,7 @@ async function joinHandle(gameData) {
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = gm.settings.password;
   if (passwordInput !== passwordGame) return;
+  if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
