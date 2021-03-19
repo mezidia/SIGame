@@ -82,7 +82,9 @@ const ua = {
   "correct": "Правильно",
   "wrong": "Неправильно",
   "onleave": "Ви дійсно хочете залишити цю гру?",
-  
+  "find-games": {
+    "placeholder": "Знайди свою гру!",
+  },
 }
 
 export { ua };

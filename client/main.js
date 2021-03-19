@@ -220,6 +220,17 @@ const handleClick = evt => ({
 const joinLobby = async () => {
   await changeHash('lobbySearch')();
   updateGames(allGames);
+  const findGames = document.getElementById('find-games');
+  findGames.addEventListener('input', () => {
+    console.log(findGames.value);
+    const input = findGames.value;
+    const games = allGames.data;
+    for (let i in games) {
+      const comp = games[i].settings.roomName.substring(0, input.length);
+      if (comp !== input) document.getElementById(i).style.display = 'none';
+      else document.getElementById(i).style.display = 'block';
+    }
+  });
 }
 
 //update games in lobby
@@ -239,6 +250,7 @@ const updateGames = data => {
   for (const gameId in games) {
     const gm = games[gameId];
     const gameDiv = document.createElement('div');
+    gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => {
       document.getElementById('picture-info-1').style.display = 'none';
       document.getElementById('picture-info-2').style.display = 'block';

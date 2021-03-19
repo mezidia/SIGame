@@ -98,6 +98,10 @@ const de = {
   "correct": "Correct",
   "wrong": "Wrong",
   "onleave": "Do you really want to exit the game?",
+  "find-games": {
+    "placeholder": "Find your game!",
+  },
+
 };
 
 export { de };
