@@ -101,6 +101,9 @@ const de = {
   "find-games": {
     "placeholder": "Find your game!",
   },
+  "players-online": "Players online: ",
+  "nopass": "Without password",
+  "pass": "With password",
 
 };
 

@@ -23,10 +23,21 @@ const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
-  'usersOnline': data => console.log(data),
+  'usersOnline': data => onUsersOnline(data),
   'messageToGameChat': data => sendMessageToGameChat(data),
   'returnAllGames': data => updateGames(data),
 })[mType];
+
+const onUsersOnline = data => {
+  const numberOfAllPlayersDiv = document.getElementById('number-of-players-online'); 
+  numberOfAllPlayersDiv.innerHTML = data.data.names.length;
+  const namesOfAllPlayersDiv = document.getElementById('names-of-players-online');
+  for (let name of data.data.names) {
+    const playerDiv = document.createElement('div');
+    playerDiv.innerText += name + '\n';
+    namesOfAllPlayersDiv.appendChild(playerDiv);
+  }
+}
 
 //executes function returned by socketHandleConfig
 function socketHandle(data) {
@@ -202,6 +213,7 @@ const handleClick = evt => ({
   'help': [onHelp],
   'home': [onHome],
   'dju': [onHome],
+  'all-players': [showPlayers],
   'create-game-btn': [createGameLobby],
   'play-btn': [connectToSIgame],
   'de': [changeLanguage(de)],
@@ -215,6 +227,31 @@ const handleClick = evt => ({
   'ref_help-questions': [scrollToElem('ref_help-questions')],
   'ref_help-bug': [scrollToElem('ref_help-bug')],
 })[evt.target.id];
+
+//config function returns handlers by id
+const handleChange = evt => ({
+  'questionBundle': [onBundleCheckChange],
+  'type-of-password': [onTypeOfPasswordChange],
+})[evt.target.id];
+
+//shows input on password when create game
+const onTypeOfPasswordChange = evt => {
+  let roomInputPassword = document.getElementById('roomPassword');
+  const caseConfig = {
+    'nopass': () => { roomInputPassword.style.display = 'none'; },
+    'pass': () => { roomInputPassword.style.display = 'block'; },
+  }
+  const handler = caseConfig[evt.target.value];
+  if (!handler) return;
+  handler();
+}
+
+//shows div with players
+const showPlayers = () => {
+  const allPlayersDiv = document.getElementById('all-players-div');
+  if (allPlayersDiv.style.display === 'none') allPlayersDiv.style.display = 'block';
+  else allPlayersDiv.style.display = 'none';
+}
 
 //join-btn click handle
 const joinLobby = async () => {
@@ -308,7 +345,15 @@ document.addEventListener('click', async evt => {
   for await(const clickEvent of handleClick(evt)) {
     clickEvent()
   }
-  // handleClick(evt).forEach(x => x());
+});
+
+// it runs click handler if it exists
+document.addEventListener('change', async evt => {
+  console.log(evt.target.id);
+  if (!handleChange(evt)) return;
+  for await(const changeEvent of handleChange(evt)) {
+    changeEvent(evt);
+  }
 });
 
 // it runs keydown handler if it exists
@@ -320,20 +365,18 @@ document.addEventListener('keydown', async evt => {
   // handleKeydown(evt).forEach(x => x(evt));
 });
 
-document.addEventListener('change', (evt) => {
-  if (evt.target.id === 'questionBundle') {
-    let fileInputDisplay = document.getElementById('bundle-file');
-    let textInputDisplay = document.getElementById('bundleSearch-input');
-    const caseConfig = {
-      'random': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'none'; },
-      'download': () => { fileInputDisplay.style.display = 'block'; textInputDisplay.style.display = 'none'; },
-      'findByName': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'block'; },
-    }
-    const handler = caseConfig[evt.target.value];
-    if (!handler) return;
-    handler();
+const onBundleCheckChange = evt => {
+  let fileInputDisplay = document.getElementById('bundle-file');
+  let textInputDisplay = document.getElementById('bundleSearch-input');
+  const caseConfig = {
+    'random': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'none'; },
+    'download': () => { fileInputDisplay.style.display = 'block'; textInputDisplay.style.display = 'none'; },
+    'findByName': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'block'; },
   }
-});
+  const handler = caseConfig[evt.target.value];
+  if (!handler) return;
+  handler();
+}
 
 function checkHash(e) {
   const name = checkView();

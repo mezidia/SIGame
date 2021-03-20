@@ -133,3 +133,8 @@
     margin: auto;
     background-color: white;
 }
+
+#players-online-container {
+    display: flex;
+    flex-direction: row;
+}
