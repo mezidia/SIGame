@@ -129,8 +129,6 @@ export default class BundleEditor {
       const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
       const finalDecks = bundle.getFinalDecks();
       const uniqueFinalDecks = finalDecks.filter(deck => !usedDecksSubjects.includes(deck.subject));
-      console.log(uniqueFinalDecks[getRandomIntInclusive(0, uniqueFinalDecks.length - 1)]);
-      console.log(bundle);
       const deck = uniqueFinalDecks[getRandomIntInclusive(0, uniqueFinalDecks.length - 1)];
       if (!deck) throw Error('not enough unique decks');
 

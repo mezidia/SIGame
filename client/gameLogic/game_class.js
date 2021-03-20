@@ -8,6 +8,7 @@ import GameTimer from "./gameTimer_class.js";
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 25; //sec
+const APPEALTIME = 5; //sec
 
 export default class Game {
   _setListeners() {
@@ -40,6 +41,9 @@ export default class Game {
     this.currentRound = 0;
     this.answerCounter = 0;
     this.turnTimerID = null;
+    this.appealTimerID = null;
+    this.lastAnswer = undefined;
+    this.appealDecision = [];
     console.log('new Game', this);
   }
 
@@ -63,7 +67,6 @@ export default class Game {
     } else {
       document.getElementById('answer-btn').disabled = true;
     }
-  
   }
 
   onJoinGame = evt => {
@@ -90,6 +93,7 @@ export default class Game {
   }
 
   onNextTurn = evt => {
+    this.appealDecision = [];
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
     console.log(this.currentQuestion.string);
@@ -112,11 +116,56 @@ export default class Game {
   }
 
   onAnswerCheck = evt => {
-    if (this.master !== new User().name) return;
-    console.log(this.currentQuestion);
     const t = this.currentQuestion.trueAns;
     const f = this.currentQuestion.falseAns;
+    this.lastAnswer = { 
+      who: evt.who,
+      ans: evt.answer,
+      t,
+      f,
+    };
+    if (this.master !== new User().name) return;
+    console.log(this.currentQuestion);
     this.gameField.gmPopUp(evt.who, evt.answer, t, f);
+  }
+
+  onCanAppeal = evt => {
+    if (evt.who !== new User().name) return;
+    document.getElementById('answer-btn').disabled = false;
+    this.clickConfig.answer = this.appeal;
+    this.appealTimerID = setTimeout(() => {
+      document.getElementById('answer-btn').disabled = true;
+      this.nextTurn();
+    }, APPEALTIME * 1000);
+  }
+
+  onAppealDecision = evt => {
+    this.appealDecision.push({
+      who: evt.who,
+      decision: evt.decision,
+    });
+    if ((this.players.length - 2) === this.appealDecision.length) {
+      let res = 0;
+      for (const d of this.appealDecision) {
+        res += d.decision ? 1 : -1;
+      }
+      if (res > 0) {
+        this.points[this.lastAnswer.who] += this.currentQuestion.cost * 2;
+        this.updatePoints();
+      }
+      this.nextTurn();
+    }
+  }
+
+  onAppeal = evt => {
+    if (new User().name === evt.who) return;
+    if (new User().name === this.master) return;
+    this.gameField.appealPopUp(
+      this.lastAnswer.who,
+      this.lastAnswer.ans,
+      this.lastAnswer.t,
+      this.lastAnswer.f
+      );
   }
 
   eventsConfig = {
@@ -128,9 +177,12 @@ export default class Game {
     'showQuestion': this.onShowQuestion,
     'answerCheck': this.onAnswerCheck,
     'nextTurn': this.onNextTurn,
+    'canAppeal': this.onCanAppeal,
+    'appeal': this.onAppeal,
+    'appealDecision': this.onAppealDecision,
   };
 
-  socketHandler = (msg) => {
+  socketHandler = msg => {
     const prsdMsg = JSON.parse(msg.data);
     if (prsdMsg.mType !== 'broadcastedEvent') return;
     const event = prsdMsg.data.data.event;
@@ -173,7 +225,7 @@ export default class Game {
     this.broadcast(event);
   }
 
-  onQuestionClick = (e) => {
+  onQuestionClick = e => {
     const target = e.target;
     const splitedID = target.id.split('-');
     const i = splitedID[1] - 1;
@@ -187,7 +239,7 @@ export default class Game {
     console.log(q);
     this.gameField.drawQuestion(q.string);
     this.currentQuestion = q;
-    const canAnswer = (evt) => {
+    const canAnswer = evt => {
       if (evt.target.id === 'last-letter') {
         const event = {
           eType: 'turnOrder',
@@ -211,8 +263,16 @@ export default class Game {
       who: new User().name,
     };
     this.broadcast(event);
-    console.log(ans.value);
+  }
 
+  appeal = () => {
+    clearTimeout(this.appealTimerID);
+    const event = {
+      eType: 'appeal',
+      who: new User().name,
+    };
+    this.broadcast(event);
+    document.getElementById('answer-btn').disabled = true;
   }
 
   raiseHand = () => {
@@ -225,12 +285,9 @@ export default class Game {
     this.broadcast(event);
     this.turnTimerID = setTimeout(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
-      const event = {
-        eType: 'turnOrder',
-        who: this.players,
-      };
-      this.broadcast(event);
       this.updatePoints();
+      document.getElementById('answer-btn').disabled = true;
+      this.nextTurn();
     }, ANSWERTIME * 1000);
 
   }
@@ -240,17 +297,13 @@ export default class Game {
     this.points[name] += this.currentQuestion.cost;
     this.updatePoints();
     this.gameField.gmPopHide();
-    const event = {
-      eType: 'turnOrder',
-      who: this.players,
-    };
-    this.broadcast(event);
     this.nextTurn();
   }
 
   nextTurn() {
     const event = {
       eType: 'nextTurn',
+      who: this.players,
     };
     this.broadcast(event);
   }
@@ -260,12 +313,31 @@ export default class Game {
     this.points[name] -= +this.currentQuestion.cost;
     this.updatePoints();
     this.gameField.gmPopHide();
-    const event = {
-      eType: 'turnOrder',
-      who: this.players,
+    const appealEvent = {
+      eType: 'canAppeal',
+      who: name,
     };
-    this.broadcast(event);
-    this.nextTurn();
+    this.broadcast(appealEvent);
+  }
+
+  disagreeWithApeal = evt => {
+    const appealEvent = {
+      eType: 'appealDecision',
+      who: new User().name,
+      decision: false,
+    };
+    this.broadcast(appealEvent);
+    this.gameField.appealPopHide();
+  }
+
+  agreeWithApeal = evt => {
+    const appealEvent = {
+      eType: 'appealDecision',
+      who: new User().name,
+      decision: true,
+    };
+    this.broadcast(appealEvent);
+    this.gameField.appealPopHide();
   }
 
   clickConfig = {
@@ -274,6 +346,8 @@ export default class Game {
     'correct': this.correct,
     'uncorrect': this.uncorrect,
     'exit': changeHash('chooseMode'),
+    'disagreeWithApeal': this.disagreeWithApeal,
+    'agreeWithApeal': this.agreeWithApeal,
     'report': 'report',
     'pause': 'pause',
     'resume': 'resume',

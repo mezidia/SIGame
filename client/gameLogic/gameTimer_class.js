@@ -13,7 +13,6 @@ export default class GameTimer {
     this._currentTime = time;
     if (time <= 0) return new Error('Time mast be int and above 0');
     const cb = () => {
-      console.log(this._currentTime);
       if (this._currentTime >= 0) {
         this.update();
         this._currentTime -= 1;
@@ -22,7 +21,7 @@ export default class GameTimer {
         clearTimeout(this._timerID);
       }
     };
-    this._timerID = setTimeout(cb, 1000);
+    cb();
   }
 
   update() {
