@@ -79,9 +79,6 @@ class Server {
 
   //on new user connected
   connectionOpen(connection, req) {
-    let n = 0;
-    this.ws.clients.forEach(() => n++);
-    this.sendToAll({mType: 'usersOnline', data: n});
     const id = idGenerator.getID();
     this._users[id] = {connection: connection, name: ''};
   }
@@ -95,6 +92,11 @@ class Server {
       console.log('(sendName) no name property in data.data: ', data);
     }
     this._users[data.id].name = data.data.name;
+    const users = {names: []};
+    for (let i in this._users) {
+      users.names.push(this._users[i].name);
+    }
+    this.sendToAll({mType: 'usersOnline', data: users});
   }
 
   //send message to everyone
@@ -308,9 +310,6 @@ class Server {
 
   //executes on user quitting
   connectionClose(connection) {
-    let n = 0;
-    this.ws.clients.forEach(() => n++);
-    this.sendToAll({mType: 'usersOnline', data: n});
     const id = this.getIdByConnection(connection);
     for (let idGame in this._games) {
       const game = this._games[idGame];
@@ -319,6 +318,11 @@ class Server {
     }
     delete this._users[id];
     idGenerator.removeID(id);
+    const users = {names: []};
+    for (let i in this._users) {
+      users.names.push(this._users[i].name);
+    }
+    this.sendToAll({mType: 'usersOnline', data: users});
   }
 
   // gets users id by connection

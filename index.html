@@ -24,9 +24,17 @@
           <a class="nav-link text-white" id="de">de</a>
           <a class="nav-link text-white" id="ua">ua</a>
         </div>
+        <div class="nav-link text-white" id="all-players" data-localize="players-word">Players</div>
       </nav>
 
       <div id="main" style="flex-grow: 1; min-height: 200px"></div>
+      <div class="float-right" style="position:absolute; left:80%; top: 0; height: 100%; width: 20%; display: none" id="all-players-div">
+        <div id="players-online-container">
+          <div data-localize="players-online">Players online: </div>
+          <span id="number-of-players-online" style="padding-left: 3px"></span>
+        </div>
+        <div id="names-of-players-online"></div>
+      </div>
     </div>
   </body>
 </html>

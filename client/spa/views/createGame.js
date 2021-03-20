@@ -8,7 +8,11 @@ const view = () => {
       <input id="roomName" type="text" required>
       
       <h2 data-localize="password-word">Password</h2>
-      <input id="roomPassword" type="text" required>
+      <select id="type-of-password" class="form-control">
+        <option value="nopass" data-localize="nopass">Without password</option>
+        <option value="pass" data-localize="pass">With password</option>
+      </select>
+      <input id="roomPassword" style="display: none; margin-top: 10px" type="text">
       
       <h2 data-localize="question-bundle-word">Question bundle</h2>
       <select id="questionBundle" class="form-control">

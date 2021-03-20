@@ -85,6 +85,9 @@ const ua = {
   "find-games": {
     "placeholder": "Знайди свою гру!",
   },
+  "players-online": "Гравців онлайн: ",
+  "nopass": "Без пароля",
+  "pass": "З паролем",
 }
 
 export { ua };
