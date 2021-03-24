@@ -104,6 +104,19 @@
     grid-template-columns: 1fr;
 }
 
+.err-popup {
+    background-color: white;
+    z-index: 10;
+    position: fixed;
+    top: 10vh;
+    margin: auto;
+    max-width: 500px;
+    min-width: 200px;
+    display: grid;
+    grid-template-rows: 70px 1fr;
+    grid-template-columns: 1fr;
+}
+
 .player-display {
     background-color: #514c4c;
     color: white;
