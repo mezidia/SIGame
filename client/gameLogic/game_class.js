@@ -365,8 +365,12 @@ export default class Game {
     this.setNextPicker(name);
     const event = {
       eType: 'startGame',
-    };
+    }; 
     this.broadcast(event);
+    this._socket.send(JSON.stringify({ mType: 'updateGameStatus', data: { 
+      roomID: this._id,
+      running: true,
+    }}));
   }
 
   setNextPicker(name) {
