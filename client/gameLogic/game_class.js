@@ -312,14 +312,18 @@ export default class Game {
 
   uncorrect = evt => {
     const name = document.getElementById('answer-author').textContent;
-    this.points[name] -= +this.currentQuestion.cost;
-    this.updatePoints();
+    if (!this.currentQuestion.type === 'noRisk') {
+      this.points[name] -= +this.currentQuestion.cost;
+      this.updatePoints();
+      const appealEvent = {
+        eType: 'canAppeal',
+        who: name,
+      };
+      this.broadcast(appealEvent);
+    }
+    this.nextTurn();
     this.gameField.gmPopHide();
-    const appealEvent = {
-      eType: 'canAppeal',
-      who: name,
-    };
-    this.broadcast(appealEvent);
+
   }
 
   disagreeWithApeal = evt => {
