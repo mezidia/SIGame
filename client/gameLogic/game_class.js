@@ -43,6 +43,7 @@ export default class Game {
     this.turnTimerID = null;
     this.appealTimerID = null;
     this.lastAnswer = undefined;
+    this.canPeakQuestion = [];
     this.appealDecision = [];
     console.log('new Game', this);
   }
@@ -377,7 +378,11 @@ export default class Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.answerCounter === 14) {
+    if (this.currentRound === 3 && this.answerCounter === 1) {
+      const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
+      //show win window
+      this.exit();
+    } else if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;
     }

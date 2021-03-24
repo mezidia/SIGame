@@ -29,8 +29,13 @@ const promisifySocketMSG = (msg, awaitMsgType, socket, timeout = 222030203) => {
   });
 }
 
+function byField(fieldName){
+  return (a, b) => a[fieldName] > b[fieldName] ? 1 : -1;
+}
+
 export {
   promisifySocketMSG,
   getRandomIntInclusive,
+  byField,
 };
 
