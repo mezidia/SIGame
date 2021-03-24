@@ -186,7 +186,7 @@ export default class GameField {
     }
   }
 
-  updatePoits(points) {
+  updatePoints(points) {
     const container = document.getElementById('players-icons');
     if (!container.hasChildNodes()) return 'this room is empty';
     const childs = container.childNodes;
