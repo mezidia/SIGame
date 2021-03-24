@@ -170,6 +170,18 @@ export default class Game {
       );
   }
 
+  onNextPicker = evt => {
+    if (new User().name !== evt.who) {
+      this.clickConfig.cell = null;
+    } else if (new User().name === evt.who) {
+      this.clickConfig.cell = this.onQuestionClick;
+    }
+  }
+
+  onStartGame = evt => {
+    this.gameField.drawTable(this.rounds[this.currentRound]);
+  }
+
   eventsConfig = {
     'leave': this.onLeaveGame,
     'turnOrder': this.onTurnOrder,
@@ -181,6 +193,8 @@ export default class Game {
     'nextTurn': this.onNextTurn,
     'canAppeal': this.onCanAppeal,
     'appeal': this.onAppeal,
+    'nextPicker': this.onNextPicker,
+    'onStartGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
   };
 
@@ -218,7 +232,7 @@ export default class Game {
   }
 
   join() {
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.waitForPlayersJpgShow();
     for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
       eType: 'join',
@@ -347,7 +361,20 @@ export default class Game {
   }
 
   startGame = () => {
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    const name = this.players[this.players.length - 1];
+    this.setNextPicker(name);
+    const event = {
+      eType: 'startGame',
+    };
+    this.broadcast(event);
+  }
+
+  setNextPicker(name) {
+    const event = {
+      eType: 'nextPicker',
+      who: name,
+    };
+    this.broadcast(event);
   }
 
   clickConfig = {
