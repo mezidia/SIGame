@@ -346,6 +346,10 @@ export default class Game {
     this.gameField.appealPopHide();
   }
 
+  startGame = () => {
+    this.gameField.drawTable(this.rounds[this.currentRound]);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
@@ -357,6 +361,7 @@ export default class Game {
     'report': 'report',
     'pause': 'pause',
     'resume': 'resume',
+    'startGame': this.startGame,
     'changePoints': () => this.gameField.scoreAsInput(true)(),
     'submitPoints': () => {
       this.gameField.scoreAsInput(false)();
@@ -373,7 +378,7 @@ export default class Game {
   }
 
   init() {
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.waitForPlayersJpgShow();
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
     this.clickConfig.cell = null;
