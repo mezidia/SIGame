@@ -19,7 +19,7 @@ let allBundles = undefined;
 let roomId = undefined;
 let game = undefined;
 let allGames = {};
-const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
+const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -60,6 +60,7 @@ const createGame = () => {
     gameMode,
     totalPlayers,
     master: new User().name,
+    hasPassword: password ? true : false,
   };
   console.log(questionBundle.value);
   if (questionBundle.value === 'download') {
@@ -323,7 +324,8 @@ async function joinHandle(gameData) {
   console.log('game data ', gameData);
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = gm.settings.password;
-  if (passwordInput !== passwordGame) return;
+  if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
+  if (gm.players.includes(new User().name)) return;
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));

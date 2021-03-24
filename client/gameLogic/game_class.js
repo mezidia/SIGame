@@ -57,6 +57,7 @@ export default class Game {
     }
     if (this.master === new User().name) {
       this.gameField.switchGameMode(true);
+      this.clickConfig.cell = null;
     }
   }
 
