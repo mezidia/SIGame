@@ -340,7 +340,7 @@ export default class Game {
     this.gameField.appealPopHide();
   }
 
-  clickConfig = {
+  clickConfig = clickId => ({
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
     'correct': this.correct,
@@ -351,11 +351,17 @@ export default class Game {
     'report': 'report',
     'pause': 'pause',
     'resume': 'resume',
-  };
+    'changePoints': this.gameField.scoreAsInput(true),
+    'submitPoints': () => {
+      this.gameField.scoreAsInput(false)();
+      this.points = this.gameField.collectScores();
+      this.updatePoints()
+    },
+  })[clickId];
 
   clickHandler = (e) => {
     const id = e.target.id.split('-')[0];
-    const handler = this.clickConfig[id];
+    const handler = this.clickConfig(id);
     if (!handler) return console.log(`no handler for this |id:${id}| button`);
     handler(e);
   }

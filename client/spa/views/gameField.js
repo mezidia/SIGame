@@ -58,11 +58,13 @@ export default class GameField {
 
   scoreAsInput = (toChange = true) => () => {
     const divs = document.getElementsByClassName('player-display');
-    const btn = document.getElementById('change-sums-btn');
+    const btn = document.getElementById(`${toChange ? 'changePoints' : 'submitPoints'}-sums-btn`);
     if (toChange) {
       btn.innerHTML = 'Apply';
+      btn.id = 'submitPoints-sums-btn';
     } else {
       btn.innerHTML = 'Change sums';
+      btn.id = 'changePoints-sums-btn';
     }
     for (const div of divs) {
       const child = div.children[1];
@@ -79,13 +81,23 @@ export default class GameField {
     toChange = !toChange;
   }
 
+  collectScores() {
+    const divs = document.getElementsByClassName('player-display');
+    const res = {};
+    for(const div of divs) {
+      const name = div.children[0].innerHTML;
+      res[name] = +div.children[1].innerHTML
+    }
+    return res;
+  }
+
   // switches layout between player and game master mode
   // if isGm is true, switches to GM mode
   switchGameMode(isGm) {
     document.getElementById('reply').innerHTML = isGm ? '' : `<input id="input-answer" type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
       <button id="btn-answer" class="btn btn-primary game-button" style="width: 100px; height: 100%"></button>`;
     document.getElementsByClassName('game-container')[0].style.gridTemplateRows = isGm ? '1fr auto 0': '1fr auto 50px';
-    document.getElementById('change-sums-btn').style.display = isGm ? 'block': 'none';
+    document.getElementById('changePoints-sums-btn').style.display = isGm ? 'block': 'none';
     document.getElementById('report-btn').style.gridColumnStart = isGm ? '2': '1';
   }
 
