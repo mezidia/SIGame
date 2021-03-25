@@ -89,6 +89,7 @@ const ua = {
   "nopass": "Без пароля",
   "pass": "З паролем",
   "all-games": "Всі ігри",
+  "game-running": "Гра вже почалась",
 }
 
 export { ua };

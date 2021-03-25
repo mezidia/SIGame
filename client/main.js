@@ -321,7 +321,11 @@ const updateGames = data => {
       document.getElementById('search-gm').innerHTML = gm.settings.master;
       document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
-      document.getElementById('join-player').addEventListener('click', joinGame);
+      if (gm.settings.running) document.getElementById('search-password').style.display = 'none';
+      else {
+        document.getElementById('search-password').style.display = 'block';
+        document.getElementById('join-player').addEventListener('click', joinGame);
+      }
     });
     gameDiv.innerHTML = gm.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
