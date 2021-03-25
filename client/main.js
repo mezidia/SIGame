@@ -298,6 +298,8 @@ const updateGames = data => {
       document.getElementById('picture-info-1').style.display = 'none';
       document.getElementById('picture-info-2').style.display = 'block';
       gameData = {game: gm, id: gameId};
+      if (gm.settings.hasPassword) document.getElementById('password-to-enter').style.display = 'block';
+      else document.getElementById('password-to-enter').style.display = 'none';
       document.getElementById('join-player').removeEventListener('click', joinGame);
       document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = gm.settings.roomName;

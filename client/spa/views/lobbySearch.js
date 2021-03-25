@@ -15,7 +15,7 @@ const view = () => {
       <h3 class="spaced-text"><span data-localize="question-bundle-word">Question Bundle</span>: <span id="search-question-bundle"></span></h3>
       <h3 class="spaced-text"><span data-localize="game-master">Game master</span>: <span id="search-gm"></span></h3>
       <h3 class="spaced-text"><span data-localize="players-word">Players</span>: <span id="search-players"></span></h3>
-      <h3 class="spaced-text"><span data-localize="password-word">Password</span>: <input type="password" id="search-password" style="max-width: 70vw"></h3>
+      <h3 class="spaced-text" id="password-to-enter"><span data-localize="password-word">Password</span>: <input type="password" id="search-password" style="max-width: 70vw"></h3>
       
       <div class="search-btns">
         <button class="btn btn-primary game-button" style="width: 100%;" id="join-player" data-localize="join">Join</button>
