@@ -235,7 +235,31 @@ const handleClick = evt => ({
 const handleChange = evt => ({
   'questionBundle': [onBundleCheckChange],
   'type-of-password': [onTypeOfPasswordChange],
+  'select-games-by-type': [showGames],
 })[evt.target.id];
+
+
+function showGames() {
+  const input = document.getElementById('find-games').value;
+  const sortParameter = document.getElementById('select-games-by-type').value;
+  const games = allGames.data;
+  for (let i in games) {
+    if (sortParameter === 'nopass') {
+      if (games[i].settings.hasPassword) {
+        document.getElementById(i).style.display = 'none';
+        continue;
+      }
+    } else if (sortParameter === 'pass')  {
+      if (!games[i].settings.hasPassword) {
+        document.getElementById(i).style.display = 'none';
+        continue;
+      }
+    }
+    const comp = games[i].settings.roomName.substring(0, input.length);
+    if (comp !== input) document.getElementById(i).style.display = 'none';
+    else document.getElementById(i).style.display = 'block';
+  }
+}
 
 //shows input on password when create game
 const onTypeOfPasswordChange = evt => {
@@ -261,16 +285,7 @@ const joinLobby = async () => {
   await changeHash('lobbySearch')();
   updateGames(allGames);
   const findGames = document.getElementById('find-games');
-  findGames.addEventListener('input', () => {
-    console.log(findGames.value);
-    const input = findGames.value;
-    const games = allGames.data;
-    for (let i in games) {
-      const comp = games[i].settings.roomName.substring(0, input.length);
-      if (comp !== input) document.getElementById(i).style.display = 'none';
-      else document.getElementById(i).style.display = 'block';
-    }
-  });
+  findGames.addEventListener('input', showGames);
 }
 
 //update games in lobby
@@ -316,6 +331,7 @@ const updateGames = data => {
     document.getElementById('picture-info-2').style.display = 'none';
     document.getElementById('picture-info-1').style.display = 'block';
   }
+  showGames();
 
 }
 

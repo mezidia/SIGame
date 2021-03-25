@@ -88,6 +88,7 @@ const ua = {
   "players-online": "Гравців онлайн: ",
   "nopass": "Без пароля",
   "pass": "З паролем",
+  "all-games": "Всі ігри",
 }
 
 export { ua };
