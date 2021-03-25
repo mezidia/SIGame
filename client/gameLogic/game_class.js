@@ -43,6 +43,7 @@ export default class Game {
     this.turnTimerID = null;
     this.appealTimerID = null;
     this.lastAnswer = undefined;
+    this.canPeakQuestion = [];
     this.appealDecision = [];
     console.log('new Game', this);
   }
@@ -57,6 +58,7 @@ export default class Game {
     }
     if (this.master === new User().name) {
       this.gameField.switchGameMode(true);
+      this.clickConfig.cell = null;
     }
   }
 
@@ -168,6 +170,18 @@ export default class Game {
       );
   }
 
+  onNextPicker = evt => {
+    if (new User().name !== evt.who) {
+      this.clickConfig.cell = null;
+    } else if (new User().name === evt.who) {
+      this.clickConfig.cell = this.onQuestionClick;
+    }
+  }
+
+  onStartGame = evt => {
+    this.gameField.drawTable(this.rounds[this.currentRound]);
+  }
+
   eventsConfig = {
     'leave': this.onLeaveGame,
     'turnOrder': this.onTurnOrder,
@@ -179,6 +193,8 @@ export default class Game {
     'nextTurn': this.onNextTurn,
     'canAppeal': this.onCanAppeal,
     'appeal': this.onAppeal,
+    'nextPicker': this.onNextPicker,
+    'onStartGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
   };
 
@@ -216,7 +232,7 @@ export default class Game {
   }
 
   join() {
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.waitForPlayersJpgShow();
     for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
       eType: 'join',
@@ -310,14 +326,18 @@ export default class Game {
 
   uncorrect = evt => {
     const name = document.getElementById('answer-author').textContent;
-    this.points[name] -= +this.currentQuestion.cost;
-    this.updatePoints();
+    if (!this.currentQuestion.type === 'noRisk') {
+      this.points[name] -= +this.currentQuestion.cost;
+      this.updatePoints();
+      const appealEvent = {
+        eType: 'canAppeal',
+        who: name,
+      };
+      this.broadcast(appealEvent);
+    }
+    this.nextTurn();
     this.gameField.gmPopHide();
-    const appealEvent = {
-      eType: 'canAppeal',
-      who: name,
-    };
-    this.broadcast(appealEvent);
+
   }
 
   disagreeWithApeal = evt => {
@@ -340,6 +360,27 @@ export default class Game {
     this.gameField.appealPopHide();
   }
 
+  startGame = () => {
+    const name = this.players[this.players.length - 1];
+    this.setNextPicker(name);
+    const event = {
+      eType: 'startGame',
+    }; 
+    this.broadcast(event);
+    this._socket.send(JSON.stringify({ mType: 'updateGameStatus', data: { 
+      roomID: this._id,
+      running: true,
+    }}));
+  }
+
+  setNextPicker(name) {
+    const event = {
+      eType: 'nextPicker',
+      who: name,
+    };
+    this.broadcast(event);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
@@ -351,6 +392,13 @@ export default class Game {
     'report': 'report',
     'pause': 'pause',
     'resume': 'resume',
+    'startGame': this.startGame,
+    'changePoints': () => this.gameField.scoreAsInput(true)(),
+    'submitPoints': () => {
+      this.gameField.scoreAsInput(false)();
+      this.points = this.gameField.collectScores();
+      this.updatePoints()
+    },
   };
 
   clickHandler = (e) => {
@@ -361,15 +409,20 @@ export default class Game {
   }
 
   init() {
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.waitForPlayersJpgShow();
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
+    this.clickConfig.cell = null;
     this.gameTimer.setTimer(GAMETIME);
   }
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.answerCounter === 14) {
+    if (this.currentRound === 3 && this.answerCounter === 1) {
+      const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
+      //show win window
+      this.exit();
+    } else if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;
     }

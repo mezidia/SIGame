@@ -6,10 +6,6 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function servGameToFrontGame(data) {
-  
-}
-
 const promisifySocketMSG = (msg, awaitMsgType, socket, timeout = 222030203) => {
   return new Promise((resolve, reject) => {
     let timer = undefined;
@@ -33,8 +29,13 @@ const promisifySocketMSG = (msg, awaitMsgType, socket, timeout = 222030203) => {
   });
 }
 
+function byField(fieldName){
+  return (a, b) => a[fieldName] > b[fieldName] ? 1 : -1;
+}
+
 export {
   promisifySocketMSG,
   getRandomIntInclusive,
+  byField,
 };
 
