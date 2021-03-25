@@ -15,12 +15,12 @@ const view = () => {
     </div>
     <div class="col-md-3 chat-container" style="padding: 0 0 0 0">
       <div id="chat" style="background-color: #6f42c1; min-height: 70px; overflow: auto">
-      <-- timer exemple -->
+      <-- timer example -->
       <div id="answer-timer">666</div>
-      <-- timer exemple -->
-      <-- timer exemple -->
+      <-- timer example -->
+      <-- timer example -->
       <div id="game-timer">666</div>
-      <-- timer exemple -->
+      <-- timer example -->
       </div>
       <div id="chat-input" style="background-color: #8c8c8c;">
         <input type="text" style="width: 100%; height: 50px;" id="message-input">

@@ -32,6 +32,7 @@ const onUsersOnline = data => {
   const numberOfAllPlayersDiv = document.getElementById('number-of-players-online'); 
   numberOfAllPlayersDiv.innerHTML = data.data.names.length;
   const namesOfAllPlayersDiv = document.getElementById('names-of-players-online');
+  namesOfAllPlayersDiv.innerHTML = '';
   for (let name of data.data.names) {
     const playerDiv = document.createElement('div');
     playerDiv.innerText += name + '\n';
@@ -289,6 +290,7 @@ const updateGames = data => {
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => {
+      console.log(gm.settings);
       const searchTitle = document.getElementById('search-title');
       searchTitle.setAttribute('class', gameId);
       document.getElementById('picture-info-1').style.display = 'none';
