@@ -211,7 +211,14 @@ export default class GameField {
 
   waitForPlayersJpgShow() {
     const gameDisplay = document.getElementById('game-display');
-    gameDisplay.innerHTML = `<img style="display: block; width: 50%; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg"></img>`;
+    gameDisplay.innerHTML = `<img style="display: block; width: 50%; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg" alt="Waiting for start">`;
+  }
+
+  drawStartButton() {
+    const placeHolder = document.getElementById('reply');
+    placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
+        <button class="btn btn-primary" id="start-game-btn">Start game</button>
+      </div>`
   }
 
 }

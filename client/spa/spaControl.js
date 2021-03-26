@@ -3,7 +3,7 @@
 import RenderEngine from './engine.js';
 import Router from './router.js';
 import { changeLanguage, language } from '../changeLanguage.js';
-import { game } from '../main.js';
+import { leavePopup } from './uiElements.js';
 
 import { de } from '../../localization/de.js';
 import { ua } from '../../localization/ua.js';
@@ -33,10 +33,8 @@ const changeHash = (hash) => async() => {
   }
   
   if(ask) {
-    const exit = confirm(language.json['onleave']);
-    if(!exit) return;
-    if(game) game.exit();
-    window.location.replace('#chooseMode');
+    leavePopup(language.json['onleave']);
+    return;
   }
 
   router.change(hash);
