@@ -154,3 +154,11 @@
     display: flex;
     flex-direction: row;
 }
+
+#start-game-btn {
+    position: absolute;
+    margin: auto;
+    top: 17vw;
+    min-width: 200px;
+    height: 100px;
+}
