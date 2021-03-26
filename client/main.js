@@ -227,7 +227,14 @@ const handleClick = evt => ({
   'ref_help-rules': [scrollToElem('ref_help-rules')],
   'ref_help-questions': [scrollToElem('ref_help-questions')],
   'ref_help-bug': [scrollToElem('ref_help-bug')],
-  'close-popup': [() => { document.getElementById('popupPlaceholder').innerHTML = '' }]
+  'close-popup': [() => {
+    document.getElementById('popupPlaceholder').innerHTML = '';
+  }],
+  'exit-game-btn': [() => {
+    if(game) game.exit();
+    window.location.replace('#chooseMode');
+    document.getElementById('popupPlaceholder').innerHTML = '';
+  }],
 })[evt.target.id];
 
 //config function returns handlers by id
