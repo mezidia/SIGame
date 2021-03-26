@@ -252,22 +252,6 @@ const handleInput = evt => ({
 })[evt.target.id];
 
 function onBundleSearchInput() {
-  //refactor me pleeease
-  /*document.getElementById('bundleSearch-input').addEventListener('focus', () => {
-    bundleSearchAutocomp.style.display = 'block';
-    let i = 0;
-    document.getElementById('bundleSearch-input').addEventListener('keydown', evt => {
-      if (evt.key === 40) {
-        i++;
-        bundleSearchAutocomp.children[i].focus();
-      }
-    })
-  })*/
-  
-  document.getElementById('bundleSearch-input').addEventListener('blur', () => {
-    bundleSearchAutocomp.style.display = 'none';
-  })
-
   const input = document.getElementById('bundleSearch-input').value;
   const bundles = allBundles;
   const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
@@ -281,9 +265,44 @@ function onBundleSearchInput() {
       autocomp.innerHTML = bundles[i].title;
       autocomp.setAttribute('class', 'bundle-search-input-autocomplete');
       bundleSearchAutocomp.appendChild(autocomp);
+      autocomp.addEventListener('click', () => {
+        document.getElementById('bundleSearch-input').value = autocomp.innerText;
+      })
     }
   }
   bundleSearchAutocomp.style.display = 'block';
+  let i = -1;
+  document.getElementById('bundleSearch-input').addEventListener('keydown', evt => {
+    if (evt.code === 'ArrowDown') {
+      i++;
+      if (i >= bundleSearchAutocomp.children.length) i = 0;
+      bundleSearchAutocomp.children[i].style.backgroundColor = '#d4d4d4';
+      for (let j = 0; j < bundleSearchAutocomp.children.length; j++) {
+        if (i !== j) {
+          bundleSearchAutocomp.children[j].style.backgroundColor = 'white';
+        }
+      }
+    } else if (evt.code === 'ArrowUp') {
+      i--;
+      if (i < 0) i = bundleSearchAutocomp.children.length - 1;
+      bundleSearchAutocomp.children[i].style.backgroundColor = '#d4d4d4';
+      for (let j = 0; j < bundleSearchAutocomp.children.length; j++) {
+        if (i !== j) {
+          bundleSearchAutocomp.children[j].style.backgroundColor = 'white';
+        }
+      }
+    } else if (evt.code === 'Enter') {
+      evt.preventDefault();
+      bundleSearchAutocomp.children[i].click();
+    }
+  })
+  //refactor me pleeease
+  document.getElementById('bundleSearch-input').addEventListener('focus', () => {
+    bundleSearchAutocomp.style.display = 'block';    
+  })
+  document.getElementById('bundleSearch-input').addEventListener('blur', () => {
+    bundleSearchAutocomp.style.display = 'none';
+  })
 
 }
 

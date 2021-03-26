@@ -172,8 +172,9 @@
 
 .bundle-search-input-autocomplete {
   border-bottom: 1px solid #d4d4d4;
-  height: 30px;
+  height: 40px;
   z-index: 99;
+  padding: 5px;
 }
 
 #start-game-btn {
