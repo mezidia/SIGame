@@ -42,6 +42,7 @@ class Server {
     'newGameMaster': data => this.newGameMaster(data),
     'sendName': data => this.sendName(data),
     'removeUserFromServer': data => this.removeUserFromServer(data),
+    'updateGameStatus': data => this.updateGameStatus(data),
   };
 
   constructor(port) {
@@ -60,6 +61,13 @@ class Server {
       });
     }
     return Server._instance;
+  }
+
+  updateGameStatus(data) {
+    const roomId = data.data.roomID;
+    this._games[roomId].settings.running = true;
+    const gamesSend = this.prepareGamesForClient();
+    this.sendToUser(id, {mType: 'returnAllGames', data: gamesSend});
   }
 
   //handles request to server
@@ -211,6 +219,7 @@ class Server {
     this._games[id].players[data.id] = this._users[data.id];
     this._games[id].bundle = message.bundle;
     this._games[id].settings = message.settings;
+    this._games[id].settings.running = false;
     this.sendToUser(data.id, {mType: 'newLobbyId', data: {id: id}});
     for (let id of Object.keys(this._users)) {
       this.returnAllGames({id: id});

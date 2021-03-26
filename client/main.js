@@ -32,6 +32,7 @@ const onUsersOnline = data => {
   const numberOfAllPlayersDiv = document.getElementById('number-of-players-online'); 
   numberOfAllPlayersDiv.innerHTML = data.data.names.length;
   const namesOfAllPlayersDiv = document.getElementById('names-of-players-online');
+  namesOfAllPlayersDiv.innerHTML = '';
   for (let name of data.data.names) {
     const playerDiv = document.createElement('div');
     playerDiv.innerText += name + '\n';
@@ -241,7 +242,31 @@ const handleClick = evt => ({
 const handleChange = evt => ({
   'questionBundle': [onBundleCheckChange],
   'type-of-password': [onTypeOfPasswordChange],
+  'select-games-by-type': [showGames],
 })[evt.target.id];
+
+
+function showGames() {
+  const input = document.getElementById('find-games').value;
+  const sortParameter = document.getElementById('select-games-by-type').value;
+  const games = allGames.data;
+  for (let i in games) {
+    if (sortParameter === 'nopass') {
+      if (games[i].settings.hasPassword) {
+        document.getElementById(i).style.display = 'none';
+        continue;
+      }
+    } else if (sortParameter === 'pass')  {
+      if (!games[i].settings.hasPassword) {
+        document.getElementById(i).style.display = 'none';
+        continue;
+      }
+    }
+    const comp = games[i].settings.roomName.substring(0, input.length);
+    if (comp !== input) document.getElementById(i).style.display = 'none';
+    else document.getElementById(i).style.display = 'block';
+  }
+}
 
 //shows input on password when create game
 const onTypeOfPasswordChange = evt => {
@@ -267,16 +292,7 @@ const joinLobby = async () => {
   await changeHash('lobbySearch')();
   updateGames(allGames);
   const findGames = document.getElementById('find-games');
-  findGames.addEventListener('input', () => {
-    console.log(findGames.value);
-    const input = findGames.value;
-    const games = allGames.data;
-    for (let i in games) {
-      const comp = games[i].settings.roomName.substring(0, input.length);
-      if (comp !== input) document.getElementById(i).style.display = 'none';
-      else document.getElementById(i).style.display = 'block';
-    }
-  });
+  findGames.addEventListener('input', showGames);
 }
 
 //update games in lobby
@@ -298,18 +314,25 @@ const updateGames = data => {
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => {
+      console.log(gm.settings);
       const searchTitle = document.getElementById('search-title');
       searchTitle.setAttribute('class', gameId);
       document.getElementById('picture-info-1').style.display = 'none';
       document.getElementById('picture-info-2').style.display = 'block';
       gameData = {game: gm, id: gameId};
+      if (gm.settings.hasPassword) document.getElementById('password-to-enter').style.display = 'block';
+      else document.getElementById('password-to-enter').style.display = 'none';
       document.getElementById('join-player').removeEventListener('click', joinGame);
       document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
       document.getElementById('search-title').innerHTML = gm.settings.roomName;
       document.getElementById('search-gm').innerHTML = gm.settings.master;
       document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
-      document.getElementById('join-player').addEventListener('click', joinGame);
+      if (gm.settings.running) document.getElementById('search-password').style.display = 'none';
+      else {
+        document.getElementById('search-password').style.display = 'block';
+        document.getElementById('join-player').addEventListener('click', joinGame);
+      }
     });
     gameDiv.innerHTML = gm.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
@@ -319,6 +342,7 @@ const updateGames = data => {
     document.getElementById('picture-info-2').style.display = 'none';
     document.getElementById('picture-info-1').style.display = 'block';
   }
+  showGames();
 
 }
 

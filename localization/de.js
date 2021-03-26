@@ -104,6 +104,8 @@ const de = {
   "players-online": "Players online: ",
   "nopass": "Without password",
   "pass": "With password",
+  "all-games": "All games",
+  "game-running": "Game has already started",
 
 };
 
