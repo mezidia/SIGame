@@ -22,7 +22,10 @@ const view = () => {
       </select>    
       <input style="display: none; margin-top: 10px" id="bundle-file" type="file" accept=".json" />
       <input style="display: none; margin-top: 10px" id="bundleSearch-input" type="text" />
-      
+      <div class="bundle-search-container">
+        <div id="bundleSearch-input-autocomplete" style="display: none;"></div>
+      </div>
+
       <h2 data-localize="game-type-word">Game type</h2>
       <select id="gameMode" class="form-control">
         <option data-localize="classic-word">Classic</option>

@@ -238,6 +238,47 @@ const handleChange = evt => ({
   'select-games-by-type': [showGames],
 })[evt.target.id];
 
+//config function returns handlers by id
+const handleInput = evt => ({
+  'find-games': [showGames],
+  'bundleSearch-input': [onBundleSearchInput],
+})[evt.target.id];
+
+function onBundleSearchInput() {
+  //refactor me pleeease
+  /*document.getElementById('bundleSearch-input').addEventListener('focus', () => {
+    bundleSearchAutocomp.style.display = 'block';
+    let i = 0;
+    document.getElementById('bundleSearch-input').addEventListener('keydown', evt => {
+      if (evt.key === 40) {
+        i++;
+        bundleSearchAutocomp.children[i].focus();
+      }
+    })
+  })*/
+  
+  document.getElementById('bundleSearch-input').addEventListener('blur', () => {
+    bundleSearchAutocomp.style.display = 'none';
+  })
+
+  const input = document.getElementById('bundleSearch-input').value;
+  const bundles = allBundles;
+  const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
+  console.log(bundleSearchAutocomp);
+  bundleSearchAutocomp.innerHTML = "";
+  console.log(input);
+  for (let i in bundles) {
+    const comp = bundles[i].title.substring(0, input.length);
+    if (comp.toLowerCase() === input.toLowerCase()) {
+      const autocomp = document.createElement('div');
+      autocomp.innerHTML = bundles[i].title;
+      autocomp.setAttribute('class', 'bundle-search-input-autocomplete');
+      bundleSearchAutocomp.appendChild(autocomp);
+    }
+  }
+  bundleSearchAutocomp.style.display = 'block';
+
+}
 
 function showGames() {
   const input = document.getElementById('find-games').value;
@@ -285,7 +326,6 @@ const joinLobby = async () => {
   await changeHash('lobbySearch')();
   updateGames(allGames);
   const findGames = document.getElementById('find-games');
-  findGames.addEventListener('input', showGames);
 }
 
 //update games in lobby
@@ -380,6 +420,15 @@ document.addEventListener('change', async evt => {
   if (!handleChange(evt)) return;
   for await(const changeEvent of handleChange(evt)) {
     changeEvent(evt);
+  }
+});
+
+// it runs click handler if it exists
+document.addEventListener('input', async evt => {
+  console.log(evt.target.id);
+  if (!handleInput(evt)) return;
+  for await(const inputEvent of handleInput(evt)) {
+    inputEvent(evt);
   }
 });
 
