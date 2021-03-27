@@ -245,6 +245,66 @@ const handleChange = evt => ({
   'select-games-by-type': [showGames],
 })[evt.target.id];
 
+//config function returns handlers by id
+const handleInput = evt => ({
+  'find-games': [showGames],
+  'bundleSearch-input': [onBundleSearchInput],
+})[evt.target.id];
+
+function onBundleSearchInput() {
+  const input = document.getElementById('bundleSearch-input').value;
+  const bundles = allBundles;
+  const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
+  console.log(bundleSearchAutocomp);
+  bundleSearchAutocomp.innerHTML = "";
+  console.log(input);
+  for (let i in bundles) {
+    const comp = bundles[i].title.substring(0, input.length);
+    if (comp.toLowerCase() === input.toLowerCase()) {
+      const autocomp = document.createElement('div');
+      autocomp.innerHTML = bundles[i].title;
+      autocomp.setAttribute('class', 'bundle-search-input-autocomplete');
+      bundleSearchAutocomp.appendChild(autocomp);
+      autocomp.addEventListener('click', () => {
+        document.getElementById('bundleSearch-input').value = autocomp.innerText;
+      })
+    }
+  }
+  bundleSearchAutocomp.style.display = 'block';
+  let i = -1;
+  document.getElementById('bundleSearch-input').addEventListener('keydown', evt => {
+    if (evt.code === 'ArrowDown') {
+      i++;
+      if (i >= bundleSearchAutocomp.children.length) i = 0;
+      bundleSearchAutocomp.children[i].style.backgroundColor = '#d4d4d4';
+      for (let j = 0; j < bundleSearchAutocomp.children.length; j++) {
+        if (i !== j) {
+          bundleSearchAutocomp.children[j].style.backgroundColor = 'white';
+        }
+      }
+    } else if (evt.code === 'ArrowUp') {
+      i--;
+      if (i < 0) i = bundleSearchAutocomp.children.length - 1;
+      bundleSearchAutocomp.children[i].style.backgroundColor = '#d4d4d4';
+      for (let j = 0; j < bundleSearchAutocomp.children.length; j++) {
+        if (i !== j) {
+          bundleSearchAutocomp.children[j].style.backgroundColor = 'white';
+        }
+      }
+    } else if (evt.code === 'Enter') {
+      evt.preventDefault();
+      bundleSearchAutocomp.children[i].click();
+    }
+  })
+  //refactor me pleeease
+  document.getElementById('bundleSearch-input').addEventListener('focus', () => {
+    bundleSearchAutocomp.style.display = 'block';    
+  })
+  document.getElementById('bundleSearch-input').addEventListener('blur', () => {
+    bundleSearchAutocomp.style.display = 'none';
+  })
+
+}
 
 function showGames() {
   const input = document.getElementById('find-games').value;
@@ -292,7 +352,6 @@ const joinLobby = async () => {
   await changeHash('lobbySearch')();
   updateGames(allGames);
   const findGames = document.getElementById('find-games');
-  findGames.addEventListener('input', showGames);
 }
 
 //update games in lobby
@@ -387,6 +446,15 @@ document.addEventListener('change', async evt => {
   if (!handleChange(evt)) return;
   for await(const changeEvent of handleChange(evt)) {
     changeEvent(evt);
+  }
+});
+
+// it runs click handler if it exists
+document.addEventListener('input', async evt => {
+  console.log(evt.target.id);
+  if (!handleInput(evt)) return;
+  for await(const inputEvent of handleInput(evt)) {
+    inputEvent(evt);
   }
 });
 

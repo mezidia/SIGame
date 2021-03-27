@@ -155,6 +155,28 @@
     flex-direction: row;
 }
 
+.bundle-search-container {
+    position: relative;
+}
+
+#bundleSearch-input-autocomplete {
+    position: absolute;
+    display: inline-block;
+    background-color: white;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-top: 1px solid #d4d4d4;
+    top: 0;
+    left: 0;
+}
+
+.bundle-search-input-autocomplete {
+  border-bottom: 1px solid #d4d4d4;
+  height: 40px;
+  z-index: 99;
+  padding: 5px;
+}
+
 #start-game-btn {
     position: absolute;
     margin: auto;
