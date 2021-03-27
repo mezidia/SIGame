@@ -252,9 +252,15 @@ const handleInput = evt => ({
 })[evt.target.id];
 
 function onBundleSearchInput() {
+  const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
+  const show = () => bundleSearchAutocomp.style.display = 'block';  
+  const hide = () => bundleSearchAutocomp.style.display = 'none';  
+  if (bundleSearchAutocomp.innerHTML == "") {
+    document.getElementById('bundleSearch-input').addEventListener('focus', show);
+    document.getElementById('bundleSearch-input').addEventListener('blur', hide);
+  }
   const input = document.getElementById('bundleSearch-input').value;
   const bundles = allBundles;
-  const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
   console.log(bundleSearchAutocomp);
   bundleSearchAutocomp.innerHTML = "";
   console.log(input);
@@ -296,14 +302,6 @@ function onBundleSearchInput() {
       bundleSearchAutocomp.children[i].click();
     }
   })
-  //refactor me pleeease
-  document.getElementById('bundleSearch-input').addEventListener('focus', () => {
-    bundleSearchAutocomp.style.display = 'block';    
-  })
-  document.getElementById('bundleSearch-input').addEventListener('blur', () => {
-    bundleSearchAutocomp.style.display = 'none';
-  })
-
 }
 
 function showGames() {
