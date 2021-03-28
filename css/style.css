@@ -175,6 +175,11 @@
   height: 40px;
   z-index: 99;
   padding: 5px;
+  cursor: pointer;
+}
+
+.bundle-search-input-autocomplete:hover {
+    background-color: #d4d4d4;
 }
 
 #start-game-btn {

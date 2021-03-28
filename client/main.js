@@ -253,16 +253,17 @@ const handleInput = evt => ({
 
 function onBundleSearchInput() {
   const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
-  const show = () => bundleSearchAutocomp.style.display = 'block';  
-  const hide = () => bundleSearchAutocomp.style.display = 'none';  
-  if (bundleSearchAutocomp.innerHTML == "") {
-    document.getElementById('bundleSearch-input').addEventListener('focus', show);
-    document.getElementById('bundleSearch-input').addEventListener('blur', hide);
+  const hide = () => {
+    document.removeEventListener('click', hide);
+    bundleSearchAutocomp.style.display = 'none';  
   }
+  if (bundleSearchAutocomp.innerHTML == "") {
+    document.addEventListener('click', hide);
+  }
+  bundleSearchAutocomp.innerHTML = "";
   const input = document.getElementById('bundleSearch-input').value;
   const bundles = allBundles;
   console.log(bundleSearchAutocomp);
-  bundleSearchAutocomp.innerHTML = "";
   console.log(input);
   for (let i in bundles) {
     const comp = bundles[i].title.substring(0, input.length);
@@ -273,6 +274,7 @@ function onBundleSearchInput() {
       bundleSearchAutocomp.appendChild(autocomp);
       autocomp.addEventListener('click', () => {
         document.getElementById('bundleSearch-input').value = autocomp.innerText;
+        hide();
       })
     }
   }
@@ -462,7 +464,6 @@ document.addEventListener('keydown', async evt => {
   for await(const keyDownEvent of handleKeydown(evt)) {
     keyDownEvent(evt);
   }
-  // handleKeydown(evt).forEach(x => x(evt));
 });
 
 const onBundleCheckChange = evt => {
