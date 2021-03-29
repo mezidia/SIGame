@@ -5,12 +5,13 @@ import User from "./user_class.js";
 import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
+import Game from "./game_class.js";
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 25; //sec
 const APPEALTIME = 5; //sec
 
-export default class Game {
+export default class SimpleGame extends Game {
   _setListeners() {
     document.addEventListener('click', this.clickHandler);
     this._socket.addEventListener('message', this.socketHandler);
@@ -98,7 +99,7 @@ export default class Game {
     this.appealDecision = [];
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
-    //console.log(this.currentQuestion.string);
+    console.log(this.currentQuestion.string);
     for (const dIndex in decks) {
       for (const qIndex in decks[dIndex].questions) {
         //console.log(dIndex, qIndex);
@@ -194,7 +195,7 @@ export default class Game {
     'canAppeal': this.onCanAppeal,
     'appeal': this.onAppeal,
     'nextPicker': this.onNextPicker,
-    'startGame': this.onStartGame,
+    'onStartGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
   };
 
@@ -363,7 +364,6 @@ export default class Game {
   startGame = () => {
     const name = this.players[this.players.length - 1];
     this.setNextPicker(name);
-    this.gameField.hideStartButton();
     const event = {
       eType: 'startGame',
     }; 
@@ -415,7 +415,6 @@ export default class Game {
     this.gameField.switchGameMode(true);
     this.clickConfig.cell = null;
     this.gameTimer.setTimer(GAMETIME);
-    this.gameField.drawStartButton();
   }
 
   checkAnswerCounter() {

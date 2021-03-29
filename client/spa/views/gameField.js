@@ -217,8 +217,13 @@ export default class GameField {
   drawStartButton() {
     const placeHolder = document.getElementById('reply');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-        <button class="btn btn-primary" id="start-game-btn">Start game</button>
+        <button class="btn btn-primary" id="startGame-btn">Start game</button>
       </div>`
+  }
+
+  hideStartButton() {
+    const placeHolder = document.getElementById('reply');
+    placeHolder.innerHTML = ``
   }
 
 }

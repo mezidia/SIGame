@@ -67,7 +67,7 @@ class Server {
     const roomId = data.data.roomID;
     this._games[roomId].settings.running = true;
     const gamesSend = this.prepareGamesForClient();
-    this.sendToUser(id, {mType: 'returnAllGames', data: gamesSend});
+    this.sendToUser(data.id, {mType: 'returnAllGames', data: gamesSend});
   }
 
   //handles request to server
