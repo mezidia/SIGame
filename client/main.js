@@ -20,6 +20,7 @@ let roomId = undefined;
 let game = undefined;
 let allGames = {};
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
+let gameInSearchLobby = undefined;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -200,6 +201,12 @@ const sendMessageToGameChat = mess => {
   message.appendChild(name);
   message.appendChild(text);
   chatField.appendChild(message);
+  scrollToBottom(chatField);
+}
+
+ //function for scrolling div to end
+ const scrollToBottom = (e) => {
+  e.scrollTop = e.scrollHeight - e.getBoundingClientRect().height;
 }
 
 const onHelp = () => {
@@ -273,8 +280,6 @@ function onBundleSearchInput() {
   bundleSearchAutocomp.innerHTML = "";
   const input = document.getElementById('bundleSearch-input').value;
   const bundles = allBundles;
-  console.log(bundleSearchAutocomp);
-  console.log(input);
   for (let i in bundles) {
     const comp = bundles[i].title.substring(0, input.length);
     if (comp.toLowerCase() === input.toLowerCase()) {
@@ -361,7 +366,6 @@ const showPlayers = () => {
 const joinLobby = async () => {
   await changeHash('lobbySearch')();
   updateGames(allGames);
-  const findGames = document.getElementById('find-games');
 }
 
 //update games in lobby
@@ -371,10 +375,6 @@ const updateGames = data => {
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
   if (!gamesSearchField) return;
-  if (Object.keys(allGames.data).length === 0) {
-    document.getElementById('picture-info-2').style.display = 'none';
-    document.getElementById('picture-info-1').style.display = 'block';
-  }
   gamesSearchField.innerHTML = '';
   let gameData = null;
   const joinGame = () => joinHandle(gameData);
@@ -383,7 +383,7 @@ const updateGames = data => {
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => {
-      console.log(gm.settings);
+      gameInSearchLobby = gameId;
       const searchTitle = document.getElementById('search-title');
       searchTitle.setAttribute('class', gameId);
       document.getElementById('picture-info-1').style.display = 'none';
@@ -397,17 +397,25 @@ const updateGames = data => {
       document.getElementById('search-gm').innerHTML = gm.settings.master;
       document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
-      if (gm.settings.running) document.getElementById('search-password').style.display = 'none';
-      else {
-        document.getElementById('search-password').style.display = 'block';
+      if (gm.settings.running) {
+        document.getElementById('search-password').style.display = 'none';
+        console.log(gm.settings.running);
+        document.getElementById('game-running').style.display = 'block';
+      } else {
+        if(gm.settings.hasPassword) document.getElementById('search-password').style.display = 'block';
         document.getElementById('join-player').addEventListener('click', joinGame);
+        document.getElementById('game-running').style.display = 'none';
       }
     });
     gameDiv.innerHTML = gm.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
+    if (gameInSearchLobby === gameId) gameDiv.click();
+    else {
+      document.getElementById('picture-info-2').style.display = 'none';
+      document.getElementById('picture-info-1').style.display = 'block';
+    }
   }
-  const searchTitle = document.getElementById('search-title');
-  if (!Object.keys(allGames).includes(searchTitle.classList[0])) {
+  if (Object.keys(allGames.data).length === 0) {
     document.getElementById('picture-info-2').style.display = 'none';
     document.getElementById('picture-info-1').style.display = 'block';
   }
@@ -426,6 +434,7 @@ async function joinHandle(gameData) {
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = gm.settings.password;
   if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
+  if (gm.settings.running) return;
   if (gm.players.includes(new User().name)) return;
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
