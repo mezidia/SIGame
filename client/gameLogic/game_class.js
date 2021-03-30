@@ -2,9 +2,12 @@
 
 import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
-import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
+import { changeHash } from "../spa/spaControl.js";
+import { appealPopup, errPopup } from "../spa/uiElements.js";
+
+
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 25; //sec
@@ -43,7 +46,8 @@ export default class Game {
     this.turnTimerID = null;
     this.appealTimerID = null;
     this.lastAnswer = undefined;
-    this.canPeakQuestion = [];
+    this.canMove = [];
+    this.aleadyMoved = [];
     this.appealDecision = [];
     console.log('new Game', this);
   }
@@ -98,11 +102,8 @@ export default class Game {
     this.appealDecision = [];
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
-    //console.log(this.currentQuestion.string);
     for (const dIndex in decks) {
       for (const qIndex in decks[dIndex].questions) {
-        //console.log(dIndex, qIndex);
-        //console.log(decks[dIndex].questions[qIndex]);
         if (!decks[dIndex].questions[qIndex]) continue;
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
           console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
@@ -112,7 +113,6 @@ export default class Game {
         }
       }
     }
-    console.log(this.rounds[this.currentRound]);
     this.checkAnswerCounter();
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
@@ -162,6 +162,7 @@ export default class Game {
   onAppeal = evt => {
     if (new User().name === evt.who) return;
     if (new User().name === this.master) return;
+    //appealPopup(this.lastAnswer);
     this.gameField.appealPopUp(
       this.lastAnswer.who,
       this.lastAnswer.ans,
@@ -322,6 +323,7 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
+    this.setNextPicker();
   }
 
   uncorrect = evt => {
@@ -335,7 +337,7 @@ export default class Game {
       };
       this.broadcast(appealEvent);
     }
-    this.nextTurn();
+    //setTimeout(() => this.nextTurn(), APPEALTIME * 1000);
     this.gameField.gmPopHide();
 
   }
@@ -361,12 +363,15 @@ export default class Game {
   }
 
   startGame = () => {
-    const name = this.players[this.players.length - 1];
-    this.setNextPicker(name);
+    if (this.players.length < 3) {
+      errPopup('min 3 players!');
+      return false;
+    }
+    this.setNextPicker();
     this.gameField.hideStartButton();
     const event = {
       eType: 'startGame',
-    }; 
+    };
     this.broadcast(event);
     this._socket.send(JSON.stringify({ mType: 'updateGameStatus', data: { 
       roomID: this._id,
@@ -375,6 +380,12 @@ export default class Game {
   }
 
   setNextPicker(name) {
+    if (this.canMove.length < 2) {
+      this.canMove = [...this.players];
+      this.canMove.splice(this.canMove.indexOf(this.master), 1);
+      this.canMove.sort(() => Math.random() - 0.5);
+    }
+    name = name || this.canMove.pop();
     const event = {
       eType: 'nextPicker',
       who: name,
@@ -398,7 +409,7 @@ export default class Game {
     'submitPoints': () => {
       this.gameField.scoreAsInput(false)();
       this.points = this.gameField.collectScores();
-      this.updatePoints()
+      this.updatePoints();
     },
   };
 

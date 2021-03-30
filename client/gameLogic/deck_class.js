@@ -15,7 +15,7 @@ export default class Deck {
   }
 
   shuffle() {
-    this.questions(() => Math.random() - 0.5);
+    this.questions.sort(() => Math.random() - 0.5);
   }
 
 }

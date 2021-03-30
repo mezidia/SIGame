@@ -130,7 +130,7 @@ export default class GameField {
 
  // draws popup to grade players' answers
  appealPopUp(who, ans, t, f) {
-  document.getElementById('reply').innerHTML = `<div class="container gm-popup">
+  document.getElementById('popupPlaceholder').innerHTML = `<div class="container gm-popup">
       <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
         <span class="badge badge-primary" id="answer-author">${who}</span>
         <br>
@@ -157,7 +157,7 @@ export default class GameField {
 
   // hides a popup
   appealPopHide() {
-    document.getElementById('reply').innerHTML = '';
+    document.getElementById('popupPlaceholder').innerHTML = '';
   }
 
   // hides a popup
@@ -167,7 +167,6 @@ export default class GameField {
 
   // display the new player joined the game
   addPlayer(name, score = 0) {
-    console.log(name + ' joined');
     const playerIcon = document.createElement('div');
     playerIcon.id = name + '-icon';
     playerIcon.className = 'player-display'

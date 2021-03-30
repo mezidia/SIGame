@@ -168,7 +168,7 @@ export default class SimpleGame extends Game {
       this.lastAnswer.ans,
       this.lastAnswer.t,
       this.lastAnswer.f
-      );
+    );
   }
 
   onNextPicker = evt => {
