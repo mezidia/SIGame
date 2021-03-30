@@ -52,20 +52,20 @@ const view = () => {
         </label>
       </div>
       <br>
-      <h2><span data-localize="round">Round</span> 1</h2>
-      <div class="collapse show">
+      <div><h2 class="collapse-control" id="ref_round1"><span data-localize="round">Round</span> 1</h2></div>
+      <div class="collapse show" id="round1">
         ${themesList(1)}
       </div>
-     <h2><span data-localize="round">Round</span> 2</h2>
-      <div class="collapse show">
+     <div class="collapse-control" id="ref_round2"><h2><span data-localize="round">Round</span> 2</h2></div>
+      <div class="collapse show" id="round2">
         ${themesList(2)}
       </div>
-      <h2><span data-localize="round">Round</span> 3</h2>
-      <div class="collapse show">
+      <div class="collapse-control" id="ref_round3"><h2><span data-localize="round">Round</span> 3</h2></div>
+      <div class="collapse show" id="round3">
         ${themesList(3)}
       </div>
-      <h2 data-localize="final-round">Final Round</h2>
-      <div class="collapse show">
+      <div class="collapse-control" id="ref_round-fin"><h2 data-localize="final-round">Final Round</h2></div>
+      <div class="collapse show" id="round-fin">
         ${finalQuestionList()}
       </div>
 

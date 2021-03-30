@@ -211,32 +211,42 @@ const onHome = () => {
 }
 
 //config function returns handlers by id
-const handleClick = evt => ({
-  'help': [onHelp],
-  'home': [onHome],
-  'dju': [onHome],
-  'all-players': [showPlayers],
-  'create-game-btn': [createGameLobby],
-  'play-btn': [connectToSIgame],
-  'de': [changeLanguage(de)],
-  'ua': [changeLanguage(ua)],
-  'startGame': [createGame],
-  'join-btn': [joinLobby],
-  'openEditor-btn': [openEditor],
-  'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
-  'go-up-btn': [scrollToStart()],
-  'ref_help-rules': [scrollToElem('ref_help-rules')],
-  'ref_help-questions': [scrollToElem('ref_help-questions')],
-  'ref_help-bug': [scrollToElem('ref_help-bug')],
-  'close-popup': [() => {
-    document.getElementById('popupPlaceholder').innerHTML = '';
-  }],
-  'exit-game-btn': [() => {
-    if(game) game.exit();
-    window.location.replace('#chooseMode');
-    document.getElementById('popupPlaceholder').innerHTML = '';
-  }],
-})[evt.target.id];
+const handleClick = evt => {
+  let funcs = {
+    'help': [onHelp],
+    'home': [onHome],
+    'dju': [onHome],
+    'all-players': [showPlayers],
+    'create-game-btn': [createGameLobby],
+    'play-btn': [connectToSIgame],
+    'de': [changeLanguage(de)],
+    'ua': [changeLanguage(ua)],
+    'startGame': [createGame],
+    'join-btn': [joinLobby],
+    'openEditor-btn': [openEditor],
+    'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
+    'ref_help-rules': [scrollToRef('ref_help-rules')],
+    'ref_help-questions': [scrollToRef('ref_help-questions')],
+    'ref_help-bug': [scrollToRef('ref_help-bug')],
+    'close-popup': [() => {
+      document.getElementById('popupPlaceholder').innerHTML = '';
+    }],
+    'exit-game-btn': [() => {
+      if(game) game.exit();
+      window.location.replace('#chooseMode');
+      document.getElementById('popupPlaceholder').innerHTML = '';
+    }],
+  }[evt.target.id];
+  if (!funcs) {
+    funcs = {
+      'scroll-to': [scrollToRef(evt.target.id)],
+      'scroll-direct': [evt.target.scrollIntoView],
+      'collapse-control': [collapseControl(evt.target.id)],
+      'go-up-btn': [scrollToStart],
+    }[evt.target.classList[0]]
+  }
+  return funcs;
+}
 
 //config function returns handlers by id
 const handleChange = evt => ({
@@ -257,7 +267,7 @@ function onBundleSearchInput() {
     document.removeEventListener('click', hide);
     bundleSearchAutocomp.style.display = 'none';  
   }
-  if (bundleSearchAutocomp.innerHTML == "") {
+  if (bundleSearchAutocomp.innerHTML === "") {
     document.addEventListener('click', hide);
   }
   bundleSearchAutocomp.innerHTML = "";
@@ -491,14 +501,22 @@ function checkHash(e) {
   }
 }
 
-const scrollToElem = id => () => {
+const scrollToRef = id => () => {
   document.getElementById(id.split('_')[1]).scrollIntoView();
+}
+
+const collapseControl = id => () => {
+  const target = document.getElementById(id.split('_')[1]);
+  if(target.classList.contains('show')) {
+    target.classList.remove('show');
+  } else {
+    target.classList.add('show');
+  }
 }
 
 // made recursive to be triggered on clicking both div and svg picture
 const scrollToStart = () => {
   window.scrollTo(0, 0)
-  return scrollToStart;
 }
 
 // won't pass user to other than main and help pages if socket is not connected
