@@ -73,8 +73,9 @@ export default class GameField {
       inp.id = child.id;
       if (toChange) {
         inp.value = child.innerHTML;
+        inp.placeholder = child.innerHTML;
       } else {
-        inp.innerHTML = child.value;
+        inp.innerHTML = !isNaN(child.value) ? child.value : child.placeholder;
       }
       div.append(inp);
     }
