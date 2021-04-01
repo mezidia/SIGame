@@ -76,7 +76,7 @@ export default class Game {
   }
 
   onJoinGame = evt => {
-    console.log(this.players);
+    console.log(`${evt.name} joined:`, this.players);
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
@@ -180,6 +180,7 @@ export default class Game {
   }
 
   onStartGame = evt => {
+    this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
 
@@ -425,7 +426,6 @@ export default class Game {
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
     this.clickConfig.cell = null;
-    this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawStartButton();
   }
 

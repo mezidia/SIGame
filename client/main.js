@@ -3,12 +3,14 @@
 import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
-import { loadView, changeHash, checkView, loadMainView, getHash } from './spa/spaControl.js';
+import SimpleGame from './gameLogic/simpleGame_class.js';
+import { loadView, changeHash, checkView, getHash } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -72,7 +74,7 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       data.bundle = bundleEditor.parseBundle(bundleObj);
-      game = new Game(data.bundle, data.settings);
+      game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
         data,
@@ -93,7 +95,7 @@ const createGame = () => {
         break;
       }
     }
-    game = new Game(data.bundle, data.settings);
+    game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -106,7 +108,7 @@ const createGame = () => {
     });
   } else {
     data.bundle = bundleEditor.getRandomBundleFrom(allBundles, language.json.code);
-    game = new Game(data.bundle, data.settings);
+    game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -255,7 +257,7 @@ function onBundleSearchInput() {
   const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
   const hide = () => {
     document.removeEventListener('click', hide);
-    bundleSearchAutocomp.style.display = 'none';  
+    bundleSearchAutocomp.style.display = 'none';
   }
   if (bundleSearchAutocomp.innerHTML == "") {
     document.addEventListener('click', hide);
@@ -303,7 +305,7 @@ function onBundleSearchInput() {
       evt.preventDefault();
       bundleSearchAutocomp.children[i].click();
     }
-  })
+  });
 }
 
 function showGames() {
@@ -421,7 +423,7 @@ async function joinHandle(gameData) {
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
-  game = new Game(gm.bundle, gm.settings, gm.players);
+  game = gm.settings.gameMode === 'Classic' ? new Game(gm.bundle, gm.settings, gm.players) : new SimpleGame(gm.bundle, gm.settings, gm.players);
   game.setID(gmId);
   game.join();
   console.log('joined game', game);
