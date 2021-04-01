@@ -1,12 +1,13 @@
 'use strict';
 
+import * as controllers from './viewsControllers/indexController.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
 import { changeLanguage, language } from '../changeLanguage.js';
 import { leavePopup } from './uiElements.js';
-
 import { de } from '../../localization/de.js';
 import { ua } from '../../localization/ua.js';
+
 const languages = {
   de: de,
   ua: ua
@@ -79,6 +80,15 @@ const checkView = () => {
   return viewName;
 }
 
+const getControllersConfig = () => {
+  console.log(Object.entries(controllers));
+  let res = {};
+  for (const [name, module] of Object.entries(controllers)) {
+   res[name] = module.default;
+  }
+  return res;
+}
+
 export {
   loadView,
   changeHash,
@@ -86,4 +96,5 @@ export {
   loadMainView,
   getHash,
   getViewControllerClassName,
+  getControllersConfig,
 };

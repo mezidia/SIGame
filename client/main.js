@@ -4,16 +4,15 @@ import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
-import { loadView, changeHash, checkView, getHash, getViewControllerClassName } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, getHash, getViewControllerClassName, getControllersConfig } from './spa/spaControl.js';
 import { changeLanguage } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
-import MainPageController from './spa/viewsControllers/mainPageController.js';
 
-console.log(eval(`new ${getViewControllerClassName()}()`));
 
+console.log(getControllersConfig()[getViewControllerClassName()].createGame());
 //singleton
 const bundleEditor = new BundleEditor();
 
