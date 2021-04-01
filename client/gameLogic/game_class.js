@@ -24,6 +24,14 @@ export default class Game {
     this._socket.removeEventListener('message', this.socketHandler);
   }
 
+  _prepForExit() {
+    this._removeListeners();
+    this.turnTimer.reset();
+    this.gameTimer.reset();
+    clearTimeout(this.turnTimerID);
+    clearTimeout(this.appealTimerID);
+  }
+
   constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
@@ -210,7 +218,7 @@ export default class Game {
   }
 
   exit = () => {
-    this._removeListeners();
+    this._prepForExit();
     const event = {
       eType: 'leave',
       name: new User().name,
