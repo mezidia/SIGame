@@ -22,6 +22,7 @@ let roomId = undefined;
 let game = undefined;
 let allGames = {};
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
+let gameInSearchLobby = undefined;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -202,6 +203,12 @@ const sendMessageToGameChat = mess => {
   message.appendChild(name);
   message.appendChild(text);
   chatField.appendChild(message);
+  scrollToBottom(chatField);
+}
+
+ //function for scrolling div to end
+ const scrollToBottom = (e) => {
+  e.scrollTop = e.scrollHeight - e.getBoundingClientRect().height;
 }
 
 const onHelp = () => {
@@ -213,32 +220,42 @@ const onHome = () => {
 }
 
 //config function returns handlers by id
-const handleClick = evt => ({
-  'help': [onHelp],
-  'home': [onHome],
-  'dju': [onHome],
-  'all-players': [showPlayers],
-  'create-game-btn': [createGameLobby],
-  'play-btn': [connectToSIgame],
-  'de': [changeLanguage(de)],
-  'ua': [changeLanguage(ua)],
-  'startGame': [createGame],
-  'join-btn': [joinLobby],
-  'openEditor-btn': [openEditor],
-  'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
-  'go-up-btn': [scrollToStart()],
-  'ref_help-rules': [scrollToElem('ref_help-rules')],
-  'ref_help-questions': [scrollToElem('ref_help-questions')],
-  'ref_help-bug': [scrollToElem('ref_help-bug')],
-  'close-popup': [() => {
-    document.getElementById('popupPlaceholder').innerHTML = '';
-  }],
-  'exit-game-btn': [() => {
-    if(game) game.exit();
-    window.location.replace('#chooseMode');
-    document.getElementById('popupPlaceholder').innerHTML = '';
-  }],
-})[evt.target.id];
+const handleClick = evt => {
+  let funcs = {
+    'help': [onHelp],
+    'home': [onHome],
+    'dju': [onHome],
+    'all-players': [showPlayers],
+    'create-game-btn': [createGameLobby],
+    'play-btn': [connectToSIgame],
+    'de': [changeLanguage(de)],
+    'ua': [changeLanguage(ua)],
+    'startGame': [createGame],
+    'join-btn': [joinLobby],
+    'openEditor-btn': [openEditor],
+    'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
+    'ref_help-rules': [scrollToRef('ref_help-rules')],
+    'ref_help-questions': [scrollToRef('ref_help-questions')],
+    'ref_help-bug': [scrollToRef('ref_help-bug')],
+    'close-popup': [() => {
+      document.getElementById('popupPlaceholder').innerHTML = '';
+    }],
+    'exit-game-btn': [() => {
+      if(game) game.exit();
+      window.location.replace('#chooseMode');
+      document.getElementById('popupPlaceholder').innerHTML = '';
+    }],
+  }[evt.target.id];
+  if (!funcs) {
+    funcs = {
+      'scroll-to': [scrollToRef(evt.target.id)],
+      'scroll-direct': [evt.target.scrollIntoView],
+      'collapse-control': [collapseControl(evt.target.id)],
+      'go-up-btn': [scrollToStart],
+    }[evt.target.classList[0]]
+  }
+  return funcs;
+}
 
 //config function returns handlers by id
 const handleChange = evt => ({
@@ -259,14 +276,12 @@ function onBundleSearchInput() {
     document.removeEventListener('click', hide);
     bundleSearchAutocomp.style.display = 'none';
   }
-  if (bundleSearchAutocomp.innerHTML == "") {
+  if (bundleSearchAutocomp.innerHTML === "") {
     document.addEventListener('click', hide);
   }
   bundleSearchAutocomp.innerHTML = "";
   const input = document.getElementById('bundleSearch-input').value;
   const bundles = allBundles;
-  console.log(bundleSearchAutocomp);
-  console.log(input);
   for (let i in bundles) {
     const comp = bundles[i].title.substring(0, input.length);
     if (comp.toLowerCase() === input.toLowerCase()) {
@@ -353,7 +368,6 @@ const showPlayers = () => {
 const joinLobby = async () => {
   await changeHash('lobbySearch')();
   updateGames(allGames);
-  const findGames = document.getElementById('find-games');
 }
 
 //update games in lobby
@@ -363,10 +377,6 @@ const updateGames = data => {
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
   if (!gamesSearchField) return;
-  if (Object.keys(allGames.data).length === 0) {
-    document.getElementById('picture-info-2').style.display = 'none';
-    document.getElementById('picture-info-1').style.display = 'block';
-  }
   gamesSearchField.innerHTML = '';
   let gameData = null;
   const joinGame = () => joinHandle(gameData);
@@ -375,7 +385,7 @@ const updateGames = data => {
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => {
-      console.log(gm.settings);
+      gameInSearchLobby = gameId;
       const searchTitle = document.getElementById('search-title');
       searchTitle.setAttribute('class', gameId);
       document.getElementById('picture-info-1').style.display = 'none';
@@ -389,17 +399,25 @@ const updateGames = data => {
       document.getElementById('search-gm').innerHTML = gm.settings.master;
       document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
       document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
-      if (gm.settings.running) document.getElementById('search-password').style.display = 'none';
-      else {
-        document.getElementById('search-password').style.display = 'block';
+      if (gm.settings.running) {
+        document.getElementById('search-password').style.display = 'none';
+        console.log(gm.settings.running);
+        document.getElementById('game-running').style.display = 'block';
+      } else {
+        if(gm.settings.hasPassword) document.getElementById('search-password').style.display = 'block';
         document.getElementById('join-player').addEventListener('click', joinGame);
+        document.getElementById('game-running').style.display = 'none';
       }
     });
     gameDiv.innerHTML = gm.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
+    if (gameInSearchLobby === gameId) gameDiv.click();
+    else {
+      document.getElementById('picture-info-2').style.display = 'none';
+      document.getElementById('picture-info-1').style.display = 'block';
+    }
   }
-  const searchTitle = document.getElementById('search-title');
-  if (!Object.keys(allGames).includes(searchTitle.classList[0])) {
+  if (Object.keys(allGames.data).length === 0) {
     document.getElementById('picture-info-2').style.display = 'none';
     document.getElementById('picture-info-1').style.display = 'block';
   }
@@ -418,6 +436,7 @@ async function joinHandle(gameData) {
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = gm.settings.password;
   if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
+  if (gm.settings.running) return;
   if (gm.players.includes(new User().name)) return;
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
@@ -493,14 +512,22 @@ function checkHash(e) {
   }
 }
 
-const scrollToElem = id => () => {
+const scrollToRef = id => () => {
   document.getElementById(id.split('_')[1]).scrollIntoView();
+}
+
+const collapseControl = id => () => {
+  const target = document.getElementById(id.split('_')[1]);
+  if(target.classList.contains('show')) {
+    target.classList.remove('show');
+  } else {
+    target.classList.add('show');
+  }
 }
 
 // made recursive to be triggered on clicking both div and svg picture
 const scrollToStart = () => {
   window.scrollTo(0, 0)
-  return scrollToStart;
 }
 
 // won't pass user to other than main and help pages if socket is not connected
