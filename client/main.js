@@ -3,7 +3,7 @@
 import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
-import { loadView, changeHash, checkView, loadMainView, getHash } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, getHash } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 
@@ -259,12 +259,12 @@ const handleClick = evt => {
 const handleChange = evt => ({
   'questionBundle': [onBundleCheckChange],
   'type-of-password': [onTypeOfPasswordChange],
-  'select-games-by-type': [showGames],
+  'select-games-by-type': [sortGames],
 })[evt.target.id];
 
 //config function returns handlers by id
 const handleInput = evt => ({
-  'find-games': [showGames],
+  'find-games': [sortGames],
   'bundleSearch-input': [onBundleSearchInput],
 })[evt.target.id];
 
@@ -321,7 +321,7 @@ function onBundleSearchInput() {
   })
 }
 
-function showGames() {
+function sortGames() {
   const input = document.getElementById('find-games').value;
   const sortParameter = document.getElementById('select-games-by-type').value;
   const games = allGames.data;
@@ -376,61 +376,60 @@ const updateGames = data => {
   allGames = data;
   if (!gamesSearchField) return;
   gamesSearchField.innerHTML = '';
-  let gameData = null;
-  const joinGame = () => joinHandle(gameData);
   for (const gameId in games) {
     const gm = games[gameId];
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
-    gameDiv.addEventListener('click', () => {
-      gameInSearchLobby = gameId;
-      const searchTitle = document.getElementById('search-title');
-      searchTitle.setAttribute('class', gameId);
-      document.getElementById('picture-info-1').style.display = 'none';
-      document.getElementById('picture-info-2').style.display = 'block';
-      gameData = {game: gm, id: gameId};
-      if (gm.settings.hasPassword) document.getElementById('password-to-enter').style.display = 'block';
-      else document.getElementById('password-to-enter').style.display = 'none';
-      document.getElementById('join-player').removeEventListener('click', joinGame);
-      document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
-      document.getElementById('search-title').innerHTML = gm.settings.roomName;
-      document.getElementById('search-gm').innerHTML = gm.settings.master;
-      document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
-      document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
-      if (gm.settings.running) {
-        document.getElementById('search-password').style.display = 'none';
-        console.log(gm.settings.running);
-        document.getElementById('game-running').style.display = 'block';
-      } else {
-        if(gm.settings.hasPassword) document.getElementById('search-password').style.display = 'block';
-        document.getElementById('join-player').addEventListener('click', joinGame);
-        document.getElementById('game-running').style.display = 'none';
-      }
-    });
+    gameDiv.addEventListener('click', () => gameDivOnClick(gameId, gm));
     gameDiv.innerHTML = gm.settings.roomName;
     gamesSearchField.appendChild(gameDiv);
     if (gameInSearchLobby === gameId) gameDiv.click();
-    else {
-      document.getElementById('picture-info-2').style.display = 'none';
-      document.getElementById('picture-info-1').style.display = 'block';
-    }
+    else hideGameInfoDiv();
   }
-  if (Object.keys(allGames.data).length === 0) {
-    document.getElementById('picture-info-2').style.display = 'none';
-    document.getElementById('picture-info-1').style.display = 'block';
-  }
-  showGames();
-
+  if (Object.keys(allGames.data).length === 0) hideGameInfoDiv();
+  sortGames();
 }
 
-//add info about games
-//function addGa
+function hideGameInfoDiv() {
+  document.getElementById('picture-info-2').style.display = 'none';
+  document.getElementById('picture-info-1').style.display = 'block';
+}
+
+function showGameInfoDiv() {
+  document.getElementById('picture-info-2').style.display = 'block';
+  document.getElementById('picture-info-1').style.display = 'none';
+}
+
+function gameDivOnClick(gameId, gm) {
+  let gameData = null;
+  const joinGame = () => joinHandle(gameData);
+  gameInSearchLobby = gameId;
+  const searchTitle = document.getElementById('search-title');
+  searchTitle.setAttribute('class', gameId);
+  showGameInfoDiv();
+  gameData = {game: gm, id: gameId};
+  if (gm.settings.hasPassword) document.getElementById('password-to-enter').style.display = 'block';
+  else document.getElementById('password-to-enter').style.display = 'none';
+  document.getElementById('join-player').removeEventListener('click', joinGame);
+  document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
+  document.getElementById('search-title').innerHTML = gm.settings.roomName;
+  document.getElementById('search-gm').innerHTML = gm.settings.master;
+  document.getElementById('search-mode').innerHTML = gm.settings.gameMode;
+  document.getElementById('search-question-bundle').innerHTML = gm.bundle.title;
+  if (gm.settings.running) {
+    document.getElementById('search-password').style.display = 'none';
+    document.getElementById('game-running').style.display = 'block';
+  } else {
+    if(gm.settings.hasPassword) document.getElementById('search-password').style.display = 'block';
+    document.getElementById('join-player').addEventListener('click', joinGame);
+    document.getElementById('game-running').style.display = 'none';
+  }
+}
 
 //this is handle, which is being called when join to game
 async function joinHandle(gameData) {
   const gm = gameData.game;
   const gmId = gameData.id;
-  console.log('game data ', gameData);
   const passwordInput = document.getElementById('search-password').value;
   const passwordGame = gm.settings.password;
   if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
@@ -451,6 +450,7 @@ const handleKeydown = evt => ({
   'message-input': [sendMessageRoom],
 })[evt.target.id];
 
+
 // it runs click handler if it exists
 document.addEventListener('click', async evt => {
   if (!handleClick(evt)) return;
@@ -461,19 +461,9 @@ document.addEventListener('click', async evt => {
 
 // it runs click handler if it exists
 document.addEventListener('change', async evt => {
-  console.log(evt.target.id);
   if (!handleChange(evt)) return;
   for await(const changeEvent of handleChange(evt)) {
     changeEvent(evt);
-  }
-});
-
-// it runs click handler if it exists
-document.addEventListener('input', async evt => {
-  console.log(evt.target.id);
-  if (!handleInput(evt)) return;
-  for await(const inputEvent of handleInput(evt)) {
-    inputEvent(evt);
   }
 });
 
@@ -482,6 +472,14 @@ document.addEventListener('keydown', async evt => {
   if (!handleKeydown(evt)) return;
   for await(const keyDownEvent of handleKeydown(evt)) {
     keyDownEvent(evt);
+  }
+});
+
+// it runs keydown handler if it exists
+document.addEventListener('input', async evt => {
+  if (!handleInput(evt)) return;
+  for await(const inputEvent of handleInput(evt)) {
+    inputEvent(evt);
   }
 });
 
@@ -559,7 +557,7 @@ loadViewSocket();
 window.addEventListener('hashchange', e => loadViewSocket(e));
 window.addEventListener('popstate', e => checkHash(e));
 window.addEventListener('scroll', checkGoUp);
-window.onload = () => {
+window.onload = async () => {
   const name = window.localStorage.getItem('name');
   if (name) document.getElementById('name-input').value = name;
 }
