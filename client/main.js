@@ -4,25 +4,36 @@ import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
-import { loadView, changeHash, checkView, getHash } from './spa/spaControl.js';
-import { changeLanguage, language } from './changeLanguage.js';
+import { loadView, changeHash, checkView, getHash, getViewControllerClassName } from './spa/spaControl.js';
+import { changeLanguage } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+import MainPageController from './spa/viewsControllers/mainPageController.js';
 
+console.log(eval(`new ${getViewControllerClassName()}()`));
 
 //singleton
 const bundleEditor = new BundleEditor();
 
 //storage
-let socket = undefined;
-let allBundles = undefined;
+let socket = null;
+let allBundles = null;
 let roomId = undefined;
-let game = undefined;
+let game = null;
 let allGames = {};
+let gameInSearchLobby = null;
+let storage = {
+  socket,
+  allBundles,
+  roomId,
+  game,
+  allGames,
+  gameInSearchLobby,
+}
+
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
-let gameInSearchLobby = undefined;
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
@@ -565,4 +576,4 @@ window.onload = () => {
   const name = window.localStorage.getItem('name');
   if (name) document.getElementById('name-input').value = name;
 }
-export { game };
+export { game, storage };

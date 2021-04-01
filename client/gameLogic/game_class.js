@@ -5,7 +5,7 @@ import User from "./user_class.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
 import { changeHash } from "../spa/spaControl.js";
-import { appealPopup, errPopup } from "../spa/uiElements.js";
+import { errPopup } from "../spa/uiElements.js";
 
 
 
@@ -115,7 +115,6 @@ export default class Game {
         if (!decks[dIndex].questions[qIndex]) continue;
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
           console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
-          //decks[dIndex].questions.splice(qIndex, 1);
           decks[dIndex].questions[qIndex] = null;
           break;
         }
@@ -346,7 +345,6 @@ export default class Game {
       };
       this.broadcast(appealEvent);
     }
-    //setTimeout(() => this.nextTurn(), APPEALTIME * 1000);
     this.gameField.gmPopHide();
 
   }

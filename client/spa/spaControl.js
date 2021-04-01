@@ -66,6 +66,14 @@ const loadView = async () => {
     });
 };
 
+const getViewControllerClassName = () => {
+  let currrentView = checkView();
+  currrentView = currrentView.charAt(0).toUpperCase() + currrentView.slice(1)
+  const controllerName = currrentView + 'Controller';
+  console.log(controllerName);
+  return controllerName;
+}
+
 const checkView = () => {
   const { viewName } = router.getState();
   return viewName;
@@ -77,4 +85,5 @@ export {
   checkView,
   loadMainView,
   getHash,
+  getViewControllerClassName,
 };
