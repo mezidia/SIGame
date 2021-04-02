@@ -4,16 +4,13 @@ import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
-import { loadView, changeHash, checkView, getHash, getController, getControllersConfig } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig } from './spa/spaControl.js';
 import { changeLanguage } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
 
-
-console.log(getControllersConfig);
-console.log(getController());
 //singleton
 const bundleEditor = new BundleEditor();
 
@@ -32,7 +29,7 @@ let storage = {
   allGames,
   gameInSearchLobby,
 };
-
+console.log(сontrollersConfig);
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
 
 //this config function returns function by mType of message, that came from socket
@@ -464,13 +461,26 @@ const handleKeydown = evt => ({
 })[evt.target.id];
 
 
-// it runs click handler if it exists
+//it runs click handler if it exists
 document.addEventListener('click', async evt => {
   if (!handleClick(evt)) return;
   for await(const clickEvent of handleClick(evt)) {
-    clickEvent()
+    clickEvent();
   }
 });
+
+// it runs click handler if it exists
+// document.addEventListener('click', async evt => {
+//   const controller = getController();
+//   console.log('controller.getHandlers(evt)', controller.getHandlers(evt), !controller.getHandlers(evt));
+//   const handlersArr = controller.getHandlers(evt);
+//   if (!handlersArr) return;
+//   console.log(handlersArr)
+//   for await(const handler of handlersArr) {
+//     console.log(handler)
+//     handler(evt);
+//   }
+// });
 
 // it runs click handler if it exists
 document.addEventListener('change', async evt => {
@@ -570,7 +580,7 @@ loadViewSocket();
 window.addEventListener('hashchange', e => loadViewSocket(e));
 window.addEventListener('popstate', e => checkHash(e));
 window.addEventListener('scroll', checkGoUp);
-window.onload = async () => {
+window.onload = () => {
   const name = window.localStorage.getItem('name');
   if (name) document.getElementById('name-input').value = name;
 }

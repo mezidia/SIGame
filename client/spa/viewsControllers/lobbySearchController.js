@@ -6,7 +6,7 @@ import { changeHash } from '../spaControl.js';
 
 const bundleEditor = new BundleEditor();
 
-export default class RedactorController {
+export default class LobbySearchController {
 
   clickConfig = {
     'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
@@ -19,5 +19,3 @@ export default class RedactorController {
   }
 
 }
-
-

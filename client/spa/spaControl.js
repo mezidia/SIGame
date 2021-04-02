@@ -23,7 +23,7 @@ async function loadMainView() {
 
 const getHash = () => router.getHash();
 
-const changeHash = (hash) => async() => {
+const changeHash = (hash) => async () => {
   let ask = false;
   if (router.getHash()) {
     const parts = router.getHash().split('/');
@@ -80,17 +80,10 @@ const checkView = () => {
   return viewName;
 }
 
-const getControllersConfig = (() => {
-  console.log(Object.entries(controllers));
-  let res = {};
-  for (const [name, module] of Object.entries(controllers)) {
-   res[name] = module;
-  }
-  return res;
-})();
+const сontrollersConfig = Object.fromEntries(Object.entries(controllers));
 
 const getController = () => {
-  return getControllersConfig[getViewControllerClassName()];
+  return new (сontrollersConfig[getViewControllerClassName()]);
 }
 
 export {
@@ -100,6 +93,6 @@ export {
   loadMainView,
   getHash,
   getViewControllerClassName,
-  getControllersConfig,
+  сontrollersConfig,
   getController,
 };

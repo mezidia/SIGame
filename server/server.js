@@ -1,4 +1,5 @@
 'use strict';
+
 const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
