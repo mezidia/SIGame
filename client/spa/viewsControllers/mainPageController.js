@@ -1,82 +1,51 @@
 'use strict';
 
 import { storage } from '../../main.js';
+import StringValidator from '../../utils/stringValidator_class.js';
+
+const validator = new StringValidator();
 
 export default class MainPageController {
 
-  static createGame = () => {
-    const data = {};
-  
-    const roomName = document.getElementById('roomName').value;
-    const password = document.getElementById('roomPassword').value;
-    const questionBundle = document.getElementById('questionBundle');
-    const gameMode = document.getElementById('gameMode').value;
-    const totalPlayers = document.getElementById('totalPlayers').value;
-    if (!reg.test(roomName)) return;
-    data.settings = {
-      roomName,
-      password,
-      gameMode,
-      totalPlayers,
-      master: new User().name,
-      hasPassword: password ? true : false,
+  static connectToSIgame = () => {
+    const name = document.getElementById('name-input').value;
+    if (!validator.isValidName(name)) return;
+    window.localStorage.setItem('name', name);
+    changeHash('chooseMode')();
+    storage.socket = new WebSocket(`ws://localhost:5000`);
+    storage.socket.onopen = () => {
+      new User(name, storage.socket);
+      storage.socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
+      storage.socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
+      storage.socket.onclose = () => {
+        //disconnect();
+        console.log('closed');
+      };
+      storage.socket.onmessage = msg => {
+        console.log(JSON.parse(msg.data));
+        socketHandle(JSON.parse(msg.data));
+      };
     };
-    console.log(questionBundle.value);
-    if (questionBundle.value === 'download') {
-      const bundleFileImport = document.getElementById('bundle-file');
-      const file = bundleFileImport.files[0];
-      if (!file) return;
-      const f = new FileReader();
-      f.onload = (e) => {
-        const bundleObj = JSON.parse(e.target.result);
-        data.bundle = bundleEditor.parseBundle(bundleObj);
-        game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
-        const msg = {
-          'mType': 'newGameLobby',
-          data,
-        };
-        promisifySocketMSG(msg, 'newLobbyId', storage.socket).then(async (msg) => {
-          roomId = msg.data.id;
-          await changeHash(`simpleLobby/roomID=${roomId}`)();
-          game.init();
-          game.setID(msg.data.id);
-        });
-      }
-      f.readAsText(file);
-    } else if (questionBundle.value === 'findByName') {
-      const bundleTitle = document.getElementById('bundleSearch-input').value;
-      for (const bundle of storage.allBundles) {
-        if (bundle.title === bundleTitle) {
-          data.bundle = bundle;
-          break;
-        }
-      }
-      game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
-      const msg = {
-        'mType': 'newGameLobby',
-        data,
+  }
+
+  static openEditor = () => {
+    const name = document.getElementById('name-input').value;
+    if (!validator.isValidName(name)) return;
+    window.localStorage.setItem('name', name);
+    changeHash('redactor')();
+    storage.socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
+    storage.socket.onopen = () => {
+      new User(name, storage.socket);
+      storage.socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
+      storage.socket.onclose = () => {
+        //disconnect();
+        console.log('closed');
       };
-      promisifySocketMSG(msg, 'newLobbyId', storage.socket).then(async (msg) => {
-        roomId = msg.data.id;
-        await changeHash(`simpleLobby/roomID=${roomId}`)();
-        game.init();
-        game.setID(msg.data.id);
-      });
-    } else {
-      data.bundle = bundleEditor.getRandomBundleFrom(storage.allBundles, language.json.code);
-      game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
-      const msg = {
-        'mType': 'newGameLobby',
-        data,
+      storage.socket.onmessage = msg => {
+        console.log(JSON.parse(msg.data));
+        socketHandle(JSON.parse(msg.data));
       };
-      promisifySocketMSG(msg, 'newLobbyId', storage.socket).then(async (msg) => {
-        roomId = msg.data.id;
-        await changeHash(`simpleLobby/roomID=${roomId}`)();
-        game.setID(msg.data.id);
-        game.init();
-        console.log(game);
-      });
-    }
-  
-  };
+    };
+  }
+
 }

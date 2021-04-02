@@ -4,7 +4,7 @@ import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
-import { loadView, changeHash, checkView, getHash, getViewControllerClassName, getControllersConfig } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, getHash, getController, getControllersConfig } from './spa/spaControl.js';
 import { changeLanguage } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 
@@ -12,7 +12,8 @@ import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
 
 
-console.log(getControllersConfig()[getViewControllerClassName()].createGame());
+console.log(getControllersConfig);
+console.log(getController());
 //singleton
 const bundleEditor = new BundleEditor();
 
@@ -30,7 +31,7 @@ let storage = {
   game,
   allGames,
   gameInSearchLobby,
-}
+};
 
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
 
@@ -169,7 +170,7 @@ const connectToSIgame = () => {
       socketHandle(JSON.parse(msg.data));
     };
   };
-};
+}
 
 const openEditor = () => {
   const name = document.getElementById('name-input').value;

@@ -1,6 +1,6 @@
 'use strict';
 
-import * as controllers from './viewsControllers/indexController.js';
+import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
 import { changeLanguage, language } from '../changeLanguage.js';
@@ -80,13 +80,17 @@ const checkView = () => {
   return viewName;
 }
 
-const getControllersConfig = () => {
+const getControllersConfig = (() => {
   console.log(Object.entries(controllers));
   let res = {};
   for (const [name, module] of Object.entries(controllers)) {
-   res[name] = module.default;
+   res[name] = module;
   }
   return res;
+})();
+
+const getController = () => {
+  return getControllersConfig[getViewControllerClassName()];
 }
 
 export {
@@ -97,4 +101,5 @@ export {
   getHash,
   getViewControllerClassName,
   getControllersConfig,
+  getController,
 };
