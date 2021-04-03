@@ -31,7 +31,7 @@ export default class ChooseModeController {
       'mType': 'getAllBundles',
     };
     promisifySocketMSG(msg, 'allBundles', socket).then(msg => {
-      allBundles = msg.data;
+      storage.allBundles = msg.data;
       for (const i in allBundles) {
         allBundles[i] = bundleEditor.parseBundle(allBundles[i]);
       }
