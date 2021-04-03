@@ -226,4 +226,27 @@ export default class GameField {
     placeHolder.innerHTML = ``
   }
 
+  // makes button fullWidth
+  buttonMode() {
+    const inp = document.getElementById('input-answer');
+    const but = document.getElementById('btn-answer');
+    but.innerHTML = ``;
+    inp.style.display = 'none';
+    but.style.width = '100%';
+  }
+
+  answerMode() {
+    const input = document.getElementById('input-answer');
+    const button = document.getElementById('btn-answer');
+    button.innerHTML = '';
+    input.style.display = 'block';
+    button.style.width = '100px';
+  }
+
+  appealMode() {
+    this.buttonMode()
+    const button = document.getElementById('btn-answer');
+    button.innerHTML = `I'm right!`;
+  }
+
 }
