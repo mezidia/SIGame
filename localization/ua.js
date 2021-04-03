@@ -1,6 +1,6 @@
 const ua = {
   "code": "ua",
-  "home": "Дім",
+  "home": "Головна",
   "help": "Допомога",
   "title": "Своя Гра",
   "bundle": "Створити низку питань",
@@ -21,6 +21,7 @@ const ua = {
   "classic-word": "Класична",
   "role-word": "Роль",
   "player-word": "Гравець",
+  "findBundleByName-word": "Знайти низку питань за ім'ям",
   "game-master-word": "Ведучий",
   "players-word": "Гравці",
   "total-word": "Всього",
@@ -77,9 +78,17 @@ const ua = {
   "bug-handling-text": "Теж саме, тільки українською",
   "save-to-db": "Додати низку питань в базу даних",
   "correct-answers": "Правильні відповіді",
-  "wrong-answers": "Неправильні відповіді",
   "correct": "Правильно",
   "wrong": "Неправильно",
+  "onleave": "Ви дійсно хочете залишити цю гру?",
+  "find-games": {
+    "placeholder": "Знайди свою гру!",
+  },
+  "players-online": "Гравців онлайн: ",
+  "nopass": "Без пароля",
+  "pass": "З паролем",
+  "all-games": "Всі ігри",
+  "game-running": "Гра вже почалась",
 }
 
 export { ua };

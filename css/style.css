@@ -104,6 +104,22 @@
     grid-template-columns: 1fr;
 }
 
+.custom-popup {
+    background-color: white;
+    z-index: 10;
+    position: fixed;
+    top: 10vh;
+    margin: auto;
+    max-width: 500px;
+    min-width: 200px;
+}
+
+.err-popup {
+    display: grid;
+    grid-template-rows: 70px 1fr;
+    grid-template-columns: 1fr;
+}
+
 .player-display {
     background-color: #514c4c;
     color: white;
@@ -132,4 +148,44 @@
 #go-up-btn svg {
     margin: auto;
     background-color: white;
+}
+
+#players-online-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.bundle-search-container {
+    position: relative;
+}
+
+#bundleSearch-input-autocomplete {
+    position: absolute;
+    display: inline-block;
+    background-color: white;
+    border-left: 1px solid #d4d4d4;
+    border-right: 1px solid #d4d4d4;
+    border-top: 1px solid #d4d4d4;
+    top: 0;
+    left: 0;
+}
+
+.bundle-search-input-autocomplete {
+  border-bottom: 1px solid #d4d4d4;
+  height: 40px;
+  z-index: 99;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.bundle-search-input-autocomplete:hover {
+    background-color: #d4d4d4;
+}
+
+#startGame-btn {
+    position: absolute;
+    margin: auto;
+    top: 17vw;
+    min-width: 200px;
+    height: 100px;
 }

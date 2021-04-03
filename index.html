@@ -13,20 +13,30 @@
     <div class="column-content" style="height: 100vh">
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div style="display: flex; justify-content: left">
-        <a class="navbar-brand" href="#">DJU</a>
-        <a class="nav-link text-white" data-localize="home" href="#">Home
-          <span class="sr-only">(current)</span>
-        </a>
-        <a class="nav-link text-white" data-localize="help" href="#help">Help</a>
-        </div>
-        <div style="flex-grow: 1"></div>
-        <div style="display: flex; flex-direction: row; justify-content: right">
-          <a class="nav-link text-white" id="de">de</a>
-          <a class="nav-link text-white" id="ua">ua</a>
+          <div class="navbar-brand" id="dju">DJU</div>
+          <div class="nav-link text-white" data-localize="home" id="home">Home
+            <span class="sr-only">(current)</span>
+          </div>
+          <div class="nav-link text-white" data-localize="help" id="help">Help
+          </div>
+          <div style="flex-grow: 1"></div>
+          <div style="display: flex; flex-direction: row; justify-content: right">
+            <a class="nav-link text-white" id="de">de</a>
+            <a class="nav-link text-white" id="ua">ua</a>
+          </div>
+          <div class="nav-link text-white" id="all-players" data-localize="players-word">Players</div>
         </div>
       </nav>
 
       <div id="main" style="flex-grow: 1; min-height: 200px"></div>
+      <div class="float-right" style="position:absolute; left:80%; top: 0; height: 100%; width: 20%; display: none" id="all-players-div">
+        <div id="players-online-container">
+          <div data-localize="players-online">Players online: </div>
+          <span id="number-of-players-online" style="padding-left: 3px"></span>
+        </div>
+        <div id="names-of-players-online"></div>
+      </div>
     </div>
+    <div id="popupPlaceholder" style="display: flex; justify-content: center"></div>
   </body>
 </html>

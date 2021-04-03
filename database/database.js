@@ -6,10 +6,51 @@ class Database {
   constructor (config) {
     //connect to database
     this.con = mysql.createConnection(config);
-    this.con.connect( err => {
-      if (err) throw err;
-      console.log("Connected!");
-    });
+  }
+
+  //check if needed tables exist and create if not
+  async checkExistance() {
+    const dbschema = `CREATE TABLE IF NOT EXISTS langcode (
+      langcode_id int PRIMARY KEY,
+      langcode_name varchar(10)
+    );
+    
+    CREATE TABLE IF NOT EXISTS bundle (
+      bundle_id int PRIMARY KEY,
+      bundle_author varchar(34),
+      bundle_langcode int,
+      CONSTRAINT fk_bundle_on_langcode
+      FOREIGN KEY (bundle_langcode)
+      REFERENCES langcode(langcode_id),
+      bundle_title varchar(200)
+    );
+    
+    CREATE TABLE IF NOT EXISTS deck (
+      bundle_id int,
+      deck_id int PRIMARY KEY,
+      deck_subject varchar(200),
+      CONSTRAINT fk_deck_on_bundle
+      FOREIGN KEY (bundle_id)
+      REFERENCES bundle(bundle_id)
+    );
+    
+    CREATE TABLE IF NOT EXISTS question (
+      deck_id int,
+      question_type varchar(50),
+      question_string varchar(200),
+      question_trueans varchar(300),
+      question_falseans varchar(300),
+      CONSTRAINT fk_question_on_deck
+      FOREIGN KEY (deck_id)
+      REFERENCES deck(deck_id)
+    );`;
+    await this.promisifyConQuery(dbschema)
+    .catch(err => console.log(err));
+  }
+
+  //return connection
+  returnConnection() {
+    return this.con;
   }
 
   //create promise from sql query
@@ -28,6 +69,7 @@ class Database {
 
   //get all bundles from database
   async getAllBundles() {
+    await this.checkExistance();
     let bundle = {
       author: null,
       langcode: null,
@@ -45,6 +87,9 @@ class Database {
       falseAns: null
     };
     let returnBundles = [];
+    const dd = `SELECT * from bundle`;
+    await this.promisifyConQuery(dd).then((dd) => console.log(dd));
+
     const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
       FROM question q
       INNER JOIN deck d
@@ -101,19 +146,22 @@ class Database {
       }
       returnBundles = allBundles;
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err))
+    .finally(() => console.log('done'));
     return returnBundles;
   }
 
   //insert new bundle to database
-  insertBundle(bundle) {
+  async insertBundle(bundle) {
+    await this.checkExistance();
     let insertLangcodeSqlStr = `INSERT INTO langcode (langcode_name)
     SELECT * FROM (SELECT '${bundle.langcode}') AS tmp
     WHERE NOT EXISTS ( SELECT langcode_name 
     FROM langcode 
     WHERE langcode_name = '${bundle.langcode}')
     LIMIT 1`;
-    this.promisifyConQuery(insertLangcodeSqlStr)
+    await this.promisifyConQuery(insertLangcodeSqlStr)
+    .catch(err => console.log(err))
     .then(() => {
       const getlangIDSqlStr = `SELECT langcode_id FROM langcode WHERE langcode_name = '${bundle.langcode}'`;
       return this.promisifyConQuery(getlangIDSqlStr);
@@ -121,26 +169,30 @@ class Database {
     .catch(err => console.log(err))
     .then(rows => {
       const langcodeId = rows[0].langcode_id;
-      const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode) VALUES('${bundle.author}', '${bundle.title}', '${langcodeId}')`;
+      const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode) 
+                                  VALUES('${bundle.author.replace(/[']{1}/g, "''")}', '${bundle.title.replace(/[']{1}/g, "''")}', '${langcodeId}')`;
       return this.promisifyConQuery(insertBundleSqlStr);
     })
     .catch(err => console.log(err))
-    .then(rows => {
+    .then(async rows => {
       const bundleId = rows.insertId;
       for (const deck of bundle.decks) {
-        const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) VALUES('${deck.subject}', '${bundleId}')`;
-        this.promisifyConQuery(insertDeckSqlStr)
-        .then(rowsD => {
+        const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) 
+                                  VALUES('${deck.subject.replace(/[']{1}/g, "''")}', '${bundleId}')`;
+        await this.promisifyConQuery(insertDeckSqlStr)
+        .then(async rowsD => {
           for (const q of deck.questions) {
-            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) VALUES('${q.type}', '${q.string}', '${q.trueAns}', '${q.falseAns}', '${rowsD.insertId}')`;
-            this.promisifyConQuery(insertQuestionSqlStr)
+            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) 
+                                          VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${q.trueAns.toString().replace(/[']{1}/g, "''")}', '${q.falseAns.toString().replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
+            await this.promisifyConQuery(insertQuestionSqlStr)
             .catch(err => console.log(err));
           }
         })
         .catch(err => console.log(err));
       }
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err))
+    .finally(() => console.log('done'));
   }
 }
 

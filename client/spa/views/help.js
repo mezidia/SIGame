@@ -3,7 +3,7 @@
 const view = () => {
   return `<div class="container" style="margin-top: 20px;">
     <h1 data-localize="help-page">Help page</h1>
-    <div id="go-up-btn"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M23.245 20l-11.245-14.374-11.219 14.374-.781-.619 12-15.381 12 15.391-.755.609z"/></svg></div>
+    <div class="go-up-btn" id="go-up-btn"><svg width="24" height="24" class="go-up-btn" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M23.245 20l-11.245-14.374-11.219 14.374-.781-.619 12-15.381 12 15.391-.755.609z"/></svg></div>
     <ul>
       <li><a class="scrollTo" id="ref_help-rules" data-localize="rules">Rules</a></li>
       <li><a class="scrollTo" id="ref_help-questions" data-localize="questions">Questions</a></li>

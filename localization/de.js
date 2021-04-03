@@ -17,6 +17,7 @@ const de = {
   "random-word": "Random",
   "download-word": "Download",
   "game-type-word": "Game type",
+  "findBundleByName-word": "Find bundle by name",
   "simple-word": "S1mple",
   "classic-word": "Classic",
   "role-word": "Role",
@@ -96,7 +97,16 @@ const de = {
   "wrong-answers": "Wrong answers",
   "correct": "Correct",
   "wrong": "Wrong",
-  
+  "onleave": "Do you really want to exit the game?",
+  "find-games": {
+    "placeholder": "Find your game!",
+  },
+  "players-online": "Players online: ",
+  "nopass": "Without password",
+  "pass": "With password",
+  "all-games": "All games",
+  "game-running": "Game has already started",
+
 };
 
 export { de };

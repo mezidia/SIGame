@@ -13,12 +13,19 @@ const view = () => {
         <button id="answer-btn" class="btn btn-primary game-button" style="width: 100px; height: 100%" disabled></button>
       </div>
     </div>
-    <div class="col-md-3 chat-container" style="padding: 0 0 0 0">
-      <div id="chat" style="background-color: #6f42c1; min-height: 70px; overflow: auto"></div>
+    <div class="col-md-3 chat-container" style="padding: 0 0 0 0; overflow-y: auto; height: 100%">
+      <div id="chat" style="background-color: #6f42c1; min-height: 70px; overflow: auto">
+      <-- timer example -->
+      <div id="answer-timer">666</div>
+      <-- timer example -->
+      <-- timer example -->
+      <div id="game-timer">666</div>
+      <-- timer example -->
+      </div>
       <div id="chat-input" style="background-color: #8c8c8c;">
         <input type="text" style="width: 100%; height: 50px;" id="message-input">
         <div class="game-button-placeholder">
-          <button class="btn btn-primary game-button" id="change-sums-btn" style="display: none;" data-localize="change-sums">Change sums</button>
+          <button class="btn btn-primary game-button" id="changePoints-sums-btn" style="display: none;" data-localize="change-sums">Change sums</button>
           <button class="btn btn-primary game-button" id="report-btn" style="grid-column: 1 / 3; grid-row: 1 / 2" data-localize="report">Report</button>
           <button class="btn btn-primary game-button" id="pause-btn" data-localize="pause">Pause</button>
           <button class="btn btn-primary game-button" id="exit-btn" data-localize="exit">Exit</button>
@@ -28,7 +35,5 @@ const view = () => {
   </div>
   `;
 };
-
-
 
 export default view;

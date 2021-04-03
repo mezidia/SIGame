@@ -5,13 +5,13 @@ import Deck from "./deck_class.js";
 import Question from "./question_class.js";
 import User from "./user_class.js";
 import { getRandomIntInclusive } from '../utils.js';
+const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
 
 function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;
   const trueAns = document.getElementById(`answer-${r}-${c}-${q}`).value;
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
   const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
-  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(string)) throw new Error(`failed reg test on string ${r}-${c}-${q}`);
   if (!reg.test(trueAns)) throw new Error(`failed reg test on trueAns ${r}-${c}-${q}`);
   if (falseAns.length > 0) if (!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
@@ -21,7 +21,6 @@ function getQData(r, c, q) {
 
 function getDomElemVal(elem) {
   const val = elem.value;
-  const reg = /[A-Za-zА-яҐґЇїІі0-9]+/;
   if (!reg.test(val)) {
     throw new Error(`failed reg test on ${elem.id}`);
   }
@@ -111,6 +110,7 @@ export default class BundleEditor {
     const bundlesByLang = this.getBundlesByLangcode(allBundles, langcode);
     // get 15 regular decks
     const usedDecksSubjects = [];
+    console.log(allBundles, bundlesByLang);
     for (let c = 0; c < 15; c++) {
       const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
       const allRegularDecks = bundle.getRegularDecks();

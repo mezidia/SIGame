@@ -2,11 +2,16 @@
 
 import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
-import { changeHash } from "../spa/spaControl.js";
 import Bundle from "./bundle_class.js";
+import GameTimer from "./gameTimer_class.js";
+import { changeHash } from "../spa/spaControl.js";
+import { errPopup } from "../spa/uiElements.js";
 
 
-const ANSWERTIME = 5000;
+
+const ANSWERTIME = 5; //sec
+const GAMETIME = 25; //sec
+const APPEALTIME = 5; //sec
 
 export default class Game {
   _setListeners() {
@@ -17,6 +22,14 @@ export default class Game {
   _removeListeners() {
     document.removeEventListener('click', this.clickHandler);
     this._socket.removeEventListener('message', this.socketHandler);
+  }
+
+  _prepForExit() {
+    this._removeListeners();
+    this.turnTimer.reset();
+    this.gameTimer.reset();
+    clearTimeout(this.turnTimerID);
+    clearTimeout(this.appealTimerID);
   }
 
   constructor(bundle, settings, players) {
@@ -31,12 +44,19 @@ export default class Game {
     this.players = players ? players : [settings.master];
     this.points = {[settings.master]: 0};
     this.gameField = new GameField();
+    this.turnTimer = new GameTimer('answer-timer');
+    this.gameTimer = new GameTimer('game-timer');
     this._setListeners();
     this.rounds = this.bundle.getRoundsArr();
     this.currentQuestion = undefined;
     this.currentRound = 0;
     this.answerCounter = 0;
-    this.turnTimerID = undefined;
+    this.turnTimerID = null;
+    this.appealTimerID = null;
+    this.lastAnswer = undefined;
+    this.canMove = [];
+    this.aleadyMoved = [];
+    this.appealDecision = [];
     console.log('new Game', this);
   }
 
@@ -50,6 +70,7 @@ export default class Game {
     }
     if (this.master === new User().name) {
       this.gameField.switchGameMode(true);
+      this.clickConfig.cell = null;
     }
   }
 
@@ -60,11 +81,10 @@ export default class Game {
     } else {
       document.getElementById('answer-btn').disabled = true;
     }
-  
   }
 
   onJoinGame = evt => {
-    console.log(this.players);
+    console.log(`${evt.name} joined:`, this.players);
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
@@ -87,33 +107,88 @@ export default class Game {
   }
 
   onNextTurn = evt => {
+    this.appealDecision = [];
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
-    console.log(this.currentQuestion.string);
     for (const dIndex in decks) {
       for (const qIndex in decks[dIndex].questions) {
-        console.log(dIndex, qIndex);
-        console.log(decks[dIndex].questions[qIndex]);
         if (!decks[dIndex].questions[qIndex]) continue;
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
           console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
-          //decks[dIndex].questions.splice(qIndex, 1);
           decks[dIndex].questions[qIndex] = null;
           break;
         }
       }
     }
-    console.log(this.rounds[this.currentRound]);
     this.checkAnswerCounter();
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
 
   onAnswerCheck = evt => {
-    if (this.master !== new User().name) return;
-    console.log(this.currentQuestion);
     const t = this.currentQuestion.trueAns;
     const f = this.currentQuestion.falseAns;
+    this.lastAnswer = { 
+      who: evt.who,
+      ans: evt.answer,
+      t,
+      f,
+    };
+    if (this.master !== new User().name) return;
+    console.log(this.currentQuestion);
     this.gameField.gmPopUp(evt.who, evt.answer, t, f);
+  }
+
+  onCanAppeal = evt => {
+    if (evt.who !== new User().name) return;
+    document.getElementById('answer-btn').disabled = false;
+    this.clickConfig.answer = this.appeal;
+    this.appealTimerID = setTimeout(() => {
+      document.getElementById('answer-btn').disabled = true;
+      this.nextTurn();
+    }, APPEALTIME * 1000);
+  }
+
+  onAppealDecision = evt => {
+    this.appealDecision.push({
+      who: evt.who,
+      decision: evt.decision,
+    });
+    if ((this.players.length - 2) === this.appealDecision.length) {
+      let res = 0;
+      for (const d of this.appealDecision) {
+        res += d.decision ? 1 : -1;
+      }
+      if (res > 0) {
+        this.points[this.lastAnswer.who] += this.currentQuestion.cost * 2;
+        this.updatePoints();
+      }
+      this.nextTurn();
+    }
+  }
+
+  onAppeal = evt => {
+    if (new User().name === evt.who) return;
+    if (new User().name === this.master) return;
+    //appealPopup(this.lastAnswer);
+    this.gameField.appealPopUp(
+      this.lastAnswer.who,
+      this.lastAnswer.ans,
+      this.lastAnswer.t,
+      this.lastAnswer.f
+      );
+  }
+
+  onNextPicker = evt => {
+    if (new User().name !== evt.who) {
+      this.clickConfig.cell = null;
+    } else if (new User().name === evt.who) {
+      this.clickConfig.cell = this.onQuestionClick;
+    }
+  }
+
+  onStartGame = evt => {
+    this.gameTimer.setTimer(GAMETIME);
+    this.gameField.drawTable(this.rounds[this.currentRound]);
   }
 
   eventsConfig = {
@@ -125,9 +200,14 @@ export default class Game {
     'showQuestion': this.onShowQuestion,
     'answerCheck': this.onAnswerCheck,
     'nextTurn': this.onNextTurn,
+    'canAppeal': this.onCanAppeal,
+    'appeal': this.onAppeal,
+    'nextPicker': this.onNextPicker,
+    'startGame': this.onStartGame,
+    'appealDecision': this.onAppealDecision,
   };
 
-  socketHandler = (msg) => {
+  socketHandler = msg => {
     const prsdMsg = JSON.parse(msg.data);
     if (prsdMsg.mType !== 'broadcastedEvent') return;
     const event = prsdMsg.data.data.event;
@@ -137,7 +217,7 @@ export default class Game {
   }
 
   exit = () => {
-    this._removeListeners();
+    this._prepForExit();
     const event = {
       eType: 'leave',
       name: new User().name,
@@ -154,14 +234,14 @@ export default class Game {
       };
       this._socket.send(JSON.stringify(msg));
     }
+    console.log('leave game-id ' + this._id);
     this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
-    changeHash('chooseMode')();
     delete this;
   }
 
   join() {
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.waitForPlayersJpgShow();
     for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
       eType: 'join',
@@ -170,7 +250,7 @@ export default class Game {
     this.broadcast(event);
   }
 
-  onQuestionClick = (e) => {
+  onQuestionClick = e => {
     const target = e.target;
     const splitedID = target.id.split('-');
     const i = splitedID[1] - 1;
@@ -184,7 +264,7 @@ export default class Game {
     console.log(q);
     this.gameField.drawQuestion(q.string);
     this.currentQuestion = q;
-    const canAnswer = (evt) => {
+    const canAnswer = evt => {
       if (evt.target.id === 'last-letter') {
         const event = {
           eType: 'turnOrder',
@@ -208,11 +288,20 @@ export default class Game {
       who: new User().name,
     };
     this.broadcast(event);
-    console.log(ans.value);
+  }
 
+  appeal = () => {
+    clearTimeout(this.appealTimerID);
+    const event = {
+      eType: 'appeal',
+      who: new User().name,
+    };
+    this.broadcast(event);
+    document.getElementById('answer-btn').disabled = true;
   }
 
   raiseHand = () => {
+    this.turnTimer.setTimer(ANSWERTIME);
     this.clickConfig.answer = this.answer;
     const event = {
       eType: 'turnOrder',
@@ -221,13 +310,10 @@ export default class Game {
     this.broadcast(event);
     this.turnTimerID = setTimeout(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
-      const event = {
-        eType: 'turnOrder',
-        who: this.players,
-      };
-      this.broadcast(event);
       this.updatePoints();
-    }, ANSWERTIME);
+      document.getElementById('answer-btn').disabled = true;
+      this.nextTurn();
+    }, ANSWERTIME * 1000);
 
   }
 
@@ -236,32 +322,82 @@ export default class Game {
     this.points[name] += this.currentQuestion.cost;
     this.updatePoints();
     this.gameField.gmPopHide();
-    const event = {
-      eType: 'turnOrder',
-      who: this.players,
-    };
-    this.broadcast(event);
     this.nextTurn();
   }
 
   nextTurn() {
     const event = {
       eType: 'nextTurn',
+      who: this.players,
     };
     this.broadcast(event);
+    this.setNextPicker();
   }
 
   uncorrect = evt => {
     const name = document.getElementById('answer-author').textContent;
-    this.points[name] -= +this.currentQuestion.cost;
-    this.updatePoints();
+    if (this.currentQuestion.type !== 'noRisk') {
+      this.points[name] -= +this.currentQuestion.cost;
+      this.updatePoints();
+      const appealEvent = {
+        eType: 'canAppeal',
+        who: name,
+      };
+      this.broadcast(appealEvent);
+    }
     this.gameField.gmPopHide();
+
+  }
+
+  disagreeWithApeal = evt => {
+    const appealEvent = {
+      eType: 'appealDecision',
+      who: new User().name,
+      decision: false,
+    };
+    this.broadcast(appealEvent);
+    this.gameField.appealPopHide();
+  }
+
+  agreeWithApeal = evt => {
+    const appealEvent = {
+      eType: 'appealDecision',
+      who: new User().name,
+      decision: true,
+    };
+    this.broadcast(appealEvent);
+    this.gameField.appealPopHide();
+  }
+
+  startGame = () => {
+    if (this.players.length < 3) {
+      errPopup('min 3 players!');
+      return false;
+    }
+    this.setNextPicker();
+    this.gameField.hideStartButton();
     const event = {
-      eType: 'turnOrder',
-      who: this.players,
+      eType: 'startGame',
     };
     this.broadcast(event);
-    this.nextTurn();
+    this._socket.send(JSON.stringify({ mType: 'updateGameStatus', data: { 
+      roomID: this._id,
+      running: true,
+    }}));
+  }
+
+  setNextPicker(name) {
+    if (this.canMove.length < 2) {
+      this.canMove = [...this.players];
+      this.canMove.splice(this.canMove.indexOf(this.master), 1);
+      this.canMove.sort(() => Math.random() - 0.5);
+    }
+    name = name || this.canMove.pop();
+    const event = {
+      eType: 'nextPicker',
+      who: name,
+    };
+    this.broadcast(event);
   }
 
   clickConfig = {
@@ -269,10 +405,19 @@ export default class Game {
     'answer': this.raiseHand,
     'correct': this.correct,
     'uncorrect': this.uncorrect,
-    'exit': this.exit,
+    'exit': changeHash('chooseMode'),
+    'disagreeWithApeal': this.disagreeWithApeal,
+    'agreeWithApeal': this.agreeWithApeal,
     'report': 'report',
     'pause': 'pause',
     'resume': 'resume',
+    'startGame': this.startGame,
+    'changePoints': () => this.gameField.scoreAsInput(true)(),
+    'submitPoints': () => {
+      this.gameField.scoreAsInput(false)();
+      this.points = this.gameField.collectScores();
+      this.updatePoints();
+    },
   };
 
   clickHandler = (e) => {
@@ -283,14 +428,20 @@ export default class Game {
   }
 
   init() {
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.waitForPlayersJpgShow();
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
+    this.clickConfig.cell = null;
+    this.gameField.drawStartButton();
   }
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.answerCounter === 14) {
+    if (this.currentRound === 3 && this.answerCounter === 1) {
+      const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
+      //show win window
+      this.exit();
+    } else if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;
     }
@@ -304,18 +455,20 @@ export default class Game {
     this.broadcast(event);
   }
 
-  broadcast(event) {
-    this._socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
-      event: event,
-      roomID: this._id,
-    }})); 
+  broadcast(...events) {
+    for (const event of events) {
+      this._socket.send(JSON.stringify({ mType: 'broadcastInRoom', data: {
+        event: event,
+        roomID: this._id,
+      }})); 
+    }
   }
 
   addPlayer(name) {
     this.players.push(name);
   }
 
-  kikcPlayer() {
+  kickPlayer() {
 
   }
 

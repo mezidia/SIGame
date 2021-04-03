@@ -1,8 +1,17 @@
 'use strict';
 
+import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
-import { changeLanguage } from '../changeLanguage.js';
+import { changeLanguage, language } from '../changeLanguage.js';
+import { leavePopup } from './uiElements.js';
+import { de } from '../../localization/de.js';
+import { ua } from '../../localization/ua.js';
+
+const languages = {
+  de: de,
+  ua: ua
+}
 
 const router = new Router();
 const engine = new RenderEngine();
@@ -12,12 +21,26 @@ async function loadMainView() {
   engine.render(view.default);
 }
 
-const changeHash = (hash) => async() => {
+const getHash = () => router.getHash();
+
+const changeHash = (hash) => async () => {
+  let ask = false;
+  if (router.getHash()) {
+    const parts = router.getHash().split('/');
+    let hash1 = parts[0];
+    if (hash1 === 'simpleLobby' && hash !== '') {
+      ask = true;
+    }
+  }
+  
+  if(ask) {
+    leavePopup(language.json['onleave']);
+    return;
+  }
+
   router.change(hash);
   await loadView();
 };
-
-const getHash = () => router.getHash()
 
 const loadView = async () => {
   const { viewName } = router.getState();
@@ -33,12 +56,34 @@ const loadView = async () => {
     .catch(reason => {
       console.log(reason);
     })
-    .finally(changeLanguage());
+    .finally(() => {
+      console.log(viewName);
+      if (viewName === 'mainPage') {
+        const name = window.localStorage.getItem('name');
+        if (name) document.getElementById('name-input').value = name;
+      }
+      const langcode = window.localStorage.getItem('language');
+      if (langcode) changeLanguage(languages[langcode])();
+    });
 };
+
+const getViewControllerClassName = () => {
+  let currrentView = checkView();
+  currrentView = currrentView.charAt(0).toUpperCase() + currrentView.slice(1)
+  const controllerName = currrentView + 'Controller';
+  console.log(controllerName);
+  return controllerName;
+}
 
 const checkView = () => {
   const { viewName } = router.getState();
   return viewName;
+}
+
+const сontrollersConfig = Object.fromEntries(Object.entries(controllers));
+
+const getController = () => {
+  return new (сontrollersConfig[getViewControllerClassName()]);
 }
 
 export {
@@ -47,4 +92,7 @@ export {
   checkView,
   loadMainView,
   getHash,
+  getViewControllerClassName,
+  сontrollersConfig,
+  getController,
 };
