@@ -24,20 +24,7 @@ const leavePopup = text => {
   `;
 }
 
-const appealPopup = obj => {
-  const placeholder = document.getElementById('popupPlaceholder');
-  placeholder.innerHTML = `<div class="custom-popup">
-    <h1>${obj.question}</h1>
-    <p>${obj.who} answered: ${obj.ans}</p>
-    <p>Is the answer correct?</p>
-    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="appeal-true">Yes</button>
-    <button class="btn btn-primary" style="width: 50%; text-align: center;" id="close-popup">No</button>
-  </div>
-  `;
-}
-
 export {
   errPopup,
   leavePopup,
-  appealPopup
 }
