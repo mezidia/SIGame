@@ -5,7 +5,7 @@ import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
 import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig } from './spa/spaControl.js';
-import { changeLanguage } from './changeLanguage.js';
+import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 
 import { de } from '../localization/de.js';

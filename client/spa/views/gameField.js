@@ -131,29 +131,16 @@ export default class GameField {
 
  // draws popup to grade players' answers
  appealPopUp(who, ans, t, f) {
-  document.getElementById('popupPlaceholder').innerHTML = `<div class="container gm-popup">
-      <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
-        <span class="badge badge-primary" id="answer-author">${who}</span>
-        <br>
-        <span id="answer-text">${ans}</span>
-      </div>
-      <div class="row">
-      
-        <div class="col-sm-6">
-          <h2 class="text-primary" data-localize="correct-answers">${language.json["correct-answers"]}</h2>
-          <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-          <div id="agreeWithApeal" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="correct">${language.json["correct"]}</div>
-        </div>
-        
-        <div class="col-sm-6">
-          <h2 class="text-primary" data-localize="wrong-answers">${language.json["wrong-answers"]}</h2>
-          <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-          <div id="disagreeWithApeal" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="wrong">${language.json["wrong"]}</div>
-        </div>
-        
-      </div>
-    </div>
-    `;
+   document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
+    <p>${who} answered: ${ans}</p>
+    <h2 class="text-primary" data-localize="correct-answers">${language.json["correct-answers"]}</h2>
+    <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
+    <h2 class="text-primary" data-localize="wrong-answers">${language.json["wrong-answers"]}</h2>
+    <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
+    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal">Agree</button>
+    <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal">Disagree</button>
+  </div>
+  `;
 }
 
   // hides a popup
