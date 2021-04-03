@@ -22,8 +22,49 @@ export default class MainPageController {
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
-    console.log(this[configString][evt.target.id]);
+    console.log(configString);
+    if (!this[configString]) return false;
+    if (!this[configString][evt.target.id]) return false;
     return this[configString][evt.target.id];
+  }
+
+  socketHandleConfig = mType => ({
+    'usersOnline': data => onUsersOnline(data),
+    'messageToGameChat': data => sendMessageToGameChat(data),
+    'returnAllGames': data => updateGames(data),
+  })[mType];
+
+  onUsersOnline = data => {
+    const numberOfAllPlayersDiv = document.getElementById('number-of-players-online'); 
+    numberOfAllPlayersDiv.innerHTML = data.data.names.length;
+    const namesOfAllPlayersDiv = document.getElementById('names-of-players-online');
+    namesOfAllPlayersDiv.innerHTML = '';
+    for (let name of data.data.names) {
+      const playerDiv = document.createElement('div');
+      playerDiv.innerText += name + '\n';
+      namesOfAllPlayersDiv.appendChild(playerDiv);
+    }
+  }
+
+  updateGames = data => {
+    console.log(data);
+    const games = data.data;
+    const gamesSearchField = document.getElementById('games-search');
+    allGames = data;
+    if (!gamesSearchField) return;
+    gamesSearchField.innerHTML = '';
+    for (const gameId in games) {
+      const gm = games[gameId];
+      const gameDiv = document.createElement('div');
+      gameDiv.setAttribute('id', gameId);
+      gameDiv.addEventListener('click', () => gameDivOnClick(gameId, gm));
+      gameDiv.innerHTML = gm.settings.roomName;
+      gamesSearchField.appendChild(gameDiv);
+      if (gameInSearchLobby === gameId) gameDiv.click();
+      else hideGameInfoDiv();
+    }
+    if (Object.keys(allGames.data).length === 0) hideGameInfoDiv();
+    sortGames();
   }
 
   connectToSIgame() {

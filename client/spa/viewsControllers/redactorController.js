@@ -15,6 +15,9 @@ export default class RedactorController {
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
+    console.log(configString);
+    if (!this[configString]) return false;
+    if (!this[configString][evt.target.id]) return false;
     return this[configString][evt.target.id];
   }
 
