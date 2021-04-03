@@ -10,13 +10,16 @@ const bundleEditor = new BundleEditor();
 export default class ChooseModeController {
 
   clickConfig = {
-    'create-game-btn': [createGameLobby],
-    'join-btn': [joinLobby],
+    'create-game-btn': [this.createGameLobby],
+    'join-btn': [this.joinLobby],
 
   }
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
+    console.log(configString);
+    if (!this[configString]) return false;
+    if (!this[configString][evt.target.id]) return false;
     return this[configString][evt.target.id];
   }
 
