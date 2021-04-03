@@ -1,12 +1,13 @@
 'use strict';
 
+import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
 import { changeLanguage, language } from '../changeLanguage.js';
 import { leavePopup } from './uiElements.js';
-
 import { de } from '../../localization/de.js';
 import { ua } from '../../localization/ua.js';
+
 const languages = {
   de: de,
   ua: ua
@@ -22,7 +23,7 @@ async function loadMainView() {
 
 const getHash = () => router.getHash();
 
-const changeHash = (hash) => async() => {
+const changeHash = (hash) => async () => {
   let ask = false;
   if (router.getHash()) {
     const parts = router.getHash().split('/');
@@ -66,9 +67,23 @@ const loadView = async () => {
     });
 };
 
+const getViewControllerClassName = () => {
+  let currrentView = checkView();
+  currrentView = currrentView.charAt(0).toUpperCase() + currrentView.slice(1)
+  const controllerName = currrentView + 'Controller';
+  console.log(controllerName);
+  return controllerName;
+}
+
 const checkView = () => {
   const { viewName } = router.getState();
   return viewName;
+}
+
+const сontrollersConfig = Object.fromEntries(Object.entries(controllers));
+
+const getController = () => {
+  return new (сontrollersConfig[getViewControllerClassName()]);
 }
 
 export {
@@ -77,4 +92,7 @@ export {
   checkView,
   loadMainView,
   getHash,
+  getViewControllerClassName,
+  сontrollersConfig,
+  getController,
 };

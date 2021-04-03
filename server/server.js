@@ -1,4 +1,5 @@
 'use strict';
+
 const http = require('http');
 const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
@@ -95,9 +96,11 @@ class Server {
   sendName(data) {
     if (!this._users.hasOwnProperty(data.id)) {
       console.log('(sendName) no such id property in this._users: ', data.id);
+      return;
     }
     if (!data.data.hasOwnProperty('name')) {
       console.log('(sendName) no name property in data.data: ', data);
+      return;
     }
     this._users[data.id].name = data.data.name;
     const users = {names: []};

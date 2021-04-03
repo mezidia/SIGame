@@ -33,6 +33,6 @@ const view = () => {
     </div>
   </div>
   `;
-};
+}
 
 export default view;

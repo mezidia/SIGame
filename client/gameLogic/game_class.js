@@ -5,7 +5,7 @@ import User from "./user_class.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
 import { changeHash } from "../spa/spaControl.js";
-import { appealPopup, errPopup } from "../spa/uiElements.js";
+import { errPopup } from "../spa/uiElements.js";
 
 
 
@@ -22,6 +22,14 @@ export default class Game {
   _removeListeners() {
     document.removeEventListener('click', this.clickHandler);
     this._socket.removeEventListener('message', this.socketHandler);
+  }
+
+  _prepForExit() {
+    this._removeListeners();
+    this.turnTimer.reset();
+    this.gameTimer.reset();
+    clearTimeout(this.turnTimerID);
+    clearTimeout(this.appealTimerID);
   }
 
   constructor(bundle, settings, players) {
@@ -76,7 +84,7 @@ export default class Game {
   }
 
   onJoinGame = evt => {
-    console.log(this.players);
+    console.log(`${evt.name} joined:`, this.players);
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
@@ -107,7 +115,6 @@ export default class Game {
         if (!decks[dIndex].questions[qIndex]) continue;
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
           console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
-          //decks[dIndex].questions.splice(qIndex, 1);
           decks[dIndex].questions[qIndex] = null;
           break;
         }
@@ -180,6 +187,7 @@ export default class Game {
   }
 
   onStartGame = evt => {
+    this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
 
@@ -209,7 +217,7 @@ export default class Game {
   }
 
   exit = () => {
-    this._removeListeners();
+    this._prepForExit();
     const event = {
       eType: 'leave',
       name: new User().name,
@@ -337,7 +345,6 @@ export default class Game {
       };
       this.broadcast(appealEvent);
     }
-    //setTimeout(() => this.nextTurn(), APPEALTIME * 1000);
     this.gameField.gmPopHide();
 
   }
@@ -425,7 +432,6 @@ export default class Game {
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
     this.clickConfig.cell = null;
-    this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawStartButton();
   }
 
