@@ -132,13 +132,13 @@ export default class GameField {
  // draws popup to grade players' answers
  appealPopUp(who, ans, t, f) {
    document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
-    <p>${who} answered: ${ans}</p>
-    <h2 class="text-primary" data-localize="correct-answers">${language.json["correct-answers"]}</h2>
-    <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-    <h2 class="text-primary" data-localize="wrong-answers">${language.json["wrong-answers"]}</h2>
-    <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal">Agree</button>
-    <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal">Disagree</button>
+     <p>${who} answered: ${ans}</p>
+     <h2 class="text-primary" data-localize="correct-answers">${language.json["correct-answers"]}</h2>
+     <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
+     <h2 class="text-primary" data-localize="wrong-answers">${language.json["wrong-answers"]}</h2>
+     <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
+     <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal">Agree</button>
+     <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal">Disagree</button>
   </div>
   `;
 }
@@ -234,6 +234,15 @@ export default class GameField {
     this.buttonMode()
     const button = document.getElementById('btn-answer');
     button.innerHTML = `I'm right!`;
+  }
+
+  bet() {
+    document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
+     <h2 class="text-primary">Please make a bet</h2>
+     <input id="bet-size" style="width: 100%" required>
+     <button class="btn btn-primary" style="width: 100%; text-align: center; float: left" id="place-bet">OK</button>
+  </div>
+  `;
   }
 
 }
