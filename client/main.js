@@ -7,9 +7,11 @@ import SimpleGame from './gameLogic/simpleGame_class.js';
 import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
+import { errPopup } from './spa/uiElements.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -401,7 +403,6 @@ const joinLobby = async () => {
 
 //update games in lobby
 const updateGames = data => {
-  console.log(data);
   const games = data.data;
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
@@ -465,7 +466,10 @@ async function joinHandle(gameData) {
   const passwordGame = gm.settings.password;
   if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
   if (gm.settings.running) return;
-  if (gm.players.includes(new User().name)) return;
+  if (gm.players.includes(new User().name)) {
+    errPopup('username taken!');
+    return;
+  }
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
