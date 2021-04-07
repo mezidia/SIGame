@@ -35,6 +35,7 @@ export default class Game {
   constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
+    this.gameStatus = 0;           // [0, 1, 2] - [not started, started, paused]
     this.master = settings.master;
     this.roomName = settings.roomName;
     this.maxPpl = settings.ppl;
@@ -61,6 +62,7 @@ export default class Game {
   }
 
   onLeaveGame = evt => {
+    console.log(evt.name + ' left');
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
     this.gameField.removePlayer(evt.name);
@@ -71,6 +73,9 @@ export default class Game {
     if (this.master === new User().name) {
       this.gameField.switchGameMode(true);
       this.clickConfig.cell = null;
+      if (this.gameStatus === 0) {
+        this.gameField.drawStartButton();
+      }
     }
   }
 
@@ -187,6 +192,7 @@ export default class Game {
   }
 
   onStartGame = evt => {
+    this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
@@ -400,6 +406,16 @@ export default class Game {
     this.broadcast(event);
   }
 
+  submitPoints = () => {
+    this.gameField.scoreAsInput(false)();
+    this.points = this.gameField.collectScores();
+    this.updatePoints();
+  }
+
+  changePoints = () => {
+    this.gameField.scoreAsInput(true)();
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
@@ -412,12 +428,8 @@ export default class Game {
     'pause': 'pause',
     'resume': 'resume',
     'startGame': this.startGame,
-    'changePoints': () => this.gameField.scoreAsInput(true)(),
-    'submitPoints': () => {
-      this.gameField.scoreAsInput(false)();
-      this.points = this.gameField.collectScores();
-      this.updatePoints();
-    },
+    'changePoints': this.changePoints,
+    'submitPoints': this.submitPoints,
   };
 
   clickHandler = (e) => {

@@ -10,6 +10,7 @@ const view = () => {
       <input value="final'" type="text" placeholder="Question type" id="question-type-${roundNumber}-${themeNumber}-${i}" data-localize="question-type" required>
       <input value="final'" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">`).join('\n');
   }
+
   const finalQuestionList = () => {
     return [1, 2, 3, 4, 5, 6, 7].map(i => `
       <h5 data-localize="question">Question ${i}</h5>
@@ -30,7 +31,7 @@ const view = () => {
           <input value="final'" type="text" maxlength=200 id="category-name-${roundNumber}-${i}" required>
       
           <h5>Secret question</h5>
-          <select id="bundleLang-select" class="form-control">
+          <select id="secretIndex-select-${roundNumber}-${i}" class="form-control">
             <option>none</option>
             <option>1</option>
             <option>2</option>
@@ -39,7 +40,7 @@ const view = () => {
             <option>5</option>
           </select>
           <h5>Bet question</h5>
-          <select id="bundleLang-select" class="form-control">
+          <select id="betIndex-select-${roundNumber}-${i}" class="form-control">
             <option>none</option>
             <option>1</option>
             <option>2</option>

@@ -547,12 +547,12 @@ const onBundleCheckChange = evt => {
 function checkHash(e) {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame' || name === 'simpleLobby') {
-    changeHash('chooseMode')();
     if (roomId) {
       game.exit();
       socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
     }
     roomId = undefined;
+    changeHash('chooseMode')();
   }
 }
 
