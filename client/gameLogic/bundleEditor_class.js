@@ -30,7 +30,6 @@ function getDomElemVal(elem) {
 function getSpecialQIndex(r, c) {
   const secretIndex = document.getElementById(`secretIndex-select-${r}-${c}`).value;
   const betIndex = document.getElementById(`betIndex-select-${r}-${c}`).value;
-  console.log(secretIndex, betIndex);
   return { secretIndex, betIndex };
 }
 
@@ -175,7 +174,6 @@ export default class BundleEditor {
             deck.questions.push(qstn);
           }
           const { secretIndex: secret, betIndex: bet } = getSpecialQIndex(r, c);
-          console.log(secret, bet);
           if (secret !== 'none') deck.questions[secret - 1].type = 'secret';
           if (bet !== 'none') deck.questions[bet - 1].type = 'bet';
           bundleData.decks.push(new Deck(deck));

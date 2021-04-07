@@ -197,6 +197,16 @@ export default class Game {
     this.gameField.drawTable(this.rounds[this.currentRound]);
   }
 
+  onPause = evt => {
+    this.clickConfig.pause = this.resume;
+    //this.gameField.pause();
+  }
+
+  onResume = evt => {
+    this.clickConfig.pause = this.pause;
+    //this.gameField.resume();
+  }
+
   eventsConfig = {
     'leave': this.onLeaveGame,
     'turnOrder': this.onTurnOrder,
@@ -211,6 +221,8 @@ export default class Game {
     'nextPicker': this.onNextPicker,
     'startGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
+    'pause': this.onPause,
+    'resume': this.onResume,
   };
 
   socketHandler = msg => {
@@ -218,7 +230,7 @@ export default class Game {
     if (prsdMsg.mType !== 'broadcastedEvent') return;
     const event = prsdMsg.data.data.event;
     const handler = this.eventsConfig[event.eType];
-    if (!handler) console.log(`no handler for |${event.eType}| type event`);
+    if (!handler) return console.log(`no handler for |${event.eType}| type event`);
     handler(event);
   }
 
@@ -416,6 +428,20 @@ export default class Game {
     this.gameField.scoreAsInput(true)();
   }
 
+  pause = () => {
+    const event = {
+      eType: 'pause',
+    };
+    this.broadcast(event);
+  }
+
+  resume = () => {
+    const event = {
+      eType: 'resume',
+    };
+    this.broadcast(event);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
@@ -424,9 +450,8 @@ export default class Game {
     'exit': changeHash('chooseMode'),
     'disagreeWithApeal': this.disagreeWithApeal,
     'agreeWithApeal': this.agreeWithApeal,
-    'report': 'report',
-    'pause': 'pause',
-    'resume': 'resume',
+    'report': () => alert('нуда нуда'),
+    'pause': this.pause,
     'startGame': this.startGame,
     'changePoints': this.changePoints,
     'submitPoints': this.submitPoints,

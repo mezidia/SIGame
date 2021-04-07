@@ -55,6 +55,10 @@ const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
 
 // setupListeners();
 
+function disconnect() {
+  if (game) game.exit();
+}
+
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
   'usersOnline': data => onUsersOnline(data),
@@ -182,7 +186,7 @@ const connectToSIgame = () => {
     socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
-      //disconnect();
+      disconnect();
       console.log('closed');
     };
     socket.onmessage = msg => {
@@ -202,7 +206,7 @@ const openEditor = () => {
     new User(name, socket);
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
-      //disconnect();
+      disconnect();
       console.log('closed');
     };
     socket.onmessage = msg => {
@@ -609,4 +613,6 @@ window.onload = () => {
   const name = window.localStorage.getItem('name');
   if (name) document.getElementById('name-input').value = name;
 }
+window.onbeforeunload = () => disconnect();
+
 export { game, storage };
