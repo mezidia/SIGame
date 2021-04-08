@@ -90,9 +90,14 @@ const createGame = () => {
   const roomName = document.getElementById('roomName').value;
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
-  const gameMode = document.getElementById('gameMode').value;
+  const gameModeSelect = document.getElementById('gameMode');
   const totalPlayers = document.getElementById('totalPlayers').value;
   if (!reg.test(roomName)) return;
+
+  const gameMode = gameModeSelect.options[gameModeSelect.selectedIndex]
+    .attributes['data-localize'].textContent
+    .split('-')[0];
+
   data.settings = {
     roomName,
     password,
@@ -110,7 +115,7 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       data.bundle = bundleEditor.parseBundle(bundleObj);
-      game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+      game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
         data,
@@ -131,7 +136,7 @@ const createGame = () => {
         break;
       }
     }
-    game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+    game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -144,7 +149,7 @@ const createGame = () => {
     });
   } else {
     data.bundle = bundleEditor.getRandomBundleFrom(allBundles, language.json.code);
-    game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+    game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -478,7 +483,7 @@ async function joinHandle(gameData) {
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
-  game = gm.settings.gameMode === 'Classic' ? new Game(gm.bundle, gm.settings, gm.players) : new SimpleGame(gm.bundle, gm.settings, gm.players);
+  game = gm.settings.gameMode === 'classic' ? new Game(gm.bundle, gm.settings, gm.players) : new SimpleGame(gm.bundle, gm.settings, gm.players);
   game.setID(gmId);
   game.join();
   console.log('joined game', game);

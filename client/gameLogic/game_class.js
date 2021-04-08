@@ -106,9 +106,32 @@ export default class Game {
     this.master = evt.name;
   }
 
-  onShowQuestion = evt => {
+  onRegularQ = evt => {
     this.gameField.drawQuestion(evt.question.string);
+    if (new User().name === this.master) this.canRaiseHand(this.players);
+  }
+
+  onSecretQ = evt => {
+    this.gameField.drawQuestion(evt.question.string);
+    
+  }
+
+  onBetQ = evt => {
+    this.gameField.drawQuestion(evt.question.string);
+  }
+
+  qTypeConfig = {
+    'regular': this.onRegularQ,
+    'secret': this.onSecretQ,
+    'bet': this.onBetQ,
+    // 'sponsored': this.onSponsored,
+  }
+
+  onShowQuestion = evt => {
     this.currentQuestion = evt.question;
+    const qHandler = this.qTypeConfig[this.currentQuestion.type];
+    if (!qHandler) return console.log('Unknown q type');
+    qHandler(evt);
   }
 
   onNextTurn = evt => {
@@ -280,19 +303,6 @@ export default class Game {
     };
     this.broadcast(event);
     console.log(q);
-    this.gameField.drawQuestion(q.string);
-    this.currentQuestion = q;
-    const canAnswer = evt => {
-      if (evt.target.id === 'last-letter') {
-        const event = {
-          eType: 'turnOrder',
-          who: this.players,
-        };
-        this.broadcast(event);
-        document.removeEventListener('animationend', canAnswer);
-      }
-    }
-    document.addEventListener('animationend', canAnswer);
   }
 
   answer = () => {
@@ -321,11 +331,7 @@ export default class Game {
   raiseHand = () => {
     this.turnTimer.setTimer(ANSWERTIME);
     this.clickConfig.answer = this.answer;
-    const event = {
-      eType: 'turnOrder',
-      who: [new User().name],
-    };
-    this.broadcast(event);
+    this.turnOrder([new User().name]);
     this.turnTimerID = setTimeout(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
@@ -484,6 +490,25 @@ export default class Game {
     }
   }
 
+  turnOrder(who) {
+    const event = {
+      eType: 'turnOrder',
+      who: who,
+      calledBy: new User().name,
+    };
+    this.broadcast(event);
+  }
+
+  canRaiseHand(who) {
+    const canAnswer = evt => {
+      if (evt.target.id === 'last-letter') {
+        this.turnOrder(who);
+        document.removeEventListener('animationend', canAnswer);
+      }
+    }
+    document.addEventListener('animationend', canAnswer);
+  }
+
   updatePoints() {
     const event = {
       eType: 'points',
@@ -503,14 +528,6 @@ export default class Game {
 
   addPlayer(name) {
     this.players.push(name);
-  }
-
-  kickPlayer() {
-
-  }
-
-  pause() {
-   
   }
 
   setMaster(master) {
