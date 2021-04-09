@@ -11,12 +11,12 @@ function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;
   const trueAns = document.getElementById(`answer-${r}-${c}-${q}`).value;
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
-  const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
+  //const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
   if (!reg.test(string)) throw new Error(`failed reg test on string ${r}-${c}-${q}`);
   if (!reg.test(trueAns)) throw new Error(`failed reg test on trueAns ${r}-${c}-${q}`);
   if (falseAns.length > 0) if (!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
-  if (!reg.test(type)) throw new Error(`failed reg test on type ${r}-${c}-${q}`);
-  return {string, trueAns, falseAns, type};
+  //if (!reg.test(type)) throw new Error(`failed reg test on type ${r}-${c}-${q}`);
+  return {string, trueAns, falseAns /*, type*/};
 }
 
 function getDomElemVal(elem) {
@@ -25,6 +25,12 @@ function getDomElemVal(elem) {
     throw new Error(`failed reg test on ${elem.id}`);
   }
   return val;
+}
+
+function getSpecialQIndex(r, c) {
+  const secretIndex = document.getElementById(`secretIndex-select-${r}-${c}`).value;
+  const betIndex = document.getElementById(`betIndex-select-${r}-${c}`).value;
+  return { secretIndex, betIndex };
 }
 
 function toLangCode(language) {
@@ -164,8 +170,12 @@ export default class BundleEditor {
           }
           for(let q = 1; q <= 5; q++) { //question
             const qstn = new Question(getQData(r, c, q)); // submiting 3 rounds
+            qstn.type = 'regular';
             deck.questions.push(qstn);
           }
+          const { secretIndex: secret, betIndex: bet } = getSpecialQIndex(r, c);
+          if (secret !== 'none') deck.questions[secret - 1].type = 'secret';
+          if (bet !== 'none') deck.questions[bet - 1].type = 'bet';
           bundleData.decks.push(new Deck(deck));
         }
       }
@@ -177,6 +187,7 @@ export default class BundleEditor {
           questions: [],
         };
         const qstn = new Question(getQData(4, 1, q));
+        qstn.type = 'final';
         deck.questions.push(qstn); //final questione
         bundleData.decks.push(new Deck(deck));
       } 

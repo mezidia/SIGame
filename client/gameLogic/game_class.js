@@ -35,6 +35,7 @@ export default class Game {
   constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
+    this.gameStatus = 0;           // [0, 1, 2] - [not started, started, paused]
     this.master = settings.master;
     this.roomName = settings.roomName;
     this.maxPpl = settings.ppl;
@@ -61,6 +62,7 @@ export default class Game {
   }
 
   onLeaveGame = evt => {
+    console.log(evt.name + ' left');
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
     this.gameField.removePlayer(evt.name);
@@ -71,6 +73,9 @@ export default class Game {
     if (this.master === new User().name) {
       this.gameField.switchGameMode(true);
       this.clickConfig.cell = null;
+      if (this.gameStatus === 0) {
+        this.gameField.drawStartButton();
+      }
     }
   }
 
@@ -101,9 +106,32 @@ export default class Game {
     this.master = evt.name;
   }
 
-  onShowQuestion = evt => {
+  onRegularQ = evt => {
     this.gameField.drawQuestion(evt.question.string);
+    if (new User().name === this.master) this.canRaiseHand(this.players);
+  }
+
+  onSecretQ = evt => {
+    this.gameField.drawQuestion(evt.question.string);
+    
+  }
+
+  onBetQ = evt => {
+    this.gameField.drawQuestion(evt.question.string);
+  }
+
+  qTypeConfig = {
+    'regular': this.onRegularQ,
+    'secret': this.onSecretQ,
+    'bet': this.onBetQ,
+    // 'sponsored': this.onSponsored,
+  }
+
+  onShowQuestion = evt => {
     this.currentQuestion = evt.question;
+    const qHandler = this.qTypeConfig[this.currentQuestion.type];
+    if (!qHandler) return console.log('Unknown q type');
+    qHandler(evt);
   }
 
   onNextTurn = evt => {
@@ -187,8 +215,19 @@ export default class Game {
   }
 
   onStartGame = evt => {
+    this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawTable(this.rounds[this.currentRound]);
+  }
+
+  onPause = evt => {
+    this.clickConfig.pause = this.resume;
+    //this.gameField.pause();
+  }
+
+  onResume = evt => {
+    this.clickConfig.pause = this.pause;
+    //this.gameField.resume();
   }
 
   eventsConfig = {
@@ -205,6 +244,8 @@ export default class Game {
     'nextPicker': this.onNextPicker,
     'startGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
+    'pause': this.onPause,
+    'resume': this.onResume,
   };
 
   socketHandler = msg => {
@@ -212,7 +253,7 @@ export default class Game {
     if (prsdMsg.mType !== 'broadcastedEvent') return;
     const event = prsdMsg.data.data.event;
     const handler = this.eventsConfig[event.eType];
-    if (!handler) console.log(`no handler for |${event.eType}| type event`);
+    if (!handler) return console.log(`no handler for |${event.eType}| type event`);
     handler(event);
   }
 
@@ -262,19 +303,6 @@ export default class Game {
     };
     this.broadcast(event);
     console.log(q);
-    this.gameField.drawQuestion(q.string);
-    this.currentQuestion = q;
-    const canAnswer = evt => {
-      if (evt.target.id === 'last-letter') {
-        const event = {
-          eType: 'turnOrder',
-          who: this.players,
-        };
-        this.broadcast(event);
-        document.removeEventListener('animationend', canAnswer);
-      }
-    }
-    document.addEventListener('animationend', canAnswer);
   }
 
   answer = () => {
@@ -303,11 +331,7 @@ export default class Game {
   raiseHand = () => {
     this.turnTimer.setTimer(ANSWERTIME);
     this.clickConfig.answer = this.answer;
-    const event = {
-      eType: 'turnOrder',
-      who: [new User().name],
-    };
-    this.broadcast(event);
+    this.turnOrder([new User().name]);
     this.turnTimerID = setTimeout(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
@@ -400,6 +424,30 @@ export default class Game {
     this.broadcast(event);
   }
 
+  submitPoints = () => {
+    this.gameField.scoreAsInput(false)();
+    this.points = this.gameField.collectScores();
+    this.updatePoints();
+  }
+
+  changePoints = () => {
+    this.gameField.scoreAsInput(true)();
+  }
+
+  pause = () => {
+    const event = {
+      eType: 'pause',
+    };
+    this.broadcast(event);
+  }
+
+  resume = () => {
+    const event = {
+      eType: 'resume',
+    };
+    this.broadcast(event);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'answer': this.raiseHand,
@@ -408,16 +456,11 @@ export default class Game {
     'exit': changeHash('chooseMode'),
     'disagreeWithApeal': this.disagreeWithApeal,
     'agreeWithApeal': this.agreeWithApeal,
-    'report': 'report',
-    'pause': 'pause',
-    'resume': 'resume',
+    'report': () => alert('нуда нуда'),
+    'pause': this.pause,
     'startGame': this.startGame,
-    'changePoints': () => this.gameField.scoreAsInput(true)(),
-    'submitPoints': () => {
-      this.gameField.scoreAsInput(false)();
-      this.points = this.gameField.collectScores();
-      this.updatePoints();
-    },
+    'changePoints': this.changePoints,
+    'submitPoints': this.submitPoints,
   };
 
   clickHandler = (e) => {
@@ -447,6 +490,25 @@ export default class Game {
     }
   }
 
+  turnOrder(who) {
+    const event = {
+      eType: 'turnOrder',
+      who: who,
+      calledBy: new User().name,
+    };
+    this.broadcast(event);
+  }
+
+  canRaiseHand(who) {
+    const canAnswer = evt => {
+      if (evt.target.id === 'last-letter') {
+        this.turnOrder(who);
+        document.removeEventListener('animationend', canAnswer);
+      }
+    }
+    document.addEventListener('animationend', canAnswer);
+  }
+
   updatePoints() {
     const event = {
       eType: 'points',
@@ -466,14 +528,6 @@ export default class Game {
 
   addPlayer(name) {
     this.players.push(name);
-  }
-
-  kickPlayer() {
-
-  }
-
-  pause() {
-   
   }
 
   setMaster(master) {

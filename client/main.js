@@ -7,9 +7,11 @@ import SimpleGame from './gameLogic/simpleGame_class.js';
 import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
+import { errPopup } from './spa/uiElements.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -53,6 +55,10 @@ const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
 
 // setupListeners();
 
+function disconnect() {
+  if (game) game.exit();
+}
+
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
   'usersOnline': data => onUsersOnline(data),
@@ -84,9 +90,14 @@ const createGame = () => {
   const roomName = document.getElementById('roomName').value;
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
-  const gameMode = document.getElementById('gameMode').value;
+  const gameModeSelect = document.getElementById('gameMode');
   const totalPlayers = document.getElementById('totalPlayers').value;
   if (!reg.test(roomName)) return;
+
+  const gameMode = gameModeSelect.options[gameModeSelect.selectedIndex]
+    .attributes['data-localize'].textContent
+    .split('-')[0];
+
   data.settings = {
     roomName,
     password,
@@ -104,7 +115,7 @@ const createGame = () => {
     f.onload = (e) => {
       const bundleObj = JSON.parse(e.target.result);
       data.bundle = bundleEditor.parseBundle(bundleObj);
-      game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+      game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
         data,
@@ -125,7 +136,7 @@ const createGame = () => {
         break;
       }
     }
-    game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+    game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -138,7 +149,7 @@ const createGame = () => {
     });
   } else {
     data.bundle = bundleEditor.getRandomBundleFrom(allBundles, language.json.code);
-    game = gameMode === 'Classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+    game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
       data,
@@ -180,7 +191,7 @@ const connectToSIgame = () => {
     socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
-      //disconnect();
+      disconnect();
       console.log('closed');
     };
     socket.onmessage = msg => {
@@ -200,7 +211,7 @@ const openEditor = () => {
     new User(name, socket);
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
-      //disconnect();
+      disconnect();
       console.log('closed');
     };
     socket.onmessage = msg => {
@@ -401,7 +412,6 @@ const joinLobby = async () => {
 
 //update games in lobby
 const updateGames = data => {
-  console.log(data);
   const games = data.data;
   const gamesSearchField = document.getElementById('games-search');
   allGames = data;
@@ -465,12 +475,15 @@ async function joinHandle(gameData) {
   const passwordGame = gm.settings.password;
   if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
   if (gm.settings.running) return;
-  if (gm.players.includes(new User().name)) return;
+  if (gm.players.includes(new User().name)) {
+    errPopup('username taken!');
+    return;
+  }
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
   await changeHash(`simpleLobby/roomID=${gmId}`)();
   socket.send(JSON.stringify({mType: 'joinGame', data: {id: gmId}}));
   roomId = gmId;
-  game = gm.settings.gameMode === 'Classic' ? new Game(gm.bundle, gm.settings, gm.players) : new SimpleGame(gm.bundle, gm.settings, gm.players);
+  game = gm.settings.gameMode === 'classic' ? new Game(gm.bundle, gm.settings, gm.players) : new SimpleGame(gm.bundle, gm.settings, gm.players);
   game.setID(gmId);
   game.join();
   console.log('joined game', game);
@@ -543,12 +556,12 @@ const onBundleCheckChange = evt => {
 function checkHash(e) {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame' || name === 'simpleLobby') {
-    changeHash('chooseMode')();
     if (roomId) {
       game.exit();
       socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: roomId }}));
     }
     roomId = undefined;
+    changeHash('chooseMode')();
   }
 }
 
@@ -605,4 +618,6 @@ window.onload = () => {
   const name = window.localStorage.getItem('name');
   if (name) document.getElementById('name-input').value = name;
 }
+window.onbeforeunload = () => disconnect();
+
 export { game, storage };
