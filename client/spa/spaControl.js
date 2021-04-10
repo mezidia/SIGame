@@ -35,6 +35,8 @@ const changeHash = (hash) => async () => {
   
   if(ask) {
     leavePopup(language.json['onleave']);
+    const innerText = document.getElementById('custom-leave-popup-text');
+    innerText.setAttribute('data-localize', 'onleave');
     return;
   }
 

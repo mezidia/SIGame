@@ -181,6 +181,7 @@ const createGameLobby = () => {
 
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
+  if (socket) disconnect();
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
   window.localStorage.setItem('name', name);
@@ -202,11 +203,12 @@ const connectToSIgame = () => {
 }
 
 const openEditor = () => {
+  if (socket) disconnect();
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
   window.localStorage.setItem('name', name);
   changeHash('redactor')();
-  socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
+  socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
     new User(name, socket);
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
@@ -419,6 +421,8 @@ const updateGames = data => {
   gamesSearchField.innerHTML = '';
   for (const gameId in games) {
     const gm = games[gameId];
+    const gameData = {game: gm, id: gameId};
+    document.getElementById('join-player').addEventListener('click', joinGame(gameData));
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => gameDivOnClick(gameId, gm));
@@ -441,9 +445,10 @@ function showGameInfoDiv() {
   document.getElementById('picture-info-1').style.display = 'none';
 }
 
+const joinGame = (gameData) => () => joinHandle(gameData);
+
 function gameDivOnClick(gameId, gm) {
   let gameData = null;
-  const joinGame = () => joinHandle(gameData);
   gameInSearchLobby = gameId;
   const searchTitle = document.getElementById('search-title');
   searchTitle.setAttribute('class', gameId);
@@ -451,7 +456,7 @@ function gameDivOnClick(gameId, gm) {
   gameData = {game: gm, id: gameId};
   if (gm.settings.hasPassword) document.getElementById('password-to-enter').style.display = 'block';
   else document.getElementById('password-to-enter').style.display = 'none';
-  document.getElementById('join-player').removeEventListener('click', joinGame);
+  document.getElementById('join-player').removeEventListener('click', joinGame(gameData));
   document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
   document.getElementById('search-title').innerHTML = gm.settings.roomName;
   document.getElementById('search-gm').innerHTML = gm.settings.master;
@@ -462,7 +467,6 @@ function gameDivOnClick(gameId, gm) {
     document.getElementById('game-running').style.display = 'block';
   } else {
     if(gm.settings.hasPassword) document.getElementById('search-password').style.display = 'block';
-    document.getElementById('join-player').addEventListener('click', joinGame);
     document.getElementById('game-running').style.display = 'none';
   }
 }
@@ -471,12 +475,16 @@ function gameDivOnClick(gameId, gm) {
 async function joinHandle(gameData) {
   const gm = gameData.game;
   const gmId = gameData.id;
-  const passwordInput = document.getElementById('search-password').value;
-  const passwordGame = gm.settings.password;
-  if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
+  if (document.getElementById('search-password')) {
+    const passwordInput = document.getElementById('search-password').value;
+    const passwordGame = gm.settings.password;
+    if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
+  }
   if (gm.settings.running) return;
   if (gm.players.includes(new User().name)) {
-    errPopup('username taken!');
+    errPopup(language.json['username-taken']);
+    const innerText = document.getElementById('custon-err-popup-text-id');
+    innerText.setAttribute('data-localize', 'username-taken');
     return;
   }
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;

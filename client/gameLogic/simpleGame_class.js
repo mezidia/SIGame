@@ -4,6 +4,7 @@
 import User from "./user_class.js";
 import Game from "./game_class.js";
 import { getRandomIntInclusive } from "../utils.js";
+import { language } from "../changeLanguage.js";
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 25; //sec
@@ -86,7 +87,9 @@ export default class SimpleGame extends Game {
 
   startGame = () => {
     if (this.players.length < 3) {
-      errPopup('min 3 players!');
+      errPopup(language.json['start-min']);
+      const innerText = document.getElementById('custon-err-popup-text-id');
+      innerText.setAttribute('data-localize', 'start-min');
       return false;
     }
     this.currentRound = getRandomIntInclusive(0, this.rounds.length - 1);

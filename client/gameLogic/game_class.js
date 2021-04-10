@@ -6,6 +6,7 @@ import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
 import { changeHash } from "../spa/spaControl.js";
 import { errPopup } from "../spa/uiElements.js";
+import { language } from "../changeLanguage.js";
 
 
 
@@ -395,7 +396,9 @@ export default class Game {
 
   startGame = () => {
     if (this.players.length < 3) {
-      errPopup('min 3 players!');
+      errPopup(language.json['start-min']);
+      const innerText = document.getElementById('custon-err-popup-text-id');
+      innerText.setAttribute('data-localize', 'start-min');
       return false;
     }
     this.setNextPicker();

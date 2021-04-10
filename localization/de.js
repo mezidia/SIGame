@@ -106,7 +106,11 @@ const de = {
   "pass": "With password",
   "all-games": "All games",
   "game-running": "Game has already started",
-
+  "username-taken": "There is already a player with your username in this game. Would you like to rename yourself?",
+  "start-min": "You need at least 3 players to start.",
+  "yes": "Yes",
+  "no": "No",
+  "apply": "Apply",
 };
 
 export { de };
