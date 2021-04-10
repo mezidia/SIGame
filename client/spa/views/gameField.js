@@ -245,4 +245,9 @@ export default class GameField {
   `;
   }
 
+  pause() {
+    const overlay = document.getElementById('pause-overlay')
+    overlay.style.width = overlay.style.width === '100%' ? '0' : '100%'
+  }
+
 }

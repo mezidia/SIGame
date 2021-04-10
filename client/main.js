@@ -234,8 +234,8 @@ const sendMessageRoom = e => {
 }
 
 //this func handles message from another member in game chat
-const sendMessageToGameChat = mess => {
-  const data = mess.data;
+const sendMessageToGameChat = msg => {
+  const data = msg.data;
   const chatField = document.getElementById('chat');
   const message = document.createElement('div');
   const name = document.createElement('p');
@@ -253,20 +253,12 @@ const sendMessageToGameChat = mess => {
   e.scrollTop = e.scrollHeight - e.getBoundingClientRect().height;
 }
 
-const onHelp = () => {
-  changeHash('help')();
-}
-
-const onHome = () => {
-  changeHash('home')();
-}
-
 //config function returns handlers by id
 const handleClick = evt => {
   let funcs = {
-    'help': [onHelp],
-    'home': [onHome],
-    'dju': [onHome],
+    'help': [changeHash('help')],
+    'home': [changeHash('')],
+    'dju': [changeHash('')],
     'all-players': [showPlayers],
     'create-game-btn': [createGameLobby],
     'play-btn': [connectToSIgame],
