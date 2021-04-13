@@ -4,7 +4,7 @@ import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
 import { changeLanguage, language } from '../changeLanguage.js';
-import { leavePopup } from './uiElements.js';
+import { yesnoPopup } from './uiElements.js';
 import { de } from '../../localization/de.js';
 import { ua } from '../../localization/ua.js';
 
@@ -34,9 +34,7 @@ const changeHash = (hash) => async () => {
   }
   
   if(ask) {
-    leavePopup(language.json['onleave']);
-    const innerText = document.getElementById('custom-leave-popup-text');
-    innerText.setAttribute('data-localize', 'onleave');
+    yesnoPopup('onleave');
     return;
   }
 

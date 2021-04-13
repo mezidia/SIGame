@@ -19,6 +19,10 @@ export default class User {
     
   }
 
+  resetName(name) {
+    this.name = name;
+  }
+
 }
 
 

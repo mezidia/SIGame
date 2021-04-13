@@ -7,7 +7,7 @@ import SimpleGame from './gameLogic/simpleGame_class.js';
 import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
-import { errPopup } from './spa/uiElements.js';
+import { errPopup, yesnoPopup } from './spa/uiElements.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
@@ -179,12 +179,18 @@ const createGameLobby = () => {
   });
 }
 
+function takeName() {
+  const name = document.getElementById('name-input').value;
+  if (!reg.test(name)) return null;
+  window.localStorage.setItem('name', name);
+  return name;
+}
+
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
   if (socket) disconnect();
-  const name = document.getElementById('name-input').value;
-  if (!reg.test(name)) return;
-  window.localStorage.setItem('name', name);
+  const name = takeName();
+  if (takeName() === null) return;
   changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
@@ -271,13 +277,35 @@ const handleClick = evt => {
     'ref_help-rules': [scrollToRef('ref_help-rules')],
     'ref_help-questions': [scrollToRef('ref_help-questions')],
     'ref_help-bug': [scrollToRef('ref_help-bug')],
-    'close-popup': [() => {
-      document.getElementById('popupPlaceholder').innerHTML = '';
-    }],
-    'exit-game-btn': [() => {
+    'close-popup': [closeCustomPopup],
+    'onleave': [() => {
       if(game) game.exit();
       window.location.replace('#chooseMode');
       document.getElementById('popupPlaceholder').innerHTML = '';
+    }],
+    'username-taken': [() => {
+      document.getElementById('username-taken').style.display = 'none';
+      document.getElementById('close-popup').style.display = 'none';
+      const div = document.getElementsByClassName('custom-popup')[0];
+      const input = document.createElement('input');
+      const okButton = document.createElement('button');
+      okButton.setAttribute('class', 'btn btn-primary');
+      okButton.style.width = '50%';
+      okButton.style.margin = '10px';
+      okButton.innerText = 'OK';
+      input.setAttribute('id', 'name-input');
+      okButton.addEventListener('click', () => {
+        const name = takeName();
+        console.log(takeName());
+        if (takeName() === null) return;
+        new User().resetName(name);
+        socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
+        closeCustomPopup();
+        document.getElementById('join-player').click();
+      })
+      input.value = window.localStorage.getItem('name');
+      div.appendChild(input);
+      div.appendChild(okButton);
     }],
   }[evt.target.id];
   if (!funcs) {
@@ -290,6 +318,8 @@ const handleClick = evt => {
   }
   return funcs;
 }
+
+const closeCustomPopup = () => document.getElementById('popupPlaceholder').innerHTML = '';
 
 //config function returns handlers by id
 const handleChange = evt => ({
@@ -448,7 +478,6 @@ function gameDivOnClick(gameId, gm) {
   gameData = {game: gm, id: gameId};
   if (gm.settings.hasPassword) document.getElementById('password-to-enter').style.display = 'block';
   else document.getElementById('password-to-enter').style.display = 'none';
-  document.getElementById('join-player').removeEventListener('click', joinGame(gameData));
   document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
   document.getElementById('search-title').innerHTML = gm.settings.roomName;
   document.getElementById('search-gm').innerHTML = gm.settings.master;
@@ -465,6 +494,7 @@ function gameDivOnClick(gameId, gm) {
 
 //this is handle, which is being called when join to game
 async function joinHandle(gameData) {
+  console.log('click');
   const gm = gameData.game;
   const gmId = gameData.id;
   if (document.getElementById('search-password')) {
@@ -474,9 +504,8 @@ async function joinHandle(gameData) {
   }
   if (gm.settings.running) return;
   if (gm.players.includes(new User().name)) {
-    errPopup(language.json['username-taken']);
-    const innerText = document.getElementById('custon-err-popup-text-id');
-    innerText.setAttribute('data-localize', 'username-taken');
+    console.log(new User().name);
+    yesnoPopup('username-taken');
     return;
   }
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
