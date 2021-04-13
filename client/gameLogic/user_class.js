@@ -19,7 +19,7 @@ export default class User {
     
   }
 
-  resetName(name) {
+  setName(name) {
     this.name = name;
   }
 

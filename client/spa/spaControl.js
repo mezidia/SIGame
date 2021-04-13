@@ -13,6 +13,8 @@ const languages = {
   ua: ua
 }
 
+const page = {next: ''};
+
 const router = new Router();
 const engine = new RenderEngine();
 
@@ -34,6 +36,7 @@ const changeHash = (hash) => async () => {
   }
   
   if(ask) {
+    page.next = hash;
     yesnoPopup('onleave');
     return;
   }
@@ -95,4 +98,5 @@ export {
   getViewControllerClassName,
   сontrollersConfig,
   getController,
+  page,
 };

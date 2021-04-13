@@ -45,7 +45,8 @@ const view = () => {
         <option value="9" label="9">
         <option value="10" label="10">
       </datalist>
-      <input id="totalPlayers" type="range" max="10" min="2" list="tickmarks">
+      <input id="totalPlayers" type="range" max="12" min="3" list="tickmarks">
+      <span id="totalPlayers-number">8</span>
 
       <br>
       <br>

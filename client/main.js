@@ -4,7 +4,7 @@ import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
-import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig, page } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 import { errPopup, yesnoPopup } from './spa/uiElements.js';
@@ -263,7 +263,7 @@ const sendMessageToGameChat = msg => {
 const handleClick = evt => {
   let funcs = {
     'help': [changeHash('help')],
-    'home': [changeHash('')],
+    'home': [changeHash('chooseMode')],
     'dju': [changeHash('')],
     'all-players': [showPlayers],
     'create-game-btn': [createGameLobby],
@@ -280,33 +280,10 @@ const handleClick = evt => {
     'close-popup': [closeCustomPopup],
     'onleave': [() => {
       if(game) game.exit();
-      window.location.replace('#chooseMode');
+      window.location.replace('#' + page.next);
       document.getElementById('popupPlaceholder').innerHTML = '';
     }],
-    'username-taken': [() => {
-      document.getElementById('username-taken').style.display = 'none';
-      document.getElementById('close-popup').style.display = 'none';
-      const div = document.getElementsByClassName('custom-popup')[0];
-      const input = document.createElement('input');
-      const okButton = document.createElement('button');
-      okButton.setAttribute('class', 'btn btn-primary');
-      okButton.style.width = '50%';
-      okButton.style.margin = '10px';
-      okButton.innerText = 'OK';
-      input.setAttribute('id', 'name-input');
-      okButton.addEventListener('click', () => {
-        const name = takeName();
-        console.log(takeName());
-        if (takeName() === null) return;
-        new User().resetName(name);
-        socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
-        closeCustomPopup();
-        document.getElementById('join-player').click();
-      })
-      input.value = window.localStorage.getItem('name');
-      div.appendChild(input);
-      div.appendChild(okButton);
-    }],
+    'username-taken': [onUserNameTaken],
   }[evt.target.id];
   if (!funcs) {
     funcs = {
@@ -317,6 +294,31 @@ const handleClick = evt => {
     }[evt.target.classList[0]]
   }
   return funcs;
+}
+
+function onUserNameTaken () {
+  document.getElementById('username-taken').style.display = 'none';
+  document.getElementById('close-popup').style.display = 'none';
+  const div = document.getElementsByClassName('custom-popup')[0];
+  const input = document.createElement('input');
+  const okButton = document.createElement('button');
+  okButton.setAttribute('class', 'btn btn-primary');
+  okButton.style.width = '50%';
+  okButton.style.margin = '10px';
+  okButton.innerText = 'OK';
+  input.setAttribute('id', 'name-input');
+  okButton.addEventListener('click', () => {
+    const name = takeName();
+    console.log(takeName());
+    if (takeName() === null) return;
+    new User().setName(name);
+    socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
+    closeCustomPopup();
+    document.getElementById('join-player').click();
+  })
+  input.value = window.localStorage.getItem('name');
+  div.appendChild(input);
+  div.appendChild(okButton);
 }
 
 const closeCustomPopup = () => document.getElementById('popupPlaceholder').innerHTML = '';
@@ -332,7 +334,13 @@ const handleChange = evt => ({
 const handleInput = evt => ({
   'find-games': [sortGames],
   'bundleSearch-input': [onBundleSearchInput],
+  'totalPlayers': [onTotalPlayersInput],
 })[evt.target.id];
+
+function onTotalPlayersInput() {
+  const number = document.getElementById('totalPlayers').value;
+  document.getElementById('totalPlayers-number').innerText = number;
+}
 
 function onBundleSearchInput() {
   const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
@@ -424,8 +432,10 @@ const onTypeOfPasswordChange = evt => {
 //shows div with players
 const showPlayers = () => {
   const allPlayersDiv = document.getElementById('all-players-div');
-  if (allPlayersDiv.style.display === 'none') allPlayersDiv.style.display = 'block';
-  else allPlayersDiv.style.display = 'none';
+  if (allPlayersDiv.style.display === 'none') {
+    //document.getElementById('all-players').style.;
+    allPlayersDiv.style.display = 'block';
+  } else allPlayersDiv.style.display = 'none';
 }
 
 //join-btn click handle
