@@ -113,6 +113,7 @@ const de = {
   "apply": "Apply",
   "agree": "Agree",
   "disagree": "Disagree",
+  "make-bet": "Please make your bet",
 };
 
 export { de };
