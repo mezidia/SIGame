@@ -60,10 +60,10 @@ export default class GameField {
     const divs = document.getElementsByClassName('player-display');
     const btn = document.getElementById(`${toChange ? 'changePoints' : 'submitPoints'}-sums-btn`);
     if (toChange) {
-      btn.innerHTML = 'Apply';
+      btn.innerHTML = language.json['apply'];
       btn.id = 'submitPoints-sums-btn';
     } else {
-      btn.innerHTML = 'Change sums';
+      btn.innerHTML = language.json['change-sums'];
       btn.id = 'changePoints-sums-btn';
     }
     for (const div of divs) {
@@ -204,7 +204,7 @@ export default class GameField {
   drawStartButton() {
     const placeHolder = document.getElementById('reply');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-        <button class="btn btn-primary" id="startGame-btn">Start game</button>
+        <button class="btn btn-primary" id="startGame-btn" data-localize="play">${language.json['play']}</button>
       </div>`
   }
 

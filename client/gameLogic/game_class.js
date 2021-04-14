@@ -7,8 +7,6 @@ import GameTimer from "./gameTimer_class.js";
 import { changeHash } from "../spa/spaControl.js";
 import { errPopup } from "../spa/uiElements.js";
 
-
-
 const ANSWERTIME = 5; //sec
 const GAMETIME = 25; //sec
 const APPEALTIME = 5; //sec
@@ -395,7 +393,7 @@ export default class Game {
 
   startGame = () => {
     if (this.players.length < 3) {
-      errPopup('min 3 players!');
+      errPopup('start-min');
       return false;
     }
     this.setNextPicker();

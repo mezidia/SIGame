@@ -4,7 +4,7 @@ import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
 import { changeLanguage, language } from '../changeLanguage.js';
-import { leavePopup } from './uiElements.js';
+import { yesnoPopup } from './uiElements.js';
 import { de } from '../../localization/de.js';
 import { ua } from '../../localization/ua.js';
 
@@ -12,6 +12,8 @@ const languages = {
   de: de,
   ua: ua
 }
+
+const page = {next: ''};
 
 const router = new Router();
 const engine = new RenderEngine();
@@ -34,7 +36,8 @@ const changeHash = (hash) => async () => {
   }
   
   if(ask) {
-    leavePopup(language.json['onleave']);
+    page.next = hash;
+    yesnoPopup('onleave');
     return;
   }
 
@@ -95,4 +98,5 @@ export {
   getViewControllerClassName,
   сontrollersConfig,
   getController,
+  page,
 };

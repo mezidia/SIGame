@@ -4,10 +4,10 @@ import Game from './gameLogic/game_class.js';
 import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
-import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig } from './spa/spaControl.js';
+import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig, page } from './spa/spaControl.js';
 import { changeLanguage, language } from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
-import { errPopup } from './spa/uiElements.js';
+import { errPopup, yesnoPopup } from './spa/uiElements.js';
 
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
@@ -179,11 +179,18 @@ const createGameLobby = () => {
   });
 }
 
+function takeName() {
+  const name = document.getElementById('name-input').value;
+  if (!reg.test(name)) return null;
+  window.localStorage.setItem('name', name);
+  return name;
+}
+
 //connects user to webSocket server, sets up socket msg events, sends userName to WS server
 const connectToSIgame = () => {
-  const name = document.getElementById('name-input').value;
-  if (!reg.test(name)) return;
-  window.localStorage.setItem('name', name);
+  if (socket) disconnect();
+  const name = takeName();
+  if (takeName() === null) return;
   changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
@@ -202,11 +209,12 @@ const connectToSIgame = () => {
 }
 
 const openEditor = () => {
+  if (socket) disconnect();
   const name = document.getElementById('name-input').value;
   if (!reg.test(name)) return;
   window.localStorage.setItem('name', name);
   changeHash('redactor')();
-  socket = new WebSocket(`ws://localhost:5000?userName=${name}`);
+  socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
     new User(name, socket);
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
@@ -253,7 +261,7 @@ const sendMessageToGameChat = msg => {
 const handleClick = evt => {
   let funcs = {
     'help': [changeHash('help')],
-    'home': [changeHash('')],
+    'home': [changeHash('chooseMode')],
     'dju': [changeHash('')],
     'all-players': [showPlayers],
     'create-game-btn': [createGameLobby],
@@ -267,14 +275,13 @@ const handleClick = evt => {
     'ref_help-rules': [scrollToRef('ref_help-rules')],
     'ref_help-questions': [scrollToRef('ref_help-questions')],
     'ref_help-bug': [scrollToRef('ref_help-bug')],
-    'close-popup': [() => {
-      document.getElementById('popupPlaceholder').innerHTML = '';
-    }],
-    'exit-game-btn': [() => {
+    'close-popup': [closeCustomPopup],
+    'onleave': [() => {
       if(game) game.exit();
-      window.location.replace('#chooseMode');
+      window.location.replace('#' + page.next);
       document.getElementById('popupPlaceholder').innerHTML = '';
     }],
+    'username-taken': [onUserNameTaken],
   }[evt.target.id];
   if (!funcs) {
     funcs = {
@@ -287,6 +294,33 @@ const handleClick = evt => {
   return funcs;
 }
 
+function onUserNameTaken () {
+  document.getElementById('username-taken').style.display = 'none';
+  document.getElementById('close-popup').style.display = 'none';
+  const div = document.getElementsByClassName('custom-popup')[0];
+  const input = document.createElement('input');
+  const okButton = document.createElement('button');
+  okButton.setAttribute('class', 'btn btn-primary');
+  okButton.style.width = '50%';
+  okButton.style.margin = '10px';
+  okButton.innerText = 'OK';
+  input.setAttribute('id', 'name-input');
+  okButton.addEventListener('click', () => {
+    const name = takeName();
+    console.log(takeName());
+    if (takeName() === null) return;
+    new User().setName(name);
+    socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
+    closeCustomPopup();
+    document.getElementById('join-player').click();
+  })
+  input.value = window.localStorage.getItem('name');
+  div.appendChild(input);
+  div.appendChild(okButton);
+}
+
+const closeCustomPopup = () => document.getElementById('popupPlaceholder').innerHTML = '';
+
 //config function returns handlers by id
 const handleChange = evt => ({
   'questionBundle': [onBundleCheckChange],
@@ -298,7 +332,13 @@ const handleChange = evt => ({
 const handleInput = evt => ({
   'find-games': [sortGames],
   'bundleSearch-input': [onBundleSearchInput],
+  'totalPlayers': [onTotalPlayersInput],
 })[evt.target.id];
+
+function onTotalPlayersInput() {
+  const number = document.getElementById('totalPlayers').value;
+  document.getElementById('totalPlayers-number').innerText = number;
+}
 
 function onBundleSearchInput() {
   const bundleSearchAutocomp = document.getElementById('bundleSearch-input-autocomplete');
@@ -390,8 +430,10 @@ const onTypeOfPasswordChange = evt => {
 //shows div with players
 const showPlayers = () => {
   const allPlayersDiv = document.getElementById('all-players-div');
-  if (allPlayersDiv.style.display === 'none') allPlayersDiv.style.display = 'block';
-  else allPlayersDiv.style.display = 'none';
+  if (allPlayersDiv.style.display === 'none') {
+    //document.getElementById('all-players').style.;
+    allPlayersDiv.style.display = 'block';
+  } else allPlayersDiv.style.display = 'none';
 }
 
 //join-btn click handle
@@ -409,6 +451,8 @@ const updateGames = data => {
   gamesSearchField.innerHTML = '';
   for (const gameId in games) {
     const gm = games[gameId];
+    const gameData = {game: gm, id: gameId};
+    document.getElementById('join-player').addEventListener('click', joinGame(gameData));
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => gameDivOnClick(gameId, gm));
@@ -431,9 +475,10 @@ function showGameInfoDiv() {
   document.getElementById('picture-info-1').style.display = 'none';
 }
 
+const joinGame = (gameData) => () => joinHandle(gameData);
+
 function gameDivOnClick(gameId, gm) {
   let gameData = null;
-  const joinGame = () => joinHandle(gameData);
   gameInSearchLobby = gameId;
   const searchTitle = document.getElementById('search-title');
   searchTitle.setAttribute('class', gameId);
@@ -441,7 +486,6 @@ function gameDivOnClick(gameId, gm) {
   gameData = {game: gm, id: gameId};
   if (gm.settings.hasPassword) document.getElementById('password-to-enter').style.display = 'block';
   else document.getElementById('password-to-enter').style.display = 'none';
-  document.getElementById('join-player').removeEventListener('click', joinGame);
   document.getElementById('search-players').innerHTML = Object.keys(gm.players).length + ' / ' + gm.settings.totalPlayers;
   document.getElementById('search-title').innerHTML = gm.settings.roomName;
   document.getElementById('search-gm').innerHTML = gm.settings.master;
@@ -452,21 +496,24 @@ function gameDivOnClick(gameId, gm) {
     document.getElementById('game-running').style.display = 'block';
   } else {
     if(gm.settings.hasPassword) document.getElementById('search-password').style.display = 'block';
-    document.getElementById('join-player').addEventListener('click', joinGame);
     document.getElementById('game-running').style.display = 'none';
   }
 }
 
 //this is handle, which is being called when join to game
 async function joinHandle(gameData) {
+  console.log('click');
   const gm = gameData.game;
   const gmId = gameData.id;
-  const passwordInput = document.getElementById('search-password').value;
-  const passwordGame = gm.settings.password;
-  if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
+  if (document.getElementById('search-password')) {
+    const passwordInput = document.getElementById('search-password').value;
+    const passwordGame = gm.settings.password;
+    if (gm.settings.hasPassword && passwordInput !== passwordGame) return;
+  }
   if (gm.settings.running) return;
   if (gm.players.includes(new User().name)) {
-    errPopup('username taken!');
+    console.log(new User().name);
+    yesnoPopup('username-taken');
     return;
   }
   if (Object.keys(gm.players).length >= gm.settings.totalPlayers) return;
