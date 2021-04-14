@@ -225,10 +225,21 @@
     transition: 0.3s;
 }
 
+.message {
+    background-color: yellow;
+    color: black;
+    border-radius: 3px;
+    padding: 2px 5px;
+    overflow-wrap: anywhere;
+    margin-left: 7px;
+    margin-right: 7px;
+    width: fit-content;
+}
+
 #gray-space {
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     background-color: gray;

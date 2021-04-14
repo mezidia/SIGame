@@ -240,12 +240,10 @@ const sendMessageToGameChat = msg => {
   const data = msg.data;
   const chatField = document.getElementById('chat');
   const message = document.createElement('div');
-  const name = document.createElement('p');
-  const text = document.createElement('p');
-  name.innerHTML = data.name + ': ';
-  text.innerHTML = data.message;
-  message.appendChild(name);
-  message.appendChild(text);
+  message.innerHTML = `
+    <p style="margin-bottom: 0">${data.name}</p>
+    <div class="message">${data.message}</div>
+  `;
   chatField.appendChild(message);
   scrollToBottom(chatField);
 }
