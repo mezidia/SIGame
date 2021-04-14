@@ -5,13 +5,9 @@ import User from './gameLogic/user_class.js';
 import BundleEditor from './gameLogic/bundleEditor_class.js';
 import SimpleGame from './gameLogic/simpleGame_class.js';
 import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig, page } from './spa/spaControl.js';
-import { changeLanguage, language } from './changeLanguage.js';
+import Language from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 import { errPopup, yesnoPopup } from './spa/uiElements.js';
-
-import { de } from '../localization/de.js';
-import { ua } from '../localization/ua.js';
-
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -148,7 +144,7 @@ const createGame = () => {
       game.setID(msg.data.id);
     });
   } else {
-    data.bundle = bundleEditor.getRandomBundleFrom(allBundles, language.json.code);
+    data.bundle = bundleEditor.getRandomBundleFrom(allBundles, Language.getTranslatedText('code'));
     game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
     const msg = {
       'mType': 'newGameLobby',
@@ -266,8 +262,8 @@ const handleClick = evt => {
     'all-players': [showPlayers],
     'create-game-btn': [createGameLobby],
     'play-btn': [connectToSIgame],
-    'de': [changeLanguage(de)],
-    'ua': [changeLanguage(ua)],
+    'de': [() => changeLanguage('de')],
+    'ua': [() => changeLanguage('ua')],
     'startGame': [createGame],
     'join-btn': [joinLobby],
     'openEditor-btn': [openEditor],
@@ -292,6 +288,11 @@ const handleClick = evt => {
     }[evt.target.classList[0]]
   }
   return funcs;
+}
+
+function changeLanguage(langcode) {
+  const language = Language.getLanguage(langcode);
+  if (language) Language.changeLanguage(language);
 }
 
 function onUserNameTaken () {

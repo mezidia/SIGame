@@ -1,6 +1,6 @@
 'use strict';
 
-import { language } from "../changeLanguage.js"
+import Language from "../changeLanguage.js"
 
 const errPopup = id => {
   const placeholder = document.getElementById('popupPlaceholder');
@@ -10,7 +10,7 @@ const errPopup = id => {
         <h1 style="text-align: center">Error</h1>
      </div>
      <div>
-       <p id="custom-err-popup-text-id" data-localize="${id}">${language.json[id]}</p>
+       <p id="custom-err-popup-text-id" data-localize="${id}">${Language.getTranslatedText(id)}</p>
        <button class="btn btn-primary" style="width: 100%; text-align: center" id="close-popup">OK</button>
     </div>
   </div>
@@ -21,9 +21,9 @@ const yesnoPopup = id => {
   const placeholder = document.getElementById('popupPlaceholder');
   placeholder.innerHTML = `<div id="gray-space"></div>
   <div class="custom-popup">
-    <h1 id="custom-leave-popup-text">${language.json[id]}</h1>
-    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="${id}" data-localize="yes">${language.json['yes']}</button>
-    <button class="btn btn-primary" style="width: 50%; text-align: center" id="close-popup" data-localize="no">${language.json['no']}</button>
+    <h1 id="custom-leave-popup-text">${Language.getTranslatedText(id)}</h1>
+    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="${id}" data-localize="yes">${Language.getTranslatedText('yes')}</button>
+    <button class="btn btn-primary" style="width: 50%; text-align: center" id="close-popup" data-localize="no">${Language.getTranslatedText('no')}</button>
   </div>
   `;
 }

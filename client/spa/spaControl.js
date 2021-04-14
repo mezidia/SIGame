@@ -3,15 +3,8 @@
 import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
-import { changeLanguage, language } from '../changeLanguage.js';
+import Language from '../changeLanguage.js';
 import { yesnoPopup } from './uiElements.js';
-import { de } from '../../localization/de.js';
-import { ua } from '../../localization/ua.js';
-
-const languages = {
-  de: de,
-  ua: ua
-}
 
 const page = {next: ''};
 
@@ -66,7 +59,8 @@ const loadView = async () => {
         if (name) document.getElementById('name-input').value = name;
       }
       const langcode = window.localStorage.getItem('language');
-      if (langcode) changeLanguage(languages[langcode])();
+      const language = Language.getLanguage(langcode);
+      if (language) Language.changeLanguage(language)();
     });
 };
 
