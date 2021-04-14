@@ -111,6 +111,8 @@ const de = {
   "yes": "Yes",
   "no": "No",
   "apply": "Apply",
+  "agree": "Agree",
+  "disagree": "Disagree",
 };
 
 export { de };

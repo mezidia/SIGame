@@ -241,10 +241,6 @@
     cursor: pointer;
 }
 
-.nav-link:focus {
-    background-color: var(--main-hover-color);
-}
-
-.navbar-brand:hover {
+.navbar-brand:hover, #go-up-btn:hover {
     cursor: pointer;
 }

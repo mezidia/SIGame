@@ -1,6 +1,6 @@
 'use strict';
 
-import { language } from '../../changeLanguage.js';
+import Language from '../../changeLanguage.js';
 
 export default class GameField {
   constructor() {
@@ -60,10 +60,10 @@ export default class GameField {
     const divs = document.getElementsByClassName('player-display');
     const btn = document.getElementById(`${toChange ? 'changePoints' : 'submitPoints'}-sums-btn`);
     if (toChange) {
-      btn.innerHTML = language.json['apply'];
+      btn.innerHTML = Language.getTranslatedText('apply');
       btn.id = 'submitPoints-sums-btn';
     } else {
-      btn.innerHTML = language.json['change-sums'];
+      btn.innerHTML = Language.getTranslatedText('change-sums');
       btn.id = 'changePoints-sums-btn';
     }
     for (const div of divs) {
@@ -113,15 +113,15 @@ export default class GameField {
         <div class="row">
         
           <div class="col-sm-6">
-            <h2 class="text-primary" data-localize="correct-answers">${language.json["correct-answers"]}</h2>
+            <h2 class="text-primary" data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="correct">${language.json["correct"]}</div>
+            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="correct">${Language.getTranslatedText('correct')}</div>
           </div>
           
           <div class="col-sm-6">
-            <h2 class="text-primary" data-localize="wrong-answers">${language.json["wrong-answers"]}</h2>
+            <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
             <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="wrong">${language.json["wrong"]}</div>
+            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="wrong">${Language.getTranslatedText('wrong')}</div>
           </div>
           
         </div>
@@ -133,12 +133,12 @@ export default class GameField {
  appealPopUp(who, ans, t, f) {
    document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
      <p>${who} answered: ${ans}</p>
-     <h2 class="text-primary" data-localize="correct-answers">${language.json["correct-answers"]}</h2>
+     <h2 class="text-primary" data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
      <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-     <h2 class="text-primary" data-localize="wrong-answers">${language.json["wrong-answers"]}</h2>
+     <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
      <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-     <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal">Agree</button>
-     <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal">Disagree</button>
+     <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal" data-localize="agree">${Language.getTranslatedText('agree')}</button>
+     <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal" data-localize="disagree">${Language.getTranslatedText('disagree')}</button>
   </div>
   `;
 }
@@ -204,7 +204,7 @@ export default class GameField {
   drawStartButton() {
     const placeHolder = document.getElementById('reply');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-        <button class="btn btn-primary" id="startGame-btn" data-localize="play">${language.json['play']}</button>
+        <button class="btn btn-primary" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
       </div>`
   }
 
