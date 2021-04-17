@@ -17,7 +17,7 @@ export default class Language {
   }
 
   //this function changes language according to json files and data-localize attribute
-  static changeLanguage = (lang = null) => () => {
+  static changeLanguage = (lang = null) => {
     const allText = document.querySelectorAll('[data-localize]');
     if (!lang) lang = this._language.json;
     else this._language.json = lang;

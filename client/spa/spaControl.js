@@ -60,7 +60,7 @@ const loadView = async () => {
       }
       const langcode = window.localStorage.getItem('language');
       const language = Language.getLanguage(langcode);
-      if (language) Language.changeLanguage(language)();
+      if (language) Language.changeLanguage(language);
     });
 };
 
