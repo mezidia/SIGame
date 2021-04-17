@@ -26,13 +26,13 @@ export default class GameTimer {
 
   update() {
     const div = document.getElementById(this._id);
-    div.innerHTML = this._currentTime;
+    div.innerHTML = this._currentTime.toString();
   }
 
   reset() {
     clearTimeout(this._timerID);
     const div = document.getElementById(this._id);
-    div.innerHTML = 0;
+    div.innerHTML = '0';
     this._currentTime = 0;
   }
   
