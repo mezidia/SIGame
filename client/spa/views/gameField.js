@@ -52,8 +52,31 @@ export default class GameField {
     // noinspection CssInvalidPropertyValue
     gameDisplay.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
-          class="question-letter" style="animation-duration: ${index * 0.16}s">${letter}</span>`).join('')}
+          class="question-letter">${letter}</span>`).join('')}
     </span>`
+    this.readQuestion(document.getElementById('question-text'), Date.now());
+  }
+
+  // animation of reading question independent from framerate
+  // delta is amount of milliseconds per letter to read
+  readQuestion (textBlock, startTime, delta = 150) {
+    const children = textBlock.childNodes;
+    const lastLetter = document.getElementById('last-letter');
+
+    // makes it repeat each 50 ms until the question is read
+    const interval = setInterval(() => {
+      let timePassed = Date.now() - startTime;
+      let index = 0;
+      while (timePassed > delta) {
+        children[index].style.color = 'red';
+        timePassed -= delta;
+        ++index;
+        if(index >= children.length - 1) break;
+      }
+      if(lastLetter.style.color === 'red') {
+        clearInterval(interval);
+      }
+    }, 50);
   }
 
   scoreAsInput = (toChange = true) => () => {

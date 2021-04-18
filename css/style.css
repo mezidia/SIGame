@@ -35,19 +35,12 @@
     height: 80px;
 }
 
-@keyframes question-read {
-    0% {color: red;}
-    50% {color: red;}
-    75% {color: red;}
-}
-
 #question-text {
     font-size: calc(20px + 4vw);
 }
 
 .question-letter {
     color: black;
-    animation-name: question-read;
     animation-delay: 0s;
     animation-direction: normal;
 }
