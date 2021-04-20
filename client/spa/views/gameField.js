@@ -44,6 +44,21 @@ export default class GameField {
     `;
   }
 
+  // displays list of themes for final round
+  drawFinalRound(themes) {
+    document.getElementById('game-display').innerHTML = `
+    <div style="display: flex; flex-direction: column; justify-content: space-around;" id="final-display">
+      ${themes.map((question, index) => {
+        return `<h1 style="text-align: center" id="theme-${index}">${question.subject}</h1>`;
+      }).join('\n')}
+    </div>`;
+  }
+
+  // removes selected theme from the list
+  removeFinalTheme(index) {
+    document.getElementById('final-display').removeChild(document.getElementById(`theme-${index}`))
+  }
+
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
