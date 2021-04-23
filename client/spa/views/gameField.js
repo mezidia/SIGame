@@ -292,4 +292,18 @@ export default class GameField {
     document.getElementById('game-state-text').innerHTML = text;
   }
 
+  displayAnswer(name, text) {
+    const parent = document.getElementById(`${name}-icon`);
+    const answer = document.createElement('div');
+    answer.id = 'answer-container';
+    answer.innerHTML = text;
+    const w = parent.offsetWidth;
+    answer.style.width = `${w}px`;
+    answer.style.left = `${parent.offsetLeft}px`;
+    parent.append(answer);
+    const h = parent.offsetTop - answer.offsetHeight;
+    answer.style.top = `${h}px`;
+    setTimeout(() => answer.remove(), 1500)
+  }
+
 }

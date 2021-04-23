@@ -265,3 +265,8 @@
 #game-master-icon {
     min-width: 100px;
 }
+
+#answer-container {
+    position: absolute;
+    background-color: #2aaacf;
+}
