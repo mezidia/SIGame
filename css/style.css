@@ -248,3 +248,20 @@
 .navbar-brand:hover, #go-up-btn:hover {
     cursor: pointer;
 }
+
+#state-line {
+    background-color: yellow;
+    width: 100%;
+    min-height: 70px;
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+}
+
+#game-state-text {
+    font-size: calc(15px + 1vw);
+    overflow-wrap: anywhere;
+}
+
+#game-master-icon {
+    min-width: 100px;
+}

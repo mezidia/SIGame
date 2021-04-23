@@ -288,4 +288,8 @@ export default class GameField {
     overlay.style.width = overlay.style.width === '100%' ? '0' : '100%'
   }
 
+  announceGameState(text) {
+    document.getElementById('game-state-text').innerHTML = text;
+  }
+
 }

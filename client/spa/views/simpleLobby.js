@@ -15,8 +15,13 @@ const view = () => {
     
       <div id="game-display" class="row" style="min-height: 200px; margin: 0 0 0 0"></div>
       
-      <div id="players-icons" style="background-color: #3c9a5f; display: flex; justify-content: space-between; flex-wrap: wrap"></div>
-    
+      <div>
+        <div id="state-line">
+          <div id="game-master-icon"></div>
+          <div id="game-state-text"></div>
+        </div>
+        <div id="players-icons" style="background-color: #3c9a5f; display: flex; justify-content: space-between; flex-wrap: wrap"></div>
+      </div>
       <div id="reply" style="background-color: #7c7c7c">
         <input id="answerInput" type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
         <button id="answer-btn" class="btn btn-primary game-button" style="width: 100px; height: 100%" disabled></button>
