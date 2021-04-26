@@ -659,6 +659,3 @@ window.onload = () => {
 window.onbeforeunload = () => disconnect();
 
 export { game, storage };
-document.onreadystatechange = function () {
-  console.log(document.readyState);
-}

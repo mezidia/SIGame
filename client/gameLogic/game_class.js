@@ -80,9 +80,9 @@ export default class Game {
   onTurnOrder = evt => {
     if (this.master === new User().name) return console.log('i am game master' + this.master);
     if (evt.who.includes(new User().name)) {
-      document.getElementById('answer-btn').disabled = false;
+      document.getElementById('btn-answer').disabled = false;
     } else {
-      document.getElementById('answer-btn').disabled = true;
+      document.getElementById('btn-answer').disabled = true;
     }
   }
 
@@ -171,10 +171,10 @@ export default class Game {
     this.gameField.announceGameState(`Фаза апеляції.`);
     if (evt.who !== new User().name) return;
     this.gameField.appealMode();
-    document.getElementById('answer-btn').disabled = false;
+    document.getElementById('btn-answer').disabled = false;
     this.clickConfig.answer = this.appeal;
     this.appealTimerID = setTimeout(() => {
-      document.getElementById('answer-btn').disabled = true;
+      document.getElementById('btn-answer').disabled = true;
       this.nextTurn();
     }, APPEALTIME * 1000);
   }
@@ -313,10 +313,10 @@ export default class Game {
   }
 
   answer = () => {
-    const ans = document.getElementById('answerInput');
+    const ans = document.getElementById('input-answer');
     if (!ans.value) return;
     clearTimeout(this.turnTimerID);
-    document.getElementById('answer-btn').disabled = true;
+    document.getElementById('btn-answer').disabled = true;
     const event = {
       eType: 'answerCheck',
       answer: ans.value,
@@ -332,7 +332,7 @@ export default class Game {
       who: new User().name,
     };
     this.broadcast(event);
-    document.getElementById('answer-btn').disabled = true;
+    document.getElementById('btn-answer').disabled = true;
   }
 
   raiseHand = () => {
@@ -344,7 +344,7 @@ export default class Game {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
       this.gameField.buttonMode();
-      document.getElementById('answer-btn').disabled = true;
+      document.getElementById('btn-answer').disabled = true;
       this.nextTurn();
     }, ANSWERTIME * 1000);
 
