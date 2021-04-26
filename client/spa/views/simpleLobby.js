@@ -7,7 +7,7 @@ const view = () => {
       <h1 class="text-white">Pause</h1>
       <br>
       <br>
-      <button class="btn btn-primary">Continue</button>
+      <button id="resume" class="btn btn-primary">Continue</button>
     </div>
   </div>
   <div class="row" style="margin: 0 0 0 0; height: 100%">
