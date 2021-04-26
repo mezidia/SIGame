@@ -28,7 +28,7 @@ let storage = {
   gameInSearchLobby,
 };
 console.log(сontrollersConfig);
-const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/;
+const reg = /^[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+$/;
 
 //it runs click handler if it exists
 // function setupListeners() {
@@ -177,6 +177,7 @@ const createGameLobby = () => {
 
 function takeName() {
   const name = document.getElementById('name-input').value;
+  console.log(reg.test(name), reg.test('()()()()()()і'));
   if (!reg.test(name)) return null;
   window.localStorage.setItem('name', name);
   return name;
@@ -299,25 +300,24 @@ function onUserNameTaken () {
   document.getElementById('username-taken').style.display = 'none';
   document.getElementById('close-popup').style.display = 'none';
   const div = document.getElementsByClassName('custom-popup')[0];
-  const input = document.createElement('input');
+  const input = `<input id="name-input" type="text" placeholder="Enter your name" pattern="[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+" title="May contain letters and/or numbers only" maxlength=34 style="min-height: 50px" data-localize="name" required>`;
   const okButton = document.createElement('button');
   okButton.setAttribute('class', 'btn btn-primary');
   okButton.style.width = '50%';
   okButton.style.margin = '10px';
   okButton.innerText = 'OK';
-  input.setAttribute('id', 'name-input');
   okButton.addEventListener('click', () => {
     const name = takeName();
-    console.log(takeName());
+    console.log('okButton ' + takeName());
     if (takeName() === null) return;
     new User().setName(name);
     socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     closeCustomPopup();
     document.getElementById('join-player').click();
   })
-  input.value = window.localStorage.getItem('name');
-  div.appendChild(input);
+  div.innerHTML+= input;
   div.appendChild(okButton);
+  document.getElementById('name-input').value = window.localStorage.getItem('name');
 }
 
 const closeCustomPopup = () => document.getElementById('popupPlaceholder').innerHTML = '';
