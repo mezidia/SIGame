@@ -88,9 +88,9 @@ export default class Game {
   onTurnOrder = evt => {
     if (this.master === new User().name) return console.log('i am game master' + this.master);
     if (evt.who.includes(new User().name)) {
-      document.getElementById('answer-btn').disabled = false;
+      document.getElementById('btn-answer').disabled = false;
     } else {
-      document.getElementById('answer-btn').disabled = true;
+      document.getElementById('btn-answer').disabled = true;
     }
   }
 
@@ -142,6 +142,7 @@ export default class Game {
 
   onNextTurn = evt => {
     this.appealDecision = [];
+    this.gameField.buttonMode();
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
     for (const dIndex in decks) {
@@ -159,6 +160,7 @@ export default class Game {
   }
 
   onAnswerCheck = evt => {
+    this.gameField.announceGameState(`Ведучий перевіряє правильність відповіді.`);
     const t = this.currentQuestion.trueAns;
     const f = this.currentQuestion.falseAns;
     this.lastAnswer = { 
@@ -167,17 +169,20 @@ export default class Game {
       t,
       f,
     };
+    this.gameField.displayAnswer(evt.who, evt.answer);
     if (this.master !== new User().name) return;
     console.log(this.currentQuestion);
     this.gameField.gmPopUp(evt.who, evt.answer, t, f);
   }
 
   onCanAppeal = evt => {
+    this.gameField.announceGameState(`Фаза апеляції.`);
     if (evt.who !== new User().name) return;
-    document.getElementById('answer-btn').disabled = false;
+    this.gameField.appealMode();
+    document.getElementById('btn-answer').disabled = false;
     this.clickConfig.answer = this.appeal;
     this.appealTimerID = setTimeout(() => {
-      document.getElementById('answer-btn').disabled = true;
+      document.getElementById('btn-answer').disabled = true;
       this.nextTurn();
     }, APPEALTIME * 1000);
   }
@@ -193,8 +198,11 @@ export default class Game {
         res += d.decision ? 1 : -1;
       }
       if (res > 0) {
+        this.gameField.announceGameState(`Апеляція схвалена!`);
         this.points[this.lastAnswer.who] += this.currentQuestion.cost * 2;
         this.updatePoints();
+      } else {
+        this.gameField.announceGameState(`Апеляція відхилена!`);
       }
       this.nextTurn();
     }
@@ -203,7 +211,6 @@ export default class Game {
   onAppeal = evt => {
     if (new User().name === evt.who) return;
     if (new User().name === this.master) return;
-    //appealPopup(this.lastAnswer);
     this.gameField.appealPopUp(
       this.lastAnswer.who,
       this.lastAnswer.ans,
@@ -213,6 +220,7 @@ export default class Game {
   }
 
   onNextPicker = evt => {
+    this.gameField.announceGameState(`${evt.who} вибирає запитання.`);
     if (new User().name !== evt.who) {
       this.clickConfig.cell = null;
     } else if (new User().name === evt.who) {
@@ -228,12 +236,12 @@ export default class Game {
 
   onPause = evt => {
     this.clickConfig.pause = this.resume;
-    //this.gameField.pause();
+    this.gameField.pause();
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
-    //this.gameField.resume();
+    this.gameField.pause();
   }
 
   eventsConfig = {
@@ -288,6 +296,7 @@ export default class Game {
   }
 
   join() {
+    this.gameField.buttonMode();
     this.gameField.waitForPlayersJpgShow();
     for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
@@ -312,10 +321,10 @@ export default class Game {
   }
 
   answer = () => {
-    const ans = document.getElementById('answerInput');
+    const ans = document.getElementById('input-answer');
     if (!ans.value) return;
     clearTimeout(this.turnTimerID);
-    document.getElementById('answer-btn').disabled = true;
+    document.getElementById('btn-answer').disabled = true;
     const event = {
       eType: 'answerCheck',
       answer: ans.value,
@@ -331,17 +340,19 @@ export default class Game {
       who: new User().name,
     };
     this.broadcast(event);
-    document.getElementById('answer-btn').disabled = true;
+    document.getElementById('btn-answer').disabled = true;
   }
 
   raiseHand = () => {
     this.turnTimer.setTimer(ANSWERTIME);
+    this.gameField.answerMode();
     this.clickConfig.answer = this.answer;
     this.turnOrder([new User().name]);
     this.turnTimerID = setTimeout(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
-      document.getElementById('answer-btn').disabled = true;
+      this.gameField.buttonMode();
+      document.getElementById('btn-answer').disabled = true;
       this.nextTurn();
     }, ANSWERTIME * 1000);
 
@@ -467,6 +478,7 @@ export default class Game {
     'startGame': this.startGame,
     'changePoints': this.changePoints,
     'submitPoints': this.submitPoints,
+    'resume': this.resume,
   };
 
   clickHandler = (e) => {

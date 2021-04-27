@@ -240,6 +240,7 @@ export default class GameField {
   }
 
   waitForPlayersJpgShow() {
+    console.log(document);
     const gameDisplay = document.getElementById('game-display');
     gameDisplay.innerHTML = `<img style="display: block; width: 50%; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg" alt="Waiting for start">`;
   }
@@ -263,6 +264,11 @@ export default class GameField {
     but.innerHTML = ``;
     inp.style.display = 'none';
     but.style.width = '100%';
+  }
+
+  disabledNode() {
+    this.buttonMode();
+    document.getElementById('btn-answer').disabled = true;
   }
 
   answerMode() {
@@ -308,7 +314,7 @@ export default class GameField {
     parent.append(answer);
     const h = parent.offsetTop - answer.offsetHeight;
     answer.style.top = `${h}px`;
-    setTimeout(() => answer.remove(), 1500)
+    setTimeout(() => answer.remove(), 4000)
   }
 
 }
