@@ -62,13 +62,14 @@ export default class GameField {
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
-  drawQuestion(str) {
+  drawQuestion(str, callback) {
     const gameDisplay = document.getElementById('game-display');
     // noinspection CssInvalidPropertyValue
     gameDisplay.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter">${letter}</span>`).join('')}
     </span>`
+    callback();
     this.readQuestion(document.getElementById('question-text'), Date.now());
   }
 
@@ -77,9 +78,8 @@ export default class GameField {
   readQuestion (textBlock, startTime, delta = 150) {
     const children = textBlock.childNodes;
     const lastLetter = document.getElementById('last-letter');
-
     // makes it repeat each 50 ms until the question is read
-    const interval = setInterval(() => {
+    const callback = () => {
       let timePassed = Date.now() - startTime;
       let index = 0;
       while (timePassed > delta) {
@@ -88,10 +88,15 @@ export default class GameField {
         ++index;
         if(index >= children.length - 1) break;
       }
-      if(lastLetter.style.color === 'red') {
-        clearInterval(interval);
+      if(lastLetter.style.color !== 'red') {
+        window.requestAnimationFrame(callback);
+      } else {
+        const ev = new AnimationEvent('animationend');
+        document.getElementById('last-letter').dispatchEvent(ev);
+        console.log(ev);
       }
-    }, 50);
+    }
+    window.requestAnimationFrame(callback)
   }
 
   scoreAsInput = (toChange = true) => () => {

@@ -22,6 +22,14 @@ export default class Game {
     this._socket.removeEventListener('message', this.socketHandler);
   }
 
+  // listener for last letter
+  // need to fill
+  _addLastLetterListener() {
+    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
+
+    })
+  }
+
   _prepForExit() {
     this._removeListeners();
     this.turnTimer.reset();
@@ -105,17 +113,17 @@ export default class Game {
   }
 
   onRegularQ = evt => {
-    this.gameField.drawQuestion(evt.question.string);
+    this.gameField.drawQuestion(evt.question.string, this._addLastLetterListener);
     if (new User().name === this.master) this.canRaiseHand(this.players);
   }
 
   onSecretQ = evt => {
-    this.gameField.drawQuestion(evt.question.string);
+    this.gameField.drawQuestion(evt.question.string, this._addLastLetterListener);
     
   }
 
   onBetQ = evt => {
-    this.gameField.drawQuestion(evt.question.string);
+    this.gameField.drawQuestion(evt.question.string, this._addLastLetterListener);
   }
 
   qTypeConfig = {
