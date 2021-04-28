@@ -24,7 +24,7 @@ const view = () => {
       </div>
       <div id="reply" style="background-color: #7c7c7c">
         <input id="input-answer" type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
-        <button id="btn-answer" class="btn btn-primary game-button" style="width: 100px; height: 100%" disabled></button>
+        <button id="answer-btn" class="btn btn-primary game-button" style="width: 100px; height: 100%" disabled></button>
       </div>
     </div>
     <div class="col-md-3 chat-container" style="padding: 0 0 0 0; overflow-y: auto; height: 100%">

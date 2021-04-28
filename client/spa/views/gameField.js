@@ -69,7 +69,10 @@ export default class GameField {
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter">${letter}</span>`).join('')}
     </span>`
-    callback();
+    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
+      callback();
+    });
+    //callback();
     this.readQuestion(document.getElementById('question-text'), Date.now());
   }
 
@@ -260,7 +263,7 @@ export default class GameField {
   // makes button fullWidth
   buttonMode() {
     const inp = document.getElementById('input-answer');
-    const but = document.getElementById('btn-answer');
+    const but = document.getElementById('answer-btn');
     but.innerHTML = ``;
     inp.style.display = 'none';
     but.style.width = '100%';
@@ -273,7 +276,7 @@ export default class GameField {
 
   answerMode() {
     const input = document.getElementById('input-answer');
-    const button = document.getElementById('btn-answer');
+    const button = document.getElementById('answer-btn');
     button.innerHTML = '';
     input.style.display = 'block';
     button.style.width = '100px';
@@ -281,7 +284,7 @@ export default class GameField {
 
   appealMode() {
     this.buttonMode()
-    const button = document.getElementById('btn-answer');
+    const button = document.getElementById('answer-btn');
     button.innerHTML = `I'm right!`;
   }
 

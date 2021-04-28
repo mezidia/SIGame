@@ -24,11 +24,12 @@ export default class Game {
 
   // listener for last letter
   // need to fill
-  _addLastLetterListener() {
-    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
-
-    })
-  }
+  // _addLastLetterListener = () => {
+  //   document.getElementById('last-letter').addEventListener('animationend', (evt) => {
+  //     console.log('cb');
+  //     if (new User().name === this.master) this.canRaiseHand(this.players);
+  //   });
+  // }
 
   _prepForExit() {
     this._removeListeners();
@@ -88,9 +89,9 @@ export default class Game {
   onTurnOrder = evt => {
     if (this.master === new User().name) return console.log('i am game master' + this.master);
     if (evt.who.includes(new User().name)) {
-      document.getElementById('btn-answer').disabled = false;
+      document.getElementById('answer-btn').disabled = false;
     } else {
-      document.getElementById('btn-answer').disabled = true;
+      document.getElementById('answer-btn').disabled = true;
     }
   }
 
@@ -113,8 +114,10 @@ export default class Game {
   }
 
   onRegularQ = evt => {
-    this.gameField.drawQuestion(evt.question.string, this._addLastLetterListener);
-    if (new User().name === this.master) this.canRaiseHand(this.players);
+    this.gameField.drawQuestion(evt.question.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
+    //if (new User().name === this.master) this.canRaiseHand(this.players);
   }
 
   onSecretQ = evt => {
@@ -142,7 +145,7 @@ export default class Game {
 
   onNextTurn = evt => {
     this.appealDecision = [];
-    this.gameField.buttonMode();
+    if (new User().name !== this.master) this.gameField.buttonMode();
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
     for (const dIndex in decks) {
@@ -179,10 +182,10 @@ export default class Game {
     this.gameField.announceGameState(`Фаза апеляції.`);
     if (evt.who !== new User().name) return;
     this.gameField.appealMode();
-    document.getElementById('btn-answer').disabled = false;
+    document.getElementById('answer-btn').disabled = false;
     this.clickConfig.answer = this.appeal;
     this.appealTimerID = setTimeout(() => {
-      document.getElementById('btn-answer').disabled = true;
+      document.getElementById('answer-btn').disabled = true;
       this.nextTurn();
     }, APPEALTIME * 1000);
   }
@@ -324,7 +327,7 @@ export default class Game {
     const ans = document.getElementById('input-answer');
     if (!ans.value) return;
     clearTimeout(this.turnTimerID);
-    document.getElementById('btn-answer').disabled = true;
+    document.getElementById('answer-btn').disabled = true;
     const event = {
       eType: 'answerCheck',
       answer: ans.value,
@@ -340,7 +343,7 @@ export default class Game {
       who: new User().name,
     };
     this.broadcast(event);
-    document.getElementById('btn-answer').disabled = true;
+    document.getElementById('answer-btn').disabled = true;
   }
 
   raiseHand = () => {
@@ -352,7 +355,7 @@ export default class Game {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
       this.gameField.buttonMode();
-      document.getElementById('btn-answer').disabled = true;
+      document.getElementById('answer-btn').disabled = true;
       this.nextTurn();
     }, ANSWERTIME * 1000);
 
@@ -518,13 +521,7 @@ export default class Game {
   }
 
   canRaiseHand(who) {
-    const canAnswer = evt => {
-      if (evt.target.id === 'last-letter') {
-        this.turnOrder(who);
-        document.removeEventListener('animationend', canAnswer);
-      }
-    }
-    document.addEventListener('animationend', canAnswer);
+    this.turnOrder(who);
   }
 
   updatePoints() {
