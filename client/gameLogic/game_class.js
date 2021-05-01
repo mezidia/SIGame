@@ -8,7 +8,7 @@ import { changeHash } from "../spa/spaControl.js";
 import { errPopup } from "../spa/uiElements.js";
 
 const ANSWERTIME = 5; //sec
-const GAMETIME = 25; //sec
+const GAMETIME = 500; //sec
 const APPEALTIME = 5; //sec
 
 export default class Game {
@@ -21,15 +21,6 @@ export default class Game {
     document.removeEventListener('click', this.clickHandler);
     this._socket.removeEventListener('message', this.socketHandler);
   }
-
-  // listener for last letter
-  // need to fill
-  // _addLastLetterListener = () => {
-  //   document.getElementById('last-letter').addEventListener('animationend', (evt) => {
-  //     console.log('cb');
-  //     if (new User().name === this.master) this.canRaiseHand(this.players);
-  //   });
-  // }
 
   _prepForExit() {
     this._removeListeners();
@@ -117,16 +108,18 @@ export default class Game {
     this.gameField.drawQuestion(evt.question.string, () => {
       if (new User().name === this.master) this.canRaiseHand(this.players);
     });
-    //if (new User().name === this.master) this.canRaiseHand(this.players);
   }
 
   onSecretQ = evt => {
-    this.gameField.drawQuestion(evt.question.string, this._addLastLetterListener);
-    
+    this.gameField.drawQuestion(evt.question.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
   }
 
   onBetQ = evt => {
-    this.gameField.drawQuestion(evt.question.string, this._addLastLetterListener);
+    this.gameField.drawQuestion(evt.question.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
   }
 
   qTypeConfig = {
@@ -240,11 +233,13 @@ export default class Game {
   onPause = evt => {
     this.clickConfig.pause = this.resume;
     this.gameField.pause();
+    this.gameTimer.pause(evt.timeStamp);
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
     this.gameField.pause();
+    this.gameTimer.resume();
   }
 
   eventsConfig = {
@@ -457,6 +452,7 @@ export default class Game {
   pause = () => {
     const event = {
       eType: 'pause',
+      timeStamp: Date.now(),
     };
     this.broadcast(event);
   }
