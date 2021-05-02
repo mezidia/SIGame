@@ -56,7 +56,13 @@ export default class GameField {
 
   // removes selected theme from the list
   removeFinalTheme(index) {
-    document.getElementById('final-display').removeChild(document.getElementById(`theme-${index}`))
+    document.getElementById('final-display').removeChild(document.getElementById(`theme-${index}`));
+  }
+
+  // return true if removed child was last, else false
+  isNullThemes() {
+    const finalDisplay = document.getElementById('final-display');
+    return !finalDisplay.hasChildNodes ? true : false;
   }
 
   // draws a question and reads it.
@@ -271,7 +277,7 @@ export default class GameField {
 
   disabledNode() {
     this.buttonMode();
-    document.getElementById('btn-answer').disabled = true;
+    document.getElementById('answer-btn').disabled = true;
   }
 
   answerMode() {
