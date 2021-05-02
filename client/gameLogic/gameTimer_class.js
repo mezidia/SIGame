@@ -31,7 +31,6 @@ export default class GameTimer {
   resume() {
     if (!this._isPaused) throw new Error('This timer wasn\'t paused before!');
     const firstTickTime = 1000 - (this._pauseTime - this._lastTickTime);
-    console.log(firstTickTime);
     this._timerID = setTimeout(this._tick, firstTickTime);
     this._isPaused = false;
   }
@@ -47,7 +46,6 @@ export default class GameTimer {
   update() {
     const div = document.getElementById(this._id);
     div.innerHTML = this._currentTime.toString();
-    console.log(this._currentTime);
   }
 
   reset() {

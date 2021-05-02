@@ -4,6 +4,7 @@ import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
+import Timer from './timer_class.js';
 import { changeHash } from "../spa/spaControl.js";
 import { errPopup } from "../spa/uiElements.js";
 
@@ -177,10 +178,14 @@ export default class Game {
     this.gameField.appealMode();
     document.getElementById('answer-btn').disabled = false;
     this.clickConfig.answer = this.appeal;
-    this.appealTimerID = setTimeout(() => {
+    this.appealTimerID = new Timer(() => {
       document.getElementById('answer-btn').disabled = true;
       this.nextTurn();
     }, APPEALTIME * 1000);
+    // this.appealTimerID = setTimeout(() => {
+    //   document.getElementById('answer-btn').disabled = true;
+    //   this.nextTurn();
+    // }, APPEALTIME * 1000);
   }
 
   onAppealDecision = evt => {
@@ -234,12 +239,18 @@ export default class Game {
     this.clickConfig.pause = this.resume;
     this.gameField.pause();
     this.gameTimer.pause(evt.timeStamp);
+    this.turnTimer.pause();
+    if (this.appealTimerID) this.appealTimerID.pause();
+    if (this.turnTimerID) this.turnTimerID.pause();
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
     this.gameField.pause();
+    this.turnTimer.resume();
     this.gameTimer.resume();
+    if (this.appealTimerID) this.appealTimerID.resume();
+    if (this.turnTimerID) this.turnTimerID.resume();
   }
 
   eventsConfig = {
@@ -346,13 +357,20 @@ export default class Game {
     this.gameField.answerMode();
     this.clickConfig.answer = this.answer;
     this.turnOrder([new User().name]);
-    this.turnTimerID = setTimeout(() => {
+    this.turnTimerID = new Timer(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
       this.gameField.buttonMode();
       document.getElementById('answer-btn').disabled = true;
       this.nextTurn();
     }, ANSWERTIME * 1000);
+    // this.turnTimerID = setTimeout(() => {
+    //   this.points[new User().name] -= this.currentQuestion.cost;
+    //   this.updatePoints();
+    //   this.gameField.buttonMode();
+    //   document.getElementById('answer-btn').disabled = true;
+    //   this.nextTurn();
+    // }, ANSWERTIME * 1000);
 
   }
 
