@@ -316,7 +316,7 @@ function onUserNameTaken () {
     socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     closeCustomPopup();
   })
-  div.innerHTML+= input;
+  div.innerHTML += input;
   div.appendChild(okButton);
   document.getElementById('name-input').value = window.localStorage.getItem('name');
 }
