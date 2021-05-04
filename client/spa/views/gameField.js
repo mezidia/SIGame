@@ -56,19 +56,29 @@ export default class GameField {
 
   // removes selected theme from the list
   removeFinalTheme(index) {
-    document.getElementById('final-display').removeChild(document.getElementById(`theme-${index}`))
+    document.getElementById('final-display').removeChild(document.getElementById(`theme-${index}`));
+  }
+
+  // return true if removed child was last, else false
+  isNullThemes() {
+    const finalDisplay = document.getElementById('final-display');
+    return !finalDisplay.hasChildNodes ? true : false;
   }
 
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
-  drawQuestion(str) {
+  drawQuestion(str, callback) {
     const gameDisplay = document.getElementById('game-display');
     // noinspection CssInvalidPropertyValue
     gameDisplay.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter">${letter}</span>`).join('')}
     </span>`
+    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
+      callback();
+    });
+    //callback();
     this.readQuestion(document.getElementById('question-text'), Date.now());
   }
 
@@ -77,9 +87,8 @@ export default class GameField {
   readQuestion (textBlock, startTime, delta = 150) {
     const children = textBlock.childNodes;
     const lastLetter = document.getElementById('last-letter');
-
     // makes it repeat each 50 ms until the question is read
-    const interval = setInterval(() => {
+    const callback = () => {
       let timePassed = Date.now() - startTime;
       let index = 0;
       while (timePassed > delta) {
@@ -88,10 +97,15 @@ export default class GameField {
         ++index;
         if(index >= children.length - 1) break;
       }
-      if(lastLetter.style.color === 'red') {
-        clearInterval(interval);
+      if(lastLetter.style.color !== 'red') {
+        window.requestAnimationFrame(callback);
+      } else {
+        const ev = new AnimationEvent('animationend');
+        document.getElementById('last-letter').dispatchEvent(ev);
+        console.log(ev);
       }
-    }, 50);
+    }
+    window.requestAnimationFrame(callback)
   }
 
   scoreAsInput = (toChange = true) => () => {
@@ -235,6 +249,7 @@ export default class GameField {
   }
 
   waitForPlayersJpgShow() {
+    console.log(document);
     const gameDisplay = document.getElementById('game-display');
     gameDisplay.innerHTML = `<img style="display: block; width: 50%; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg" alt="Waiting for start">`;
   }
@@ -254,15 +269,20 @@ export default class GameField {
   // makes button fullWidth
   buttonMode() {
     const inp = document.getElementById('input-answer');
-    const but = document.getElementById('btn-answer');
+    const but = document.getElementById('answer-btn');
     but.innerHTML = ``;
     inp.style.display = 'none';
     but.style.width = '100%';
   }
 
+  disabledNode() {
+    this.buttonMode();
+    document.getElementById('answer-btn').disabled = true;
+  }
+
   answerMode() {
     const input = document.getElementById('input-answer');
-    const button = document.getElementById('btn-answer');
+    const button = document.getElementById('answer-btn');
     button.innerHTML = '';
     input.style.display = 'block';
     button.style.width = '100px';
@@ -270,7 +290,7 @@ export default class GameField {
 
   appealMode() {
     this.buttonMode()
-    const button = document.getElementById('btn-answer');
+    const button = document.getElementById('answer-btn');
     button.innerHTML = `I'm right!`;
   }
 
@@ -303,7 +323,7 @@ export default class GameField {
     parent.append(answer);
     const h = parent.offsetTop - answer.offsetHeight;
     answer.style.top = `${h}px`;
-    setTimeout(() => answer.remove(), 1500)
+    setTimeout(() => answer.remove(), 4000)
   }
 
 }

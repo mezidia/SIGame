@@ -4,11 +4,12 @@ import GameField from "../spa/views/gameField.js";
 import User from "./user_class.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
+import Timer from './timer_class.js';
 import { changeHash } from "../spa/spaControl.js";
 import { errPopup } from "../spa/uiElements.js";
 
 const ANSWERTIME = 5; //sec
-const GAMETIME = 25; //sec
+const GAMETIME = 500; //sec
 const APPEALTIME = 5; //sec
 
 export default class Game {
@@ -26,8 +27,8 @@ export default class Game {
     this._removeListeners();
     this.turnTimer.reset();
     this.gameTimer.reset();
-    clearTimeout(this.turnTimerID);
-    clearTimeout(this.appealTimerID);
+    this.turnTimerID.pause();
+    this.appealTimerID.pause();
   }
 
   constructor(bundle, settings, players) {
@@ -105,17 +106,21 @@ export default class Game {
   }
 
   onRegularQ = evt => {
-    this.gameField.drawQuestion(evt.question.string);
-    if (new User().name === this.master) this.canRaiseHand(this.players);
+    this.gameField.drawQuestion(evt.question.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
   }
 
   onSecretQ = evt => {
-    this.gameField.drawQuestion(evt.question.string);
-    
+    this.gameField.drawQuestion(evt.question.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
   }
 
   onBetQ = evt => {
-    this.gameField.drawQuestion(evt.question.string);
+    this.gameField.drawQuestion(evt.question.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
   }
 
   qTypeConfig = {
@@ -134,6 +139,7 @@ export default class Game {
 
   onNextTurn = evt => {
     this.appealDecision = [];
+    if (new User().name !== this.master) this.gameField.buttonMode();
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
     for (const dIndex in decks) {
@@ -147,10 +153,16 @@ export default class Game {
       }
     }
     this.checkAnswerCounter();
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    if (this.currentRound === 0) { // switch to 3 for production
+      console.log(this.bundle.getFinalDecks());
+      this.gameField.drawFinalRound(this.bundle.getFinalDecks());
+    } else {
+      this.gameField.drawTable(this.rounds[this.currentRound]);
+    }
   }
 
   onAnswerCheck = evt => {
+    this.gameField.announceGameState(`Ведучий перевіряє правильність відповіді.`);
     const t = this.currentQuestion.trueAns;
     const f = this.currentQuestion.falseAns;
     this.lastAnswer = { 
@@ -159,16 +171,19 @@ export default class Game {
       t,
       f,
     };
+    this.gameField.displayAnswer(evt.who, evt.answer);
     if (this.master !== new User().name) return;
     console.log(this.currentQuestion);
     this.gameField.gmPopUp(evt.who, evt.answer, t, f);
   }
 
   onCanAppeal = evt => {
+    this.gameField.announceGameState(`Фаза апеляції.`);
     if (evt.who !== new User().name) return;
+    this.gameField.appealMode();
     document.getElementById('answer-btn').disabled = false;
     this.clickConfig.answer = this.appeal;
-    this.appealTimerID = setTimeout(() => {
+    this.appealTimerID = new Timer(() => {
       document.getElementById('answer-btn').disabled = true;
       this.nextTurn();
     }, APPEALTIME * 1000);
@@ -185,8 +200,11 @@ export default class Game {
         res += d.decision ? 1 : -1;
       }
       if (res > 0) {
+        this.gameField.announceGameState(`Апеляція схвалена!`);
         this.points[this.lastAnswer.who] += this.currentQuestion.cost * 2;
         this.updatePoints();
+      } else {
+        this.gameField.announceGameState(`Апеляція відхилена!`);
       }
       this.nextTurn();
     }
@@ -195,7 +213,6 @@ export default class Game {
   onAppeal = evt => {
     if (new User().name === evt.who) return;
     if (new User().name === this.master) return;
-    //appealPopup(this.lastAnswer);
     this.gameField.appealPopUp(
       this.lastAnswer.who,
       this.lastAnswer.ans,
@@ -205,10 +222,13 @@ export default class Game {
   }
 
   onNextPicker = evt => {
+    this.gameField.announceGameState(`${evt.who} ходить.`);
     if (new User().name !== evt.who) {
       this.clickConfig.cell = null;
+      this.clickConfig.theme = null;
     } else if (new User().name === evt.who) {
       this.clickConfig.cell = this.onQuestionClick;
+      this.clickConfig.theme = this.onThemeClick;
     }
   }
 
@@ -220,12 +240,28 @@ export default class Game {
 
   onPause = evt => {
     this.clickConfig.pause = this.resume;
-    //this.gameField.pause();
+    this.gameField.pause();
+    this.gameTimer.pause(evt.timeStamp);
+    this.turnTimer.pause();
+    if (this.appealTimerID) this.appealTimerID.pause();
+    if (this.turnTimerID) this.turnTimerID.pause();
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
-    //this.gameField.resume();
+    this.gameField.pause();
+    this.turnTimer.resume();
+    this.gameTimer.resume();
+    if (this.appealTimerID) this.appealTimerID.resume();
+    if (this.turnTimerID) this.turnTimerID.resume();
+  }
+
+  onClickedTheme = evt => {
+    if (new User().name === this.master) this.setNextPicker();
+    this.gameField.removeFinalTheme(evt.index);
+    if (this.gameField.isNullThemes()) {
+      console.log('LastTheme');
+    }
   }
 
   eventsConfig = {
@@ -240,6 +276,7 @@ export default class Game {
     'canAppeal': this.onCanAppeal,
     'appeal': this.onAppeal,
     'nextPicker': this.onNextPicker,
+    'clickedTheme': this.onClickedTheme,
     'startGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
     'pause': this.onPause,
@@ -280,6 +317,7 @@ export default class Game {
   }
 
   join() {
+    this.gameField.buttonMode();
     this.gameField.waitForPlayersJpgShow();
     for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
@@ -304,9 +342,10 @@ export default class Game {
   }
 
   answer = () => {
-    const ans = document.getElementById('answerInput');
+    const ans = document.getElementById('input-answer');
     if (!ans.value) return;
-    clearTimeout(this.turnTimerID);
+    this.turnTimerID.pause();
+    this.turnTimer.pause();
     document.getElementById('answer-btn').disabled = true;
     const event = {
       eType: 'answerCheck',
@@ -317,7 +356,7 @@ export default class Game {
   }
 
   appeal = () => {
-    clearTimeout(this.appealTimerID);
+    this.appealTimerID.pause();
     const event = {
       eType: 'appeal',
       who: new User().name,
@@ -328,15 +367,16 @@ export default class Game {
 
   raiseHand = () => {
     this.turnTimer.setTimer(ANSWERTIME);
+    this.gameField.answerMode();
     this.clickConfig.answer = this.answer;
     this.turnOrder([new User().name]);
-    this.turnTimerID = setTimeout(() => {
+    this.turnTimerID = new Timer(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
+      this.gameField.buttonMode();
       document.getElementById('answer-btn').disabled = true;
       this.nextTurn();
     }, ANSWERTIME * 1000);
-
   }
 
   correct = evt => {
@@ -435,6 +475,7 @@ export default class Game {
   pause = () => {
     const event = {
       eType: 'pause',
+      timeStamp: Date.now(),
     };
     this.broadcast(event);
   }
@@ -446,8 +487,20 @@ export default class Game {
     this.broadcast(event);
   }
 
+  onThemeClick = e => {
+    const target = e.target;
+    const splitedID = target.id.split('-');
+    const i = splitedID[1];
+    const event = {
+      eType: 'clickedTheme',
+      index: i,
+    };
+    this.broadcast(event);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
+    'theme': this.onThemeClick,
     'answer': this.raiseHand,
     'correct': this.correct,
     'uncorrect': this.uncorrect,
@@ -459,6 +512,7 @@ export default class Game {
     'startGame': this.startGame,
     'changePoints': this.changePoints,
     'submitPoints': this.submitPoints,
+    'resume': this.resume,
   };
 
   clickHandler = (e) => {
@@ -498,13 +552,7 @@ export default class Game {
   }
 
   canRaiseHand(who) {
-    const canAnswer = evt => {
-      if (evt.target.id === 'last-letter') {
-        this.turnOrder(who);
-        document.removeEventListener('animationend', canAnswer);
-      }
-    }
-    document.addEventListener('animationend', canAnswer);
+    this.turnOrder(who);
   }
 
   updatePoints() {

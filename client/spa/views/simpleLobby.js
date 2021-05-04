@@ -7,7 +7,7 @@ const view = () => {
       <h1 class="text-white">Pause</h1>
       <br>
       <br>
-      <button class="btn btn-primary">Continue</button>
+      <button id="resume" class="btn btn-primary">Continue</button>
     </div>
   </div>
   <div class="row" style="margin: 0 0 0 0; height: 100%">
@@ -23,7 +23,7 @@ const view = () => {
         <div id="players-icons" style="background-color: #3c9a5f; display: flex; justify-content: space-between; flex-wrap: wrap"></div>
       </div>
       <div id="reply" style="background-color: #7c7c7c">
-        <input id="answerInput" type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
+        <input id="input-answer" type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
         <button id="answer-btn" class="btn btn-primary game-button" style="width: 100px; height: 100%" disabled></button>
       </div>
     </div>
