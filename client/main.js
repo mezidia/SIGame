@@ -190,7 +190,9 @@ const connectToSIgame = () => {
   changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
-    new User(name, socket);
+    const user = new User(name, socket);
+    user.setSocket(socket);
+    user.setName(name);
     socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
@@ -206,13 +208,14 @@ const connectToSIgame = () => {
 
 const openEditor = () => {
   if (socket) disconnect();
-  const name = document.getElementById('name-input').value;
-  if (!reg.test(name)) return;
-  window.localStorage.setItem('name', name);
+  const name = takeName();
+  if (takeName() === null) return;
   changeHash('redactor')();
   socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
-    new User(name, socket);
+    const user = new User(name, socket);
+    user.setSocket(socket);
+    user.setName(name);
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
       disconnect();
