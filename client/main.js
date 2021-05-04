@@ -177,7 +177,6 @@ const createGameLobby = () => {
 
 function takeName() {
   const name = document.getElementById('name-input').value;
-  console.log(reg.test(name), reg.test('()()()()()()і'));
   if (!reg.test(name)) return null;
   window.localStorage.setItem('name', name);
   return name;
@@ -307,13 +306,12 @@ function onUserNameTaken () {
   okButton.style.margin = '10px';
   okButton.innerText = 'OK';
   okButton.addEventListener('click', () => {
-    const name = takeName();
+    const name = takeName()
     console.log('okButton ' + takeName());
     if (takeName() === null) return;
     new User().setName(name);
     socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     closeCustomPopup();
-    document.getElementById('join-player').click();
   })
   div.innerHTML+= input;
   div.appendChild(okButton);
@@ -450,10 +448,12 @@ const updateGames = data => {
   allGames = data;
   if (!gamesSearchField) return;
   gamesSearchField.innerHTML = '';
+  document.getElementById('join-player').outerHTML = document.getElementById('join-player').outerHTML;
   for (const gameId in games) {
     const gm = games[gameId];
     const gameData = {game: gm, id: gameId};
-    document.getElementById('join-player').addEventListener('click', joinGame(gameData));
+    const joinGame = () => joinHandle(gameData);
+    document.getElementById('join-player').addEventListener('click', joinGame);
     const gameDiv = document.createElement('div');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => gameDivOnClick(gameId, gm));
@@ -475,8 +475,6 @@ function showGameInfoDiv() {
   document.getElementById('picture-info-2').style.display = 'block';
   document.getElementById('picture-info-1').style.display = 'none';
 }
-
-const joinGame = (gameData) => () => joinHandle(gameData);
 
 function gameDivOnClick(gameId, gm) {
   let gameData = null;
