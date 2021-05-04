@@ -27,8 +27,8 @@ export default class Game {
     this._removeListeners();
     this.turnTimer.reset();
     this.gameTimer.reset();
-    this.turnTimerID.pause();
-    this.appealTimerID.pause();
+    if (this.turnTimerID) this.turnTimerID.pause();
+    if (this.appealTimerID) this.appealTimerID.pause();
   }
 
   constructor(bundle, settings, players) {
