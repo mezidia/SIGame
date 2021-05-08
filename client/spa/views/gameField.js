@@ -1,10 +1,12 @@
 'use strict';
 
 import Language from '../../changeLanguage.js';
+import QReader from '../../gameLogic/question_reader.js'
 
 export default class GameField {
   constructor() {
     if (!GameField._instance) {
+      this.Qreader = new QReader();
       GameField._instance = this;
     }
     return GameField._instance;
@@ -79,34 +81,10 @@ export default class GameField {
       callback();
     });
     //callback();
-    this.readQuestion(document.getElementById('question-text'), Date.now());
+    // this.readQuestion(document.getElementById('question-text'), Date.now());
+    this.Qreader.read(document.getElementById('question-text'), Date.now())
   }
 
-  // animation of reading question independent from framerate
-  // delta is amount of milliseconds per letter to read
-  readQuestion (textBlock, startTime, delta = 150) {
-    const children = textBlock.childNodes;
-    const lastLetter = document.getElementById('last-letter');
-    // makes it repeat each 50 ms until the question is read
-    const callback = () => {
-      let timePassed = Date.now() - startTime;
-      let index = 0;
-      while (timePassed > delta) {
-        children[index].style.color = 'red';
-        timePassed -= delta;
-        ++index;
-        if(index >= children.length - 1) break;
-      }
-      if(lastLetter.style.color !== 'red') {
-        window.requestAnimationFrame(callback);
-      } else {
-        const ev = new AnimationEvent('animationend');
-        document.getElementById('last-letter').dispatchEvent(ev);
-        console.log(ev);
-      }
-    }
-    window.requestAnimationFrame(callback)
-  }
 
   scoreAsInput = (toChange = true) => () => {
     const divs = document.getElementsByClassName('player-display');
@@ -304,6 +282,9 @@ export default class GameField {
   }
 
   pause() {
+    if (this.Qreader.isActive = true) {
+      this.Qreader.isPaused ? this.Qreader.resume() : this.Qreader.pause();
+    }
     const overlay = document.getElementById('pause-overlay')
     overlay.style.width = overlay.style.width === '100%' ? '0' : '100%'
   }
