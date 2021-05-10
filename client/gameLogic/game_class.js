@@ -11,6 +11,7 @@ import { errPopup } from "../spa/uiElements.js";
 const ANSWERTIME = 5; //sec
 const GAMETIME = 500; //sec
 const APPEALTIME = 5; //sec
+const MIN_PLAYERS = 3; // minimum amount of players 
 
 export default class Game {
   _setListeners() {
@@ -60,6 +61,14 @@ export default class Game {
     console.log('new Game', this);
   }
 
+  drawStartOrWait() {
+    if (this.players.length >= MIN_PLAYERS) {
+      this.gameField.drawStartButton();
+    } else {
+      this.gameField.drawPreStartText(this.players.length, MIN_PLAYERS)
+    }
+  }
+
   onLeaveGame = evt => {
     console.log(evt.name + ' left');
     const index = this.players.indexOf(evt.name);
@@ -73,7 +82,7 @@ export default class Game {
       this.gameField.switchGameMode(true);
       this.clickConfig.cell = null;
       if (this.gameStatus === 0) {
-        this.gameField.drawStartButton();
+        this.drawStartOrWait();
       }
     }
   }
@@ -92,7 +101,10 @@ export default class Game {
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
-    if (new User().name === this.master) this.updatePoints();
+    if (new User().name === this.master) {
+      this.drawStartOrWait();
+      this.updatePoints();
+    }
   }
 
   onPoints = evt => {
@@ -433,7 +445,6 @@ export default class Game {
 
   startGame = () => {
     if (this.players.length < 3) {
-      errPopup('start-min');
       return false;
     }
     this.setNextPicker();
@@ -527,7 +538,7 @@ export default class Game {
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
     this.clickConfig.cell = null;
-    this.gameField.drawStartButton();
+    this.drawStartOrWait();
   }
 
   checkAnswerCounter() {
