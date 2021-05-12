@@ -1,6 +1,6 @@
 'use strict';
 
-import GameField from "../spa/views/gameField.js";
+import GameField from "./gameField.js";
 import User from "./user_class.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";

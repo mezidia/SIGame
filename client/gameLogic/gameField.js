@@ -1,7 +1,7 @@
 'use strict';
 
-import Language from '../../changeLanguage.js';
-import QReader from '../../gameLogic/question_reader.js'
+import Language from '../changeLanguage.js';
+import QReader from './question_reader.js'
 
 export default class GameField {
   constructor() {
