@@ -11,8 +11,12 @@ const view = () => {
     </div>
   </div>
   <div class="row" style="margin: 0 0 0 0; height: 100%">
-    <div class="col-md-9 game-container" style="padding: 0 0 0 0">
-    
+    <div class="col-md-9 game-container" style="padding: 0 0 0 0;">
+      <div id="answer-timer">
+        <div class="fill-side-bar"></div>
+        <div class="main-side-bar"></div>
+        <div class="fill-side-bar"></div>
+      </div>
       <div id="game-display" class="row" style="min-height: 200px; margin: 0 0 0 0"></div>
       
       <div>
@@ -29,17 +33,10 @@ const view = () => {
     </div>
     <div class="col-md-3 chat-container" style="padding: 0 0 0 0; overflow-y: auto; height: 100%">
       <div id="game-global-timer">
-        <div id="left-side-bar"></div>
-        <div id="right-side-bar"></div>
+        <div class="main-side-bar"></div>
+        <div class="fill-side-bar"></div>
       </div>
-      <div id="chat" style="background-color: #6f42c1; min-height: 70px; overflow: auto">
-      <-- timer example -->
-      <div id="answer-timer">666</div>
-      <-- timer example -->
-      <-- timer example -->
-      <div id="game-timer">666</div>
-      <-- timer example -->
-      </div>
+      <div id="chat" style="background-color: #6f42c1; min-height: 70px; overflow: auto"></div>
       <div id="chat-input" style="background-color: #8c8c8c;">
         <input type="text" style="width: 100%; height: 50px;" id="message-input">
         <div class="game-button-placeholder">

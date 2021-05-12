@@ -7,7 +7,7 @@ import GameTimer from "./gameTimer_class.js";
 import Timer from './timer_class.js';
 import { changeHash } from "../spa/spaControl.js";
 
-const ANSWERTIME = 5; //sec
+const ANSWERTIME = 10; //sec
 const GAMETIME = 500; //sec
 const APPEALTIME = 5; //sec
 const MIN_PLAYERS = 3; // minimum amount of players 
@@ -60,14 +60,16 @@ export default class Game {
     console.log('new Game', this);
   }
 
-  turnTimerCallback(timeleft, totaltime) {
-    const div = document.getElementById('answer-timer');
-    div.innerHTML = timeleft;
+  turnTimerCallback(timeleft, totalTime) {
+    const percent = Math.floor(timeleft/totalTime*100)
+    const bar = document.getElementById('answer-timer').children[1];
+    bar.style.width = `${percent}%`;
   }
 
   globalTimerCallback(timeleft, totalTime) {
     const percent = Math.floor(timeleft/totalTime*100)
-    document.getElementById('left-side-bar').style.width = `${percent}%`
+    const bar = document.getElementById('game-global-timer').children[0];
+    bar.style.width = `${percent}%`;
   }
 
   drawStartOrWait() {

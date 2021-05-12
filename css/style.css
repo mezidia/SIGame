@@ -19,7 +19,7 @@
 
 .game-container {
     display: grid;
-    grid-template-rows: 1fr auto 50px;
+    grid-template-rows: 20px 1fr auto 50px;
 }
 
 .game-button {
@@ -187,6 +187,8 @@
     height: 100px;
 }
 
+    /* overlay styling */
+
 .overlay {
     height: 100%;
     width: 0;
@@ -284,12 +286,20 @@
     display: flex;
 }
 
-#left-side-bar {
-    background-color: #0079a1;
-    width: 0px;
+#answer-timer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#right-side-bar {
+.main-side-bar {
+    background-color: #0079a1;
+    width: 0;
+    height: 100%;
+}
+
+.fill-side-bar {
     flex-grow: 1;
     flex-shrink: 1;
+    height: 100%;
 }
