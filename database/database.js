@@ -194,6 +194,40 @@ class Database {
     .catch(err => console.log(err))
     .finally(() => console.log('done'));
   }
+
+  async getBundleNames() {
+    await this.checkExistance();
+    const query =  `SELECT bundle_title FROM bundle`;
+    let result = null;
+    await this.promisifyConQuery(query)
+    .catch(err => console.log(err))
+    .then(rows => {
+      console.log(rows);
+      result = rows;
+    })
+    .finally(() => console.log('done'));
+    return result;
+  }
+
+  async getBundleByName(name) {
+    const query = `SELECT d.*, q.*, b.*
+      FROM question q
+      INNER JOIN deck d
+      ON d.deck_id = q.deck_id
+      INNER JOIN bundle b
+      ON d.bundle_id = b.bundle_id 
+      WHERE b.bundle_title='${name.replace(/[']{1}/g, "''")}'
+      `;
+    let result = null;
+    await this.promisifyConQuery(query)
+    .catch(err => console.log(err))
+    .then(rows => {
+      console.log(rows);
+      result = rows;
+    })
+    .finally(() => console.log('done'));
+    return result;
+  }
 }
 
 module.exports = { Database };
