@@ -6,7 +6,6 @@ import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
 import Timer from './timer_class.js';
 import { changeHash } from "../spa/spaControl.js";
-import { errPopup } from "../spa/uiElements.js";
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 500; //sec
@@ -45,8 +44,8 @@ export default class Game {
     this.players = players ? players : [settings.master];
     this.points = {[settings.master]: 0};
     this.gameField = new GameField();
-    this.turnTimer = new GameTimer('answer-timer');
-    this.gameTimer = new GameTimer('game-timer');
+    this.turnTimer = new GameTimer(this.turnTimerCallback);
+    this.gameTimer = new GameTimer(this.globalTimerCallback);
     this._setListeners();
     this.rounds = this.bundle.getRoundsArr();
     this.currentQuestion = undefined;
@@ -59,6 +58,16 @@ export default class Game {
     this.aleadyMoved = [];
     this.appealDecision = [];
     console.log('new Game', this);
+  }
+
+  turnTimerCallback(timeleft, totaltime) {
+    const div = document.getElementById('answer-timer');
+    div.innerHTML = timeleft;
+  }
+
+  globalTimerCallback(timeleft, totalTime) {
+    const percent = Math.floor(timeleft/totalTime*100)
+    document.getElementById('left-side-bar').style.width = `${percent}%`
   }
 
   drawStartOrWait() {

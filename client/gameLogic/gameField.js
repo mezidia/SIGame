@@ -298,7 +298,7 @@ export default class GameField {
     document.getElementById('game-state-text').innerHTML = text;
   }
 
-  displayAnswer(name, text) {
+  displayAnswer(name, text, delay = 4000) {
     const parent = document.getElementById(`${name}-icon`);
     const answer = document.createElement('div');
     answer.id = 'answer-container';
@@ -309,7 +309,7 @@ export default class GameField {
     parent.append(answer);
     const h = parent.offsetTop - answer.offsetHeight;
     answer.style.top = `${h}px`;
-    setTimeout(() => answer.remove(), 4000)
+    setTimeout(() => answer.remove(), delay);
   }
 
 }

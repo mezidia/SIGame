@@ -6,15 +6,17 @@ export default class GameTimer {
   _lastTickTime = 0;
   _pauseTime = 0;
   _isPaused = false;
+  _totalTime = 0;
 
-  constructor(divId) {
-    this._id = divId;
+  // callback has to have (time left to the end: number, total Time of Game: number) contract
+  constructor(callback) {
+    this._callback = callback;
   }
 
   _tick = () => {
     if (this._currentTime >= 0) {
       this._lastTickTime = Date.now();
-      this.update();
+      this._callback(this._currentTime, this._totalTime);
       this._currentTime -= 1;
       this._timerID = setTimeout(this._tick, 1000);
     } else {
@@ -36,22 +38,17 @@ export default class GameTimer {
   }
 
   setTimer(time) {
-    this.reset();
+    this._totalTime = time;
+    this.reset(time);
     this._currentTime = time;
     this._lastTickTime = Date.now();
     if (time <= 0) return new Error('Time mast be int and above 0');
     this._tick();
   }
 
-  update() {
-    const div = document.getElementById(this._id);
-    div.innerHTML = this._currentTime.toString();
-  }
-
-  reset() {
+  reset(totalTime) {
     clearTimeout(this._timerID);
-    const div = document.getElementById(this._id);
-    div.innerHTML = '0';
+    this._callback(100, totalTime);
     this._currentTime = 0;
     this._lastTickTime = 0;
     this._pauseTime = 0;

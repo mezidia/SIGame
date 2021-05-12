@@ -28,6 +28,10 @@ const view = () => {
       </div>
     </div>
     <div class="col-md-3 chat-container" style="padding: 0 0 0 0; overflow-y: auto; height: 100%">
+      <div id="game-global-timer">
+        <div id="left-side-bar"></div>
+        <div id="right-side-bar"></div>
+      </div>
       <div id="chat" style="background-color: #6f42c1; min-height: 70px; overflow: auto">
       <-- timer example -->
       <div id="answer-timer">666</div>
