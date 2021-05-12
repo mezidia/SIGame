@@ -87,7 +87,7 @@ const createGame = () => {
   const password = document.getElementById('roomPassword').value;
   const questionBundle = document.getElementById('questionBundle');
   const gameModeSelect = document.getElementById('gameMode');
-  const totalPlayers = document.getElementById('totalPlayers').value;
+  const totalPlayers = 12; // max amount of players
   if (!reg.test(roomName)) return;
 
   const gameMode = gameModeSelect.options[gameModeSelect.selectedIndex]

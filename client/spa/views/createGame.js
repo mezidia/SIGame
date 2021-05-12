@@ -31,26 +31,8 @@ const view = () => {
         <option data-localize="classic-word">Classic</option>
         <option data-localize="simple-word">Simple</option>
       </select>
-      
-      <br>
-      <h2 data-localize="players-word">Players</h2>
-      <datalist id="tickmarks">
-        <option value="2" label="2">
-        <option value="3" label="3">
-        <option value="4" label="4">
-        <option value="5" label="5">
-        <option value="6" label="6">
-        <option value="7" label="7">
-        <option value="8" label="8">
-        <option value="9" label="9">
-        <option value="10" label="10">
-      </datalist>
-      <input id="totalPlayers" type="range" max="12" min="3" list="tickmarks">
-      <span id="totalPlayers-number">8</span>
 
       <br>
-      <br>
-      <button type="button" class="btn btn-primary" data-localize="settings">Settings</button>
       <button id="startGame" type="button" class="btn btn-primary" data-localize="play">Start game</button>
       
     </form>
