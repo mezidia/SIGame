@@ -87,9 +87,6 @@ class Database {
       falseAns: null
     };
     let returnBundles = [];
-    const dd = `SELECT * from bundle`;
-    await this.promisifyConQuery(dd).then((dd) => console.log(dd));
-
     const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
       FROM question q
       INNER JOIN deck d
@@ -194,6 +191,87 @@ class Database {
     .catch(err => console.log(err))
     .finally(() => console.log('done'));
   }
-}
+
+  async getBundleNames() {
+    await this.checkExistance();
+    const query =  `SELECT bundle_title FROM bundle`;
+    let result = null;
+    await this.promisifyConQuery(query)
+    .catch(err => console.log(err))
+    .then(rows => {
+      console.log(rows);
+      result = rows;
+    })
+    .finally(() => console.log('done'));
+    return result;
+  }
+
+  async getBundleByName(name) {
+    await this.checkExistance();
+    let bundle = {
+      author: null,
+      langcode: null,
+      title: null,
+      decks: []
+    };
+    let deck = {
+      subject: null,
+      questions: []
+    };
+    let question = {
+      type: null,
+      string: null,
+      trueAns: null,
+      falseAns: null
+    };
+    const getDeckSqlStr = `SELECT b.*, l.*, d.*, q.*
+      FROM question q
+      INNER JOIN deck d
+      ON d.deck_id = q.deck_id
+      INNER JOIN bundle b
+      ON d.bundle_id = b.bundle_id 
+      INNER JOIN langcode l
+      ON l.langcode_id = b.bundle_langcode
+      WHERE b.bundle_title='${name.replace(/[']{1}/g, "''")}'`;
+    await this.promisifyConQuery(getDeckSqlStr)
+    .catch(err => console.log(err))
+    .then(rows => {
+      let deckId = 1;
+      for (let i = 0; i < rows.length; i++) {
+        question.type = rows[i].question_type;
+        question.string = rows[i].question_string;
+        question.trueAns = rows[i].question_trueans;
+        question.falseAns = rows[i].question_falseans;
+        const queToDeck = {};
+        deck.questions.push(Object.assign(queToDeck, question));
+        question = {
+          type: null,
+          string: null,
+          trueAns: null,
+          falseAns: null
+        }
+
+        bundle.author = rows[i].bundle_author;
+        bundle.langcode = rows[i].langcode_name;
+        bundle.title = rows[i].bundle_title;
+        deck.subject = rows[i].deck_subject;
+        
+        if (i === rows.length - 1 || deckId !== rows[i + 1].deck_id) {
+          const deckToBundle = {};
+          bundle.decks.push(Object.assign(deckToBundle, deck));
+          deck = {
+            subject: null,
+            questions: []
+          };
+          if (i !== rows.length - 1) deckId = rows[i + 1].deck_id;
+        }
+      }
+    })
+    .catch(err => console.log(err))
+    .finally(() => console.log('done'));
+    console.log(bundle);
+    return bundle;
+  }
+} 
 
 module.exports = { Database };
