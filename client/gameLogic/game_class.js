@@ -57,6 +57,7 @@ export default class Game {
     this.canMove = [];
     this.aleadyMoved = [];
     this.appealDecision = [];
+    this.bets = {};
     console.log('new Game', this);
   }
 
@@ -141,22 +142,18 @@ export default class Game {
   }
 
   onBetQ = evt => {
-    this.gameField.drawQuestion(evt.question.string, () => {
-      if (new User().name === this.master) this.canRaiseHand(this.players);
-    });
+    if (new User().name !== this.master) this.gameField.bet();
   }
 
   onFinalQ = evt => {
-    this.gameField.drawQuestion(evt.question.string, () => {
-      if (new User().name === this.master) this.canRaiseHand(this.players);
-    });
+    if (new User().name !== this.master) this.gameField.bet();
   }
 
   qTypeConfig = {
     'regular': this.onRegularQ,
     'secret': this.onSecretQ,
     'bet': this.onBetQ,
-    'final': this.onFinalQ
+    'final': this.onFinalQ,
     // 'sponsored': this.onSponsored,
   }
 
@@ -169,6 +166,7 @@ export default class Game {
 
   onNextTurn = evt => {
     this.appealDecision = [];
+    this.bets = {};
     if (new User().name !== this.master) this.gameField.buttonMode();
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
@@ -231,7 +229,12 @@ export default class Game {
       }
       if (res > 0) {
         this.gameField.announceGameState(`Апеляція схвалена!`);
-        this.points[this.lastAnswer.who] += this.currentQuestion.cost * 2;
+        let cost = this.currentQuestion.cost;
+        if (this.currentQuestion.type === 'final' || 
+            this.currentQuestion.type === 'bet') {
+              cost = this.bets[new User().name];
+          }
+        this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
       } else {
         this.gameField.announceGameState(`Апеляція відхилена!`);
@@ -305,6 +308,37 @@ export default class Game {
     }
   }
 
+  onBetBtn = evt => {
+    const cost = +document.getElementById('betSize').value;
+    if (cost < 0) return;
+    const event = {
+      eType: 'setBetCost',
+      who: new User().name,
+      'cost': cost,
+    };
+    this.gameField.hideBet();
+    this.broadcast(event);
+  }
+
+  onSetBetCost = evt => {
+    console.log(evt.who);
+    this.bets[evt.who] = evt.cost;
+    if (new User().name !== this.master) return;
+    if (Object.keys(this.bets).length === this.players.length - 1) {
+      const event = {
+        eType: 'forseShowQ',
+        who: new User().name,
+      };
+      this.broadcast(event);
+    }
+  }
+
+  forseShowQ = evt => {
+    this.gameField.drawQuestion(this.currentQuestion.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
+  }
+
   eventsConfig = {
     'leave': this.onLeaveGame,
     'turnOrder': this.onTurnOrder,
@@ -322,6 +356,9 @@ export default class Game {
     'appealDecision': this.onAppealDecision,
     'pause': this.onPause,
     'resume': this.onResume,
+    'setBetCost': this.onSetBetCost,
+    'forseShowQ': this.forseShowQ,
+     
   };
 
   socketHandler = msg => {
@@ -422,7 +459,15 @@ export default class Game {
 
   correct = evt => {
     const name = document.getElementById('answer-author').textContent;
-    this.points[name] += this.currentQuestion.cost;
+    console.log(this.bets);
+    console.log(this.bets[name])
+    console.log(this.currentQuestion);
+    let cost = this.currentQuestion.cost;
+    if (this.currentQuestion.type === 'final' ||
+        this.currentQuestion.type === 'bet') {
+          cost = +this.bets[name];
+      }
+    this.points[name] += cost;
     this.updatePoints();
     this.gameField.gmPopHide();
     this.nextTurn();
@@ -440,7 +485,12 @@ export default class Game {
   uncorrect = evt => {
     const name = document.getElementById('answer-author').textContent;
     if (this.currentQuestion.type !== 'noRisk') {
-      this.points[name] -= +this.currentQuestion.cost;
+      let cost = this.currentQuestion.cost;
+      if (this.currentQuestion.type === 'final' || 
+          this.currentQuestion.type === 'bet') {
+            cost = this.bets[name];
+        }
+      this.points[name] -= +cost;
       this.updatePoints();
       const appealEvent = {
         eType: 'canAppeal',
@@ -553,6 +603,7 @@ export default class Game {
     'changePoints': this.changePoints,
     'submitPoints': this.submitPoints,
     'resume': this.resume,
+    'bet': this.onBetBtn,
   };
 
   clickHandler = (e) => {

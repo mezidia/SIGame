@@ -268,7 +268,7 @@ export default class GameField {
   answerMode() {
     const input = document.getElementById('input-answer');
     const button = document.getElementById('answer-btn');
-    button.innerHTML = '';
+    if (button) button.innerHTML = '';
     input.style.display = 'block';
     button.style.width = '100px';
   }
@@ -282,10 +282,14 @@ export default class GameField {
   bet() {
     document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
      <h2 class="text-primary" data-localize="make-bet">${Language.getTranslatedText('make-bet')}</h2>
-     <input id="bet-size" style="width: 100%" required>
-     <button class="btn btn-primary" style="width: 100%; text-align: center; float: left" id="place-bet">OK</button>
+     <input id="betSize" style="width: 100%" required>
+     <button id="bet-btn" class="btn btn-primary" style="width: 100%; text-align: center; float: left" id="place-bet">OK</button>
   </div>
   `;
+  }
+
+  hideBet() {
+    document.getElementById('popupPlaceholder').innerHTML = '';
   }
 
   pause() {
