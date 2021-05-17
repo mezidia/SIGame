@@ -127,9 +127,10 @@ const createGame = () => {
     f.readAsText(file);
   } else if (questionBundle.value === 'findByName') {
     const bundleTitle = document.getElementById('bundleSearch-input').value;
-    const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
-    promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
-      data.bundle = info.data; //todo
+    const message = {mType: 'getAllBundles', data: {name: bundleTitle}};
+    promisifySocketMSG(message, 'allBundles', socket).then(async (info) => {
+      console.log(info);
+      data.bundle = bundleEditor.parseBundle(info.data); //todo
       game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
@@ -144,18 +145,22 @@ const createGame = () => {
     });
   } else {
     //todo
-    data.bundle = bundleEditor.getRandomBundleFrom(allBundles, Language.getTranslatedText('code'));
-    game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
-    const msg = {
-      'mType': 'newGameLobby',
-      data,
-    };
-    promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
-      roomId = msg.data.id;
-      await changeHash(`simpleLobby/roomID=${roomId}`)();
-      game.setID(msg.data.id);
-      game.init();
-      console.log(game);
+    const bundleTitle = [...bundleNames].sort(() => Math.random() - 0.5)[0];
+    const message = {mType: 'getAllBundles', data: {name: bundleTitle}};
+    promisifySocketMSG(message, 'allBundles', socket).then(async (info) => {
+      console.log(info);
+      data.bundle = bundleEditor.parseBundle(info.data); //todo
+      game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+      const msg = {
+        'mType': 'newGameLobby',
+        data,
+      };
+      promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
+        roomId = msg.data.id;
+        await changeHash(`simpleLobby/roomID=${roomId}`)();
+        game.init();
+        game.setID(msg.data.id);
+      });
     });
   }
 
