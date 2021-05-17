@@ -15,6 +15,7 @@ const bundleEditor = new BundleEditor();
 //storage
 let socket = null;
 let allBundles = null;
+let bundleNames = [];
 let roomId = undefined;
 let game = null;
 let allGames = {};
@@ -126,36 +127,39 @@ const createGame = () => {
     f.readAsText(file);
   } else if (questionBundle.value === 'findByName') {
     const bundleTitle = document.getElementById('bundleSearch-input').value;
-    for (const bundle of allBundles) {
-      if (bundle.title === bundleTitle) {
-        data.bundle = bundle;
-        break;
-      }
-    }
-    game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
-    const msg = {
-      'mType': 'newGameLobby',
-      data,
-    };
-    promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
-      roomId = msg.data.id;
-      await changeHash(`simpleLobby/roomID=${roomId}`)();
-      game.init();
-      game.setID(msg.data.id);
+    const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
+      console.log(info);
+      data.bundle = bundleEditor.parseBundle(info.data); //todo
+      game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+      const msg = {
+        'mType': 'newGameLobby',
+        data,
+      };
+      promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
+        roomId = msg.data.id;
+        await changeHash(`simpleLobby/roomID=${roomId}`)();
+        game.init();
+        game.setID(msg.data.id);
+      });
     });
   } else {
-    data.bundle = bundleEditor.getRandomBundleFrom(allBundles, Language.getTranslatedText('code'));
-    game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
-    const msg = {
-      'mType': 'newGameLobby',
-      data,
-    };
-    promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
-      roomId = msg.data.id;
-      await changeHash(`simpleLobby/roomID=${roomId}`)();
-      game.setID(msg.data.id);
-      game.init();
-      console.log(game);
+    const bundleTitle = [...bundleNames].sort(() => Math.random() - 0.5)[0];
+    const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
+      console.log(info);
+      data.bundle = bundleEditor.parseBundle(info.data);
+      game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
+      const msg = {
+        'mType': 'newGameLobby',
+        data,
+      };
+      promisifySocketMSG(msg, 'newLobbyId', socket).then(async (msg) => {
+        roomId = msg.data.id;
+        await changeHash(`simpleLobby/roomID=${roomId}`)();
+        game.init();
+        game.setID(msg.data.id);
+      });
     });
   }
 
@@ -163,14 +167,13 @@ const createGame = () => {
 
 const createGameLobby = () => {
   const msg = {
-    'mType': 'getAllBundles',
+    'mType': 'getBundleNames',
   };
-  promisifySocketMSG(msg, 'allBundles', socket).then(msg => {
-    allBundles = msg.data;
-    for (const i in allBundles) {
-      allBundles[i] = bundleEditor.parseBundle(allBundles[i]);
+  promisifySocketMSG(msg, 'bundleNames', socket).then(msg => {
+    for (const i in msg.data) {
+      bundleNames[i] = msg.data[i]['bundle_title'];
     }
-    console.log(allBundles);
+    console.log(bundleNames);
     changeHash('createGame')();
   });
 }
@@ -190,7 +193,9 @@ const connectToSIgame = () => {
   changeHash('chooseMode')();
   socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
-    new User(name, socket);
+    const user = new User(name, socket);
+    user.setSocket(socket);
+    user.setName(name);
     socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
@@ -206,13 +211,14 @@ const connectToSIgame = () => {
 
 const openEditor = () => {
   if (socket) disconnect();
-  const name = document.getElementById('name-input').value;
-  if (!reg.test(name)) return;
-  window.localStorage.setItem('name', name);
+  const name = takeName();
+  if (takeName() === null) return;
   changeHash('redactor')();
   socket = new WebSocket(`ws://localhost:5000`);
   socket.onopen = () => {
-    new User(name, socket);
+    const user = new User(name, socket);
+    user.setSocket(socket);
+    user.setName(name);
     socket.send(JSON.stringify({mType: 'returnAllGames', data: {}}));
     socket.onclose = () => {
       disconnect();
@@ -350,12 +356,12 @@ function onBundleSearchInput() {
   }
   bundleSearchAutocomp.innerHTML = "";
   const input = document.getElementById('bundleSearch-input').value;
-  const bundles = allBundles;
+  const bundles = bundleNames;
   for (let i in bundles) {
-    const comp = bundles[i].title.substring(0, input.length);
+    const comp = bundles[i].substring(0, input.length);
     if (comp.toLowerCase() === input.toLowerCase()) {
       const autocomp = document.createElement('div');
-      autocomp.innerHTML = bundles[i].title;
+      autocomp.innerHTML = bundles[i];
       autocomp.setAttribute('class', 'bundle-search-input-autocomplete');
       bundleSearchAutocomp.appendChild(autocomp);
       autocomp.addEventListener('click', () => {
