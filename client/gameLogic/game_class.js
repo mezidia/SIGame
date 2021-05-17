@@ -146,10 +146,17 @@ export default class Game {
     });
   }
 
+  onFinalQ = evt => {
+    this.gameField.drawQuestion(evt.question.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    });
+  }
+
   qTypeConfig = {
     'regular': this.onRegularQ,
     'secret': this.onSecretQ,
     'bet': this.onBetQ,
+    'final': this.onFinalQ
     // 'sponsored': this.onSponsored,
   }
 
@@ -281,9 +288,20 @@ export default class Game {
 
   onClickedTheme = evt => {
     if (new User().name === this.master) this.setNextPicker();
-    this.gameField.removeFinalTheme(evt.index);
+    const theme = this.gameField.removeFinalTheme(evt.index);
     if (this.gameField.isNullThemes()) {
-      console.log('LastTheme');
+      console.log('LastTheme', theme);
+      let q = null;
+      for (let d of this.bundle.getFinalDecks()) {
+        console.log(d);
+        if (d.subject === theme) q = d.questions[0];
+      }
+      console.log(q);
+      const event = {
+        eType: 'showQuestion',
+        question: q,
+      };
+      this.broadcast(event);
     }
   }
 
@@ -554,7 +572,7 @@ export default class Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.currentRound === 3 && this.answerCounter === 1) {
+    if (this.currentRound === 3 && this.answerCounter === 1) { //3, 1
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
       this.exit();

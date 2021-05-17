@@ -58,13 +58,15 @@ export default class GameField {
 
   // removes selected theme from the list
   removeFinalTheme(index) {
+    const theme = document.getElementById(`theme-${index}`).textContent;
     document.getElementById('final-display').removeChild(document.getElementById(`theme-${index}`));
+    return theme;
   }
 
   // return true if removed child was last, else false
   isNullThemes() {
     const finalDisplay = document.getElementById('final-display');
-    return !finalDisplay.hasChildNodes ? true : false;
+    return finalDisplay.childElementCount === 0 ? true : false;
   }
 
   // draws a question and reads it.
