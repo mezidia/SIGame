@@ -127,8 +127,8 @@ const createGame = () => {
     f.readAsText(file);
   } else if (questionBundle.value === 'findByName') {
     const bundleTitle = document.getElementById('bundleSearch-input').value;
-    const message = {mType: 'getAllBundles', data: {name: bundleTitle}};
-    promisifySocketMSG(message, 'allBundles', socket).then(async (info) => {
+    const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
       console.log(info);
       data.bundle = bundleEditor.parseBundle(info.data); //todo
       game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
@@ -144,12 +144,11 @@ const createGame = () => {
       });
     });
   } else {
-    //todo
     const bundleTitle = [...bundleNames].sort(() => Math.random() - 0.5)[0];
-    const message = {mType: 'getAllBundles', data: {name: bundleTitle}};
-    promisifySocketMSG(message, 'allBundles', socket).then(async (info) => {
+    const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
       console.log(info);
-      data.bundle = bundleEditor.parseBundle(info.data); //todo
+      data.bundle = bundleEditor.parseBundle(info.data);
       game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
       const msg = {
         'mType': 'newGameLobby',
