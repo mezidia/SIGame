@@ -15,7 +15,7 @@ const bundleEditor = new BundleEditor();
 //storage
 let socket = null;
 let allBundles = null;
-let bundleNames = [];
+let bundlesMeta = [];
 let roomId = undefined;
 let game = null;
 let allGames = {};
@@ -144,7 +144,9 @@ const createGame = () => {
       });
     });
   } else {
-    const bundleTitle = [...bundleNames].sort(() => Math.random() - 0.5)[0];
+    const currentLangcode = Language.getLangcode();
+    const bByName = bundlesMeta.filter(el => el.langcode_name === currentLangcode);
+    const bundleTitle = bByName.map(el => el.bundle_title).sort(() => Math.random() - 0.5)[0];
     const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
     promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
       console.log(info);
@@ -171,9 +173,9 @@ const createGameLobby = () => {
   };
   promisifySocketMSG(msg, 'bundleNames', socket).then(msg => {
     for (const i in msg.data) {
-      bundleNames[i] = msg.data[i]['bundle_title'];
+      bundlesMeta[i] = msg.data[i];
     }
-    console.log(bundleNames);
+    console.log(bundlesMeta);
     changeHash('createGame')();
   });
 }
@@ -356,7 +358,7 @@ function onBundleSearchInput() {
   }
   bundleSearchAutocomp.innerHTML = "";
   const input = document.getElementById('bundleSearch-input').value;
-  const bundles = bundleNames;
+  const bundles = bundlesMeta.map(el => el.bundle_title);
   for (let i in bundles) {
     const comp = bundles[i].substring(0, input.length);
     if (comp.toLowerCase() === input.toLowerCase()) {

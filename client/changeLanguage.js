@@ -4,8 +4,8 @@
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
 export default class Language {
-  static _language = {json: de};
-  static _languages = { de: de, ua: ua}; 
+  static _language = { json: de };
+  static _languages = { de: de, ua: ua }; 
 
   static getTranslatedText(text) {
     return this._language.json[text];
@@ -14,6 +14,10 @@ export default class Language {
   static getLanguage(langcode) {
     if (langcode in this._languages) return this._languages[langcode];
     else return null;
+  }
+
+  static getLangcode() {
+    return this._language.json.code;
   }
 
   //this function changes language according to json files and data-localize attribute
