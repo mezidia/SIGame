@@ -338,7 +338,12 @@ class Server {
     connection.connect( async err => {
       if (err) throw err;
       console.log("Connected!");
-      const bundleNames = await database.getBundleNames();
+      let bundleNames = null;
+      try {
+        bundleNames = await database.getBundleNames();
+      } catch (err) {
+        console.log(err);
+      } 
       this.sendToUser(data.id, {mType: 'bundleNames', data: bundleNames});
       connection.destroy();
     });
@@ -352,7 +357,12 @@ class Server {
     connection.connect( async err => {
       if (err) throw err;
       console.log("Connected!");
-      const bundleRows = await database.getBundleByName(name);
+      let bundleRows = null;
+      try {
+        bundleRows = await database.getBundleByName(name);
+      } catch (err) {
+        console.log(err);
+      }
       this.sendToUser(data.id, {mType: 'bundleRows', data: bundleRows});
       connection.destroy();
     });
