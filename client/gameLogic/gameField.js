@@ -305,7 +305,7 @@ export default class GameField {
   }
 
   displayAnswer(name, text, delay = 4000) {
-    const parent = document.getElementById(`${name}-icon`);
+    const parent = document.getElementById(`icon-${name}`);
     const answer = document.createElement('div');
     answer.id = 'answer-container';
     answer.innerHTML = text;
