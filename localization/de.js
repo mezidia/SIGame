@@ -114,6 +114,14 @@ const de = {
   "agree": "Agree",
   "disagree": "Disagree",
   "make-bet": "Please make your bet",
+  "choose-person-to-answer": " chooses, who will answer the question.",
+  "gamemaster-checks-answers": "Game master checks answers.",
+  "appeal": "Appeal phase.",
+  "appeal-approved": "Appeal approved!",
+  "appeal-denied": "Appeal denied!",
+  "someone's-move": "'s move.",
+
+  
 };
 
 export { de };

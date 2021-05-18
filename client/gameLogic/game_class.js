@@ -6,6 +6,7 @@ import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
 import Timer from './timer_class.js';
 import { changeHash } from "../spa/spaControl.js";
+import Language from "../changeLanguage.js";
 
 const ANSWERTIME = 10; //sec
 const GAMETIME = 500; //sec
@@ -137,7 +138,7 @@ export default class Game {
 
   onSecretQ = evt => {
     console.log(evt.who);
-    this.gameField.announceGameState(`${evt.who} обирає, хто відповідатиме на запитанняю.`);
+    this.gameField.announceGameState(evt.who + Language.getTranslatedText("choose-person-to-answer"));
     if (new User().name === evt.who) this.clickConfig.icon = this.onIconClick;
     // this.gameField.drawQuestion(evt.question.string, () => {
     //   if (new User().name === this.master) this.canRaiseHand(this.players);
@@ -193,7 +194,7 @@ export default class Game {
   }
 
   onAnswerCheck = evt => {
-    this.gameField.announceGameState(`Ведучий перевіряє правильність відповіді.`);
+    this.gameField.announceGameState(Language.getTranslatedText("gamemaster-checks-answers"));
     const t = this.currentQuestion.trueAns;
     const f = this.currentQuestion.falseAns;
     this.lastAnswer = { 
@@ -209,7 +210,7 @@ export default class Game {
   }
 
   onCanAppeal = evt => {
-    this.gameField.announceGameState(`Фаза апеляції.`);
+    this.gameField.announceGameState(Language.getTranslatedText("appeal"));
     if (evt.who !== new User().name) return;
     this.gameField.appealMode();
     document.getElementById('answer-btn').disabled = false;
@@ -231,7 +232,7 @@ export default class Game {
         res += d.decision ? 1 : -1;
       }
       if (res > 0) {
-        this.gameField.announceGameState(`Апеляція схвалена!`);
+        this.gameField.announceGameState(Language.getTranslatedText("appeal-approved"));
         let cost = this.currentQuestion.cost;
         if (this.currentQuestion.type === 'final' || 
             this.currentQuestion.type === 'bet') {
@@ -240,7 +241,7 @@ export default class Game {
         this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
       } else {
-        this.gameField.announceGameState(`Апеляція відхилена!`);
+        this.gameField.announceGameState(Language.getTranslatedText("appeal-denied"));
       }
       this.nextTurn();
     }
@@ -258,7 +259,7 @@ export default class Game {
   }
 
   onNextPicker = evt => {
-    this.gameField.announceGameState(`${evt.who} ходить.`);
+    this.gameField.announceGameState(evt.who + Language.getTranslatedText("someone's-move"));
     if (new User().name !== evt.who) {
       this.clickConfig.cell = null;
       this.clickConfig.theme = null;

@@ -97,6 +97,13 @@ const ua = {
   "agree": "Погодитись",
   "disagree": "Не погодитись",
   "make-bet": "Будь ласка, введіть Вашу ставку",
+  "choose-person-to-answer": " обирає, хто відповідатиме на запитання.",
+  "gamemaster-checks-answers": "Ведучий перевіряє правильність відповіді.",
+  "appeal": "Фаза апеляції.",
+  "appeal-approved": "Апеляція схвалена!",
+  "appeal-denied": "Апеляція відхилена!",
+  "someone's-move": " ходить."
+
 }
 
 export { ua };
