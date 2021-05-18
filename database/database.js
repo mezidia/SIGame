@@ -194,7 +194,10 @@ class Database {
 
   async getBundleNames() {
     await this.checkExistance();
-    const query =  `SELECT bundle_title FROM bundle`;
+    const query =  `SELECT b.bundle_title, l.langcode_name
+                    FROM bundle b
+                    INNER JOIN langcode l
+                    ON b.bundle_langcode = l.langcode_id`;
     let result = null;
     await this.promisifyConQuery(query)
     .catch(err => console.log(err))
