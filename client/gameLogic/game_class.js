@@ -136,9 +136,12 @@ export default class Game {
   }
 
   onSecretQ = evt => {
-    this.gameField.drawQuestion(evt.question.string, () => {
-      if (new User().name === this.master) this.canRaiseHand(this.players);
-    });
+    console.log(evt.who);
+    this.gameField.announceGameState(`${evt.who} обирає, хто відповідатиме на запитанняю.`);
+    if (new User().name === evt.who) this.clickConfig.icon = this.onIconClick;
+    // this.gameField.drawQuestion(evt.question.string, () => {
+    //   if (new User().name === this.master) this.canRaiseHand(this.players);
+    // });
   }
 
   onBetQ = evt => {
@@ -154,7 +157,7 @@ export default class Game {
     'secret': this.onSecretQ,
     'bet': this.onBetQ,
     'final': this.onFinalQ,
-    // 'sponsored': this.onSponsored,
+    'sponsored': this.onRegularQ,
   }
 
   onShowQuestion = evt => {
@@ -232,7 +235,7 @@ export default class Game {
         let cost = this.currentQuestion.cost;
         if (this.currentQuestion.type === 'final' || 
             this.currentQuestion.type === 'bet') {
-              cost = this.bets[new User().name];
+              cost = this.bets[this.lastAnswer.who];
           }
         this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
@@ -484,7 +487,7 @@ export default class Game {
 
   uncorrect = evt => {
     const name = document.getElementById('answer-author').textContent;
-    if (this.currentQuestion.type !== 'noRisk') {
+    if (this.currentQuestion.type !== 'sponsored') {
       let cost = this.currentQuestion.cost;
       if (this.currentQuestion.type === 'final' || 
           this.currentQuestion.type === 'bet') {
@@ -588,6 +591,16 @@ export default class Game {
     this.broadcast(event);
   }
 
+  onIconClick = e => {
+    this.clickConfig.icon = null;
+    const target = e.target;
+    const splitedID = target.id.split('-');
+    const name = splitedID[0];
+    this.gameField.drawQuestion(this.currentQuestion.string, () => {
+      if (new User().name === this.master) this.canRaiseHand(name);
+    });
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
     'theme': this.onThemeClick,
@@ -604,6 +617,8 @@ export default class Game {
     'submitPoints': this.submitPoints,
     'resume': this.resume,
     'bet': this.onBetBtn,
+    'icon': null,
+
   };
 
   clickHandler = (e) => {

@@ -188,7 +188,7 @@ export default class GameField {
   // display the new player joined the game
   addPlayer(name, score = 0) {
     const playerIcon = document.createElement('div');
-    playerIcon.id = name + '-icon';
+    playerIcon.id = 'icon-' + name;
     playerIcon.className = 'player-display'
     playerIcon.innerHTML = `<p>${name}</p>
       <p id="${name}-score">${score}</p>`
@@ -200,7 +200,7 @@ export default class GameField {
     const container = document.getElementById('players-icons');
     if (!container.hasChildNodes()) return 'this room is empty';
     const childs = container.childNodes;
-    const playerID = name + '-icon';
+    const playerID = 'icon-' + name;
     for (const child of childs) {
       if (child.id === playerID) {
         child.remove();
