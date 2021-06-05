@@ -59,6 +59,7 @@ export default class Game {
     this.aleadyMoved = [];
     this.appealDecision = [];
     this.bets = {};
+    this.playersIterator = undefined;
     console.log('new Game', this);
   }
 
@@ -163,7 +164,7 @@ export default class Game {
 
   onShowQuestion = evt => {
     this.currentQuestion = evt.question;
-    const qHandler = this.qTypeConfig[this.currentQuestion.type];
+    const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
     if (!qHandler) return console.log('Unknown q type');
     qHandler(evt);
   }
@@ -185,8 +186,7 @@ export default class Game {
       }
     }
     this.checkAnswerCounter();
-    if (this.currentRound === 0) { // switch to 3 for production
-      console.log(this.bundle.getFinalDecks());
+    if (this.currentRound === 3) { // switch to 3 for production
       this.gameField.drawFinalRound(this.bundle.getFinalDecks());
     } else {
       this.gameField.drawTable(this.rounds[this.currentRound]);
@@ -325,13 +325,13 @@ export default class Game {
   }
 
   onSetBetCost = evt => {
-    console.log(evt.who);
     this.bets[evt.who] = evt.cost;
     if (new User().name !== this.master) return;
     if (Object.keys(this.bets).length === this.players.length - 1) {
       const event = {
         eType: 'forseShowQ',
         who: new User().name,
+        canRaise: this.players,
       };
       this.broadcast(event);
     }
@@ -339,7 +339,7 @@ export default class Game {
 
   forseShowQ = evt => {
     this.gameField.drawQuestion(this.currentQuestion.string, () => {
-      if (new User().name === this.master) this.canRaiseHand(this.players);
+      if (new User().name === this.master) this.canRaiseHand(evt.canRaise);
     });
   }
 
@@ -418,6 +418,7 @@ export default class Game {
     const event = {
       eType: 'showQuestion',
       question: q,
+      who: new User().name,
     };
     this.broadcast(event);
     console.log(q);
@@ -462,7 +463,7 @@ export default class Game {
   }
 
   correct = evt => {
-    const name = document.getElementById('answer-author').textContent;
+    const name = document.getElementById('answer-author').value;
     console.log(this.bets);
     console.log(this.bets[name])
     console.log(this.currentQuestion);
@@ -543,12 +544,15 @@ export default class Game {
   }
 
   setNextPicker(name) {
-    if (this.canMove.length < 2) {
-      this.canMove = [...this.players];
-      this.canMove.splice(this.canMove.indexOf(this.master), 1);
-      this.canMove.sort(() => Math.random() - 0.5);
+    if (!name) {
+      let next = this.playersIterator ? this.playersIterator.next() : false;
+      if (!next || next.value === undefined || next.done === true) {
+        this.playersIterator = this.players.values();
+        this.playersIterator.next(); // skip GM
+        next = this.playersIterator.next();
+      }
+      name = next.value
     }
-    name = name || this.canMove.pop();
     const event = {
       eType: 'nextPicker',
       who: name,
@@ -596,10 +600,14 @@ export default class Game {
     this.clickConfig.icon = null;
     const target = e.target;
     const splitedID = target.id.split('-');
-    const name = splitedID[0];
-    this.gameField.drawQuestion(this.currentQuestion.string, () => {
-      if (new User().name === this.master) this.canRaiseHand(name);
-    });
+    const name = splitedID[1];
+    this.canRaiseHand(name);
+    const event = {
+      eType: 'forseShowQ',
+      who: new User().name,
+      canRaise: [name],
+    };
+    this.broadcast(event);
   }
 
   clickConfig = {

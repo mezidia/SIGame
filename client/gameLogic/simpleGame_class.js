@@ -37,22 +37,14 @@ export default class SimpleGame extends Game {
   }
 
   onStartGame = evt => {
+    this.gameStatus = 1;
+    this.gameTimer.setTimer(GAMETIME);
     this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
     this.gameTimer.setTimer(GAMETIME);
-    this.gameField.drawQuestion(this.currentQuestion.string);
-    if (new User().name === this.master) {
-      const canAnswer = evt => {
-        if (evt.target.id === 'last-letter') {
-          const event = {
-            eType: 'turnOrder',
-            who: this.players,
-          };
-          this.broadcast(event);
-          document.removeEventListener('animationend', canAnswer);
-        }
-      }
-      document.addEventListener('animationend', canAnswer);
-    }
+    const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
+    console.log(this.currentQuestion);
+    if (!qHandler) return console.log('Unknown q type');
+    qHandler(evt);
   }
 
   eventsConfig = {
@@ -70,6 +62,10 @@ export default class SimpleGame extends Game {
     'startGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
     'newCurrentRound': this.onNewCurrentRound,
+    'pause': this.onPause,
+    'resume': this.onResume,
+    'setBetCost': this.onSetBetCost,
+    'forseShowQ': this.forseShowQ,
   };
 
   onNewCurrentRound = evt => {

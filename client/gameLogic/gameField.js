@@ -255,7 +255,7 @@ export default class GameField {
   buttonMode() {
     const inp = document.getElementById('input-answer');
     const but = document.getElementById('answer-btn');
-    but.innerHTML = ``;
+    if (but) but.innerHTML = ``;
     inp.style.display = 'none';
     but.style.width = '100%';
   }
