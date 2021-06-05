@@ -136,6 +136,8 @@ export default class GameField {
 
   // draws popup to grade players' answers
   gmPopUp(who, ans, t, f) {
+    Array.isArray(t) ? t = t.join(',') : false;
+    Array.isArray(f) ? f = f.join(',') : false;
     document.getElementById('reply').innerHTML = `<div class="container gm-popup">
         <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
           <span class="badge badge-primary" id="answer-author">${who}</span>
@@ -163,14 +165,16 @@ export default class GameField {
 
  // draws popup to grade players' answers
  appealPopUp(who, ans, t, f) {
-   document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
-     <p>${who} answered: ${ans}</p>
-     <h2 class="text-primary" data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
-     <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-     <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
-     <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-     <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal" data-localize="agree">${Language.getTranslatedText('agree')}</button>
-     <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal" data-localize="disagree">${Language.getTranslatedText('disagree')}</button>
+  Array.isArray(t) ? t = t.join(',') : false;
+  Array.isArray(f) ? f = f.join(',') : false;
+  document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
+    <p>${who} answered: ${ans}</p>
+    <h2 class="text-primary" data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
+    <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
+    <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
+    <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
+    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal" data-localize="agree">${Language.getTranslatedText('agree')}</button>
+    <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal" data-localize="disagree">${Language.getTranslatedText('disagree')}</button>
   </div>
   `;
 }

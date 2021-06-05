@@ -141,9 +141,7 @@ export default class Game {
     console.log(evt.who);
     this.gameField.announceGameState(evt.who + Language.getTranslatedText("choose-person-to-answer"));
     if (new User().name === evt.who) this.clickConfig.icon = this.onIconClick;
-    // this.gameField.drawQuestion(evt.question.string, () => {
-    //   if (new User().name === this.master) this.canRaiseHand(this.players);
-    // });
+
   }
 
   onBetQ = evt => {
@@ -343,6 +341,10 @@ export default class Game {
     });
   }
 
+  onNewCurrentRound = evt => {
+    this.currentRound = evt.round;
+  }
+  
   eventsConfig = {
     'leave': this.onLeaveGame,
     'turnOrder': this.onTurnOrder,
@@ -362,6 +364,7 @@ export default class Game {
     'resume': this.onResume,
     'setBetCost': this.onSetBetCost,
     'forseShowQ': this.forseShowQ,
+    'newCurrentRound': this.onNewCurrentRound,
      
   };
 
@@ -463,10 +466,7 @@ export default class Game {
   }
 
   correct = evt => {
-    const name = document.getElementById('answer-author').value;
-    console.log(this.bets);
-    console.log(this.bets[name])
-    console.log(this.currentQuestion);
+    const name = document.getElementById('answer-author').textContent;
     let cost = this.currentQuestion.cost;
     if (this.currentQuestion.type === 'final' ||
         this.currentQuestion.type === 'bet') {
