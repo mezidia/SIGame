@@ -4,7 +4,7 @@ export default class QReader {
   _startTime = 0;
   isPaused = false;
   _textBlock = null;
-  _passedFromStart = null;
+  _passedFromStart = 0;
   isActive = false;
 
   constructor(delta = 150) {
@@ -42,12 +42,13 @@ export default class QReader {
 
   resume() {
     this.isPaused = false;
-    this.read(this._textBlock, Date.now() - this._passedFromStart)
+    this.read(this._textBlock, this._startTime)
   }
 
-  pause() {
+  pause(stopTime = Date.now()) {
     this.isPaused = true;
-    this._startTime = Date.now() - this._startTime;
+    console.error(stopTime);
+    this._startTime = stopTime - this._passedFromStart;
   }
 
   status() {
