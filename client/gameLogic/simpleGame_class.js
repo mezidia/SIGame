@@ -17,42 +17,32 @@ export default class SimpleGame extends Game {
 
   onNextTurn = evt => {
     this.appealDecision = [];
+    this.bets = {};
     this.clickConfig.answer = this.raiseHand;
     this.checkAnswerCounter();
+    
+    if (new User().name !== this.master) this.gameField.buttonMode();
+    this.clickConfig.answer = this.raiseHand;
     this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
-    this.gameField.drawQuestion(this.currentQuestion.string);
-    if (new User().name === this.master) {
-      const canAnswer = evt => {
-        if (evt.target.id === 'last-letter') {
-          const event = {
-            eType: 'turnOrder',
-            who: this.players,
-          };
-          this.broadcast(event);
-          document.removeEventListener('animationend', canAnswer);
-        }
-      }
-      document.addEventListener('animationend', canAnswer);
-    }
+    if (this.currentQuestion.type === 'secret') this.currentQuestion.type = 'regular';
+    const event = {
+      eType: 'showQuestion',
+      question: this.currentQuestion,
+      who: new User().name,
+    };
+    if (new User().name === this.master) this.broadcast(event);
   }
 
   onStartGame = evt => {
-    this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
+    this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
-    this.gameField.drawQuestion(this.currentQuestion.string);
-    if (new User().name === this.master) {
-      const canAnswer = evt => {
-        if (evt.target.id === 'last-letter') {
-          const event = {
-            eType: 'turnOrder',
-            who: this.players,
-          };
-          this.broadcast(event);
-          document.removeEventListener('animationend', canAnswer);
-        }
-      }
-      document.addEventListener('animationend', canAnswer);
-    }
+    this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
+    if (this.currentQuestion.type === 'secret') this.currentQuestion.type = 'regular';
+    const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
+    console.log(this.currentQuestion);
+    evt.question = this.currentQuestion;
+    if (!qHandler) return console.log('Unknown q type');
+    qHandler(evt);
   }
 
   eventsConfig = {
@@ -70,6 +60,10 @@ export default class SimpleGame extends Game {
     'startGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
     'newCurrentRound': this.onNewCurrentRound,
+    'pause': this.onPause,
+    'resume': this.onResume,
+    'setBetCost': this.onSetBetCost,
+    'forseShowQ': this.forseShowQ,
   };
 
   onNewCurrentRound = evt => {
