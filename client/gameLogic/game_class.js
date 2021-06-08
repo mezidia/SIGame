@@ -581,6 +581,7 @@ export default class Game {
   resume = () => {
     const event = {
       eType: 'resume',
+      timeStamp: Date.now(),
     };
     this.broadcast(event);
   }
