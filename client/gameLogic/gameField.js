@@ -296,9 +296,9 @@ export default class GameField {
     document.getElementById('popupPlaceholder').innerHTML = '';
   }
 
-  pause() {
+  pause(timeStamp) {
     if (this.Qreader.isActive = true) {
-      this.Qreader.isPaused ? this.Qreader.resume() : this.Qreader.pause();
+      this.Qreader.isPaused ? this.Qreader.resume() : this.Qreader.pause(timeStamp);
     }
     const overlay = document.getElementById('pause-overlay')
     overlay.style.width = overlay.style.width === '100%' ? '0' : '100%'

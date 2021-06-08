@@ -275,7 +275,7 @@ export default class Game {
 
   onPause = evt => {
     this.clickConfig.pause = this.resume;
-    this.gameField.pause();
+    this.gameField.pause(evt.timeStamp);
     this.gameTimer.pause(evt.timeStamp);
     this.turnTimer.pause();
     if (this.appealTimerID) this.appealTimerID.pause();
