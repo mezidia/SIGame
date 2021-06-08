@@ -40,15 +40,17 @@ export default class QReader {
     window.requestAnimationFrame(callback);
   }
 
-  resume() {
+  resume(resumeTime) {
     this.isPaused = false;
-    this.read(this._textBlock, this._startTime)
+    console.error(resumeTime);
+    this.read(this._textBlock, resumeTime - this._passedFromStart)
   }
 
   pause(stopTime = Date.now()) {
     this.isPaused = true;
     console.error(stopTime);
-    this._startTime = stopTime - this._passedFromStart;
+    this._passedFromStart -= Date.now() - stopTime;
+    //this._startTime = stopTime - this._passedFromStart;
   }
 
   status() {

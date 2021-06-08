@@ -298,7 +298,7 @@ export default class GameField {
 
   pause(timeStamp) {
     if (this.Qreader.isActive = true) {
-      this.Qreader.isPaused ? this.Qreader.resume() : this.Qreader.pause(timeStamp);
+      this.Qreader.isPaused ? this.Qreader.resume(timeStamp) : this.Qreader.pause(timeStamp);
     }
     const overlay = document.getElementById('pause-overlay')
     overlay.style.width = overlay.style.width === '100%' ? '0' : '100%'
