@@ -267,7 +267,6 @@ const handleClick = evt => {
     'help': [changeHash('help')],
     'home': [changeHash('chooseMode')],
     'dju': [changeHash('')],
-    'all-players': [showPlayers],
     'create-game-btn': [createGameLobby],
     'play-btn': [connectToSIgame],
     'de': [() => changeLanguage('de')],
@@ -293,6 +292,7 @@ const handleClick = evt => {
       'scroll-direct': [evt.target.scrollIntoView],
       'collapse-control': [collapseControl(evt.target.id)],
       'go-up-btn': [scrollToStart],
+      'home': [() => document.getElementById(evt.target.id).remove(), changeHash('chooseMode')],
     }[evt.target.classList[0]]
   }
   return funcs;
@@ -432,15 +432,6 @@ const onTypeOfPasswordChange = evt => {
   const handler = caseConfig[evt.target.value];
   if (!handler) return;
   handler();
-}
-
-//shows div with players
-const showPlayers = () => {
-  const allPlayersDiv = document.getElementById('all-players-div');
-  if (allPlayersDiv.style.display === 'none') {
-    //document.getElementById('all-players').style.;
-    allPlayersDiv.style.display = 'block';
-  } else allPlayersDiv.style.display = 'none';
 }
 
 //join-btn click handle
