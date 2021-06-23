@@ -108,6 +108,7 @@ export default class SimpleGame extends Game {
     if (this.answerCounter === 25) {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
+      this.gameField.congratulate(winner);
       this.exit();
     } else if (this.answerCounter % 5 === 0) {
       this.currentRound++;

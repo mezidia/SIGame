@@ -8,6 +8,7 @@ import { loadView, changeHash, checkView, getHash, getController, сontrollersCo
 import Language from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 import { errPopup, yesnoPopup } from './spa/uiElements.js';
+import { loader } from './utils/loader.js';
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -58,7 +59,7 @@ function disconnect() {
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
-  'usersOnline': data => onUsersOnline(data),
+  'usersOnline': () => {}, // onUsersOnline
   'messageToGameChat': data => sendMessageToGameChat(data),
   'returnAllGames': data => updateGames(data),
 })[mType];
@@ -90,7 +91,8 @@ const createGame = () => {
   const gameModeSelect = document.getElementById('gameMode');
   const totalPlayers = 12; // max amount of players
   if (!reg.test(roomName)) return;
-
+  loader();
+  
   const gameMode = gameModeSelect.options[gameModeSelect.selectedIndex]
     .attributes['data-localize'].textContent
     .split('-')[0];

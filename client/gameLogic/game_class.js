@@ -61,6 +61,7 @@ export default class Game {
     this.bets = {};
     this.playersIterator = undefined;
     console.log('new Game', this);
+    globalThis.gf = new GameField();
   }
 
   turnTimerCallback(timeleft, totalTime) {
@@ -131,25 +132,39 @@ export default class Game {
     this.master = evt.name;
   }
 
-  onRegularQ = evt => {
+  onRegularQ = (evt, str) => {
+    let timeToPause = 0;
+    if (str !== 'Regular question') {
+      timeToPause = this.gameField.flash(str);
+    }
+    setTimeout(() => {
     this.gameField.drawQuestion(evt.question.string, () => {
       if (new User().name === this.master) this.canRaiseHand(this.players);
     });
+    }, timeToPause);
   }
 
-  onSecretQ = evt => {
+  onSecretQ = (evt, str) => {
     console.log(evt.who);
-    this.gameField.announceGameState(evt.who + Language.getTranslatedText("choose-person-to-answer"));
-    if (new User().name === evt.who) this.clickConfig.icon = this.onIconClick;
-
+    const timeToPause = this.gameField.flash(str);
+    setTimeout(() => {
+      this.gameField.announceGameState(evt.who + Language.getTranslatedText("choose-person-to-answer"));
+      if (new User().name === evt.who) this.clickConfig.icon = this.onIconClick;
+    }, timeToPause);
   }
 
-  onBetQ = evt => {
-    if (new User().name !== this.master) this.gameField.bet();
+  onBetQ = (evt, str) => {
+    const timeToPause = this.gameField.flash(str);
+    setTimeout(() => {
+      if (new User().name !== this.master) this.gameField.bet();
+    }, timeToPause);
   }
 
-  onFinalQ = evt => {
+  onFinalQ = (evt, str) => {
+    const timeToPause = this.gameField.flash(str);
+    setTimeout(() => {
     if (new User().name !== this.master) this.gameField.bet();
+    }, timeToPause);
   }
 
   qTypeConfig = {
@@ -160,11 +175,19 @@ export default class Game {
     'sponsored': this.onRegularQ,
   }
 
+  qTypeAnnounce = {
+    'regular': 'Regular question',
+    'secret': 'Question with secret',
+    'bet': 'Question with bet',
+    'final': 'Final question',
+    'sponsored': 'Sponsored question',
+  }
+
   onShowQuestion = evt => {
     this.currentQuestion = evt.question;
     const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
     if (!qHandler) return console.log('Unknown q type');
-    qHandler(evt);
+    qHandler(evt, this.qTypeAnnounce[this.currentQuestion.type]);
   }
 
   onNextTurn = evt => {
@@ -375,6 +398,7 @@ export default class Game {
     const handler = this.eventsConfig[event.eType];
     if (!handler) return console.log(`no handler for |${event.eType}| type event`);
     handler(event);
+    this.gameField.highlightCurrentPlayer(new User().name);
   }
 
   exit = () => {
@@ -651,6 +675,7 @@ export default class Game {
     if (this.currentRound === 3 && this.answerCounter === 1) { //3, 1
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
+      this.gameField.congratulate(winner)
       this.exit();
     } else if (this.answerCounter === 14) {
       this.answerCounter = 0;

@@ -6,7 +6,7 @@ import QReader from './question_reader.js'
 export default class GameField {
   constructor() {
     if (!GameField._instance) {
-      this.Qreader = new QReader();
+      this.Qreader = new QReader('game-display');
       GameField._instance = this;
     }
     return GameField._instance;
@@ -72,21 +72,19 @@ export default class GameField {
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
-  drawQuestion(str, callback) {
-    const gameDisplay = document.getElementById('game-display');
-    // noinspection CssInvalidPropertyValue
-    gameDisplay.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
-      `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
-          class="question-letter">${letter}</span>`).join('')}
-    </span>`
-    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
-      callback();
-    });
-    //callback();
-    // this.readQuestion(document.getElementById('question-text'), Date.now());
-    this.Qreader.read(document.getElementById('question-text'), Date.now())
+  drawQuestion(str, callback, needToRead = true) {
+    this.Qreader.drawQuestion(str, callback, needToRead);
   }
 
+  congratulate(name) {
+    this.Qreader.congratulate(name);
+    setTimeout(this.exitBtn, 1000); // exit button appears after 1 second
+  }
+
+  flash(text, delta = 400, total = 2800) { // tick every 0.4s for 2.8s
+    this.Qreader.flash(text, delta, total);
+    return total;
+  }
 
   scoreAsInput = (toChange = true) => () => {
     const divs = document.getElementsByClassName('player-display');
@@ -322,4 +320,15 @@ export default class GameField {
     setTimeout(() => answer.remove(), delay);
   }
 
+  highlightCurrentPlayer(name) {
+    document.getElementById(`icon-${name}`).style.backgroundColor = '#0399E1';
+  }
+
+  
+  exitBtn() {
+    const placeHolder = document.getElementById('popupPlaceholder');
+    placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
+        <button class="home btn btn-primary" id="startGame-btn" data-localize="home" style="top: 20vw">Home</button>
+      </div>`;
+  }
 }

@@ -4,14 +4,57 @@ export default class QReader {
   _startTime = 0;
   isPaused = false;
   _textBlock = null;
+  _displayName = null;
+  _display = null;
   _passedFromStart = 0;
   isActive = false;
 
-  constructor(delta = 150) {
-    this._delta = delta;
+  constructor(displayId) {
+    this._displayName = displayId;
   }
 
-  read (textBlock, startTime = this._startTime, delta = this._delta) {
+  initDisplay() {
+    if (!this._display) {
+      this._display = document.getElementById(this._displayName);
+    }
+  }
+
+  drawQuestion(str, callback, needToRead = true) {
+    this.initDisplay();
+    // noinspection CssInvalidPropertyValue
+    this._display.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
+      `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
+          class="question-letter">${letter}</span>`).join('')}
+    </span>`
+    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
+      callback();
+    });
+    this._textBlock = document.getElementById('question-text');
+
+    if (needToRead) {
+      this.read(this._textBlock, Date.now())
+    }
+  }
+ 
+  congratulate(name) {
+    this.drawQuestion(`Congratulations, ${name} has won!!`, () => {}, false);
+  }
+
+  flash(text, delta, total) {
+    this.drawQuestion(text, () => {}, false);
+    this._textBlock.style.textAlign = 'center';
+    let isMainColor = true;
+    const interval = setInterval(() => {
+      const children = this._textBlock.children;
+      for (let i = 0; i < children.length; ++i) {
+        children[i].style.color = isMainColor ? 'red' : 'black';
+      }
+      isMainColor = !isMainColor;
+    }, delta);
+    setTimeout(() => clearInterval(interval), total);
+  }
+
+  read (textBlock, startTime = this._startTime, delta = 150) {
     this.isActive = true;
     this._textBlock = textBlock;
 
@@ -49,11 +92,14 @@ export default class QReader {
   pause(stopTime = Date.now()) {
     this.isPaused = true;
     console.error(stopTime);
-    this._passedFromStart -= Date.now() - stopTime;
+    // this._passedFromStart -= Date.now() - stopTime;
     //this._startTime = stopTime - this._passedFromStart;
   }
 
   status() {
+    console.log('display name ' + this._displayName);
+    console.log('display ' + this._display);
+    console.log('textBlock ' + this._textBlock);
     console.log('startTime = ' + this._startTime);
     console.log('isPaused = ' + this.isPaused);
     console.log('textblock');
