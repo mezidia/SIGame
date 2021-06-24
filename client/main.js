@@ -91,7 +91,6 @@ const createGame = () => {
   const gameModeSelect = document.getElementById('gameMode');
   const totalPlayers = 12; // max amount of players
   if (!reg.test(roomName)) return;
-  loader();
   
   const gameMode = gameModeSelect.options[gameModeSelect.selectedIndex]
     .attributes['data-localize'].textContent
@@ -109,6 +108,7 @@ const createGame = () => {
   if (questionBundle.value === 'download') {
     const bundleFileImport = document.getElementById('bundle-file');
     const file = bundleFileImport.files[0];
+    loader();
     if (!file) return;
     const f = new FileReader();
     f.onload = (e) => {
@@ -130,6 +130,7 @@ const createGame = () => {
   } else if (questionBundle.value === 'findByName') {
     const bundleTitle = document.getElementById('bundleSearch-input').value;
     const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    loader();
     promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
       console.log(info);
       data.bundle = bundleEditor.parseBundle(info.data); //todo
@@ -150,6 +151,7 @@ const createGame = () => {
     const bByName = bundlesMeta.filter(el => el.langcode_name === currentLangcode);
     const bundleTitle = bByName.map(el => el.bundle_title).sort(() => Math.random() - 0.5)[0];
     const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    loader();
     promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
       console.log(info);
       data.bundle = bundleEditor.parseBundle(info.data);
