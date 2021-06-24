@@ -172,6 +172,7 @@ const createGame = () => {
 };
 
 const createGameLobby = () => {
+  loader();
   const msg = {
     'mType': 'getBundleNames',
   };
