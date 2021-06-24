@@ -455,6 +455,7 @@ export default class Game {
     const ans = document.getElementById('input-answer');
     if (!ans.value) return;
     this.turnTimerID.pause();
+    this.turnTimerCallback(0, 1);
     this.turnTimer.pause();
     document.getElementById('answer-btn').disabled = true;
     const event = {
