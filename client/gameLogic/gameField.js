@@ -129,7 +129,7 @@ export default class GameField {
       <button id="btn-answer" class="btn btn-primary game-button" style="width: 100px; height: 100%"></button>`;
     document.getElementsByClassName('game-container')[0].style.gridTemplateRows = isGm ? '20px 1fr auto 0': '20px 1fr auto 50px';
     document.getElementById('changePoints-sums-btn').style.display = isGm ? 'block': 'none';
-    document.getElementById('report-btn').style.gridColumnStart = isGm ? '2': '1';
+    document.getElementById('pause-btn').style.gridColumnStart = isGm ? '2': '1';
   }
 
   // draws popup to grade players' answers

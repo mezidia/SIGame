@@ -645,7 +645,6 @@ export default class Game {
     'exit': changeHash('chooseMode'),
     'disagreeWithApeal': this.disagreeWithApeal,
     'agreeWithApeal': this.agreeWithApeal,
-    'report': () => alert('нуда нуда'),
     'pause': this.pause,
     'startGame': this.startGame,
     'changePoints': this.changePoints,
