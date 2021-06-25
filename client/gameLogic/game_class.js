@@ -61,7 +61,6 @@ export default class Game {
     this.bets = {};
     this.playersIterator = undefined;
     console.log('new Game', this);
-    globalThis.gf = new GameField();
   }
 
   turnTimerCallback(timeleft, totalTime) {
