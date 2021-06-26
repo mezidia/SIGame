@@ -13,10 +13,55 @@ const GAMETIME = 500; //sec
 const APPEALTIME = 5; //sec
 const MIN_PLAYERS = 3; // minimum amount of players 
 
+var browserPrefixes = ['moz', 'ms', 'o', 'webkit'];
+
+// get the correct attribute name
+function getHiddenPropertyName(prefix) {
+  return (prefix ? prefix + 'Hidden' : 'hidden');
+}
+
+// get the correct event name
+function getVisibilityEvent(prefix) {
+  return (prefix ? prefix : '') + 'visibilitychange';
+}
+
+// get current browser vendor prefix
+function getBrowserPrefix() {
+  for (var i = 0; i < browserPrefixes.length; i++) {
+    if(getHiddenPropertyName(browserPrefixes[i]) in document) {
+      // return vendor prefix
+      return browserPrefixes[i];
+    }
+  }
+
+  // no vendor prefix needed
+  return null;
+}
+
+// bind and handle events
+var browserPrefix = getBrowserPrefix();
+
+function handleVisibilityChange(context) {
+  let a;
+  if(document[getHiddenPropertyName(browserPrefix)]) {
+    a = context.checkEventsWhenHiden();
+    console.log('hidden');
+  } else {
+    if (a) {
+      clearInterval(a);
+    }
+    console.log('visible');
+  }
+}
+
+
+
+
 export default class Game {
   _setListeners() {
     document.addEventListener('click', this.clickHandler);
     this._socket.addEventListener('message', this.socketHandler);
+    document.addEventListener(getVisibilityEvent(browserPrefix), () => handleVisibilityChange(this), false);
   }
 
   _removeListeners() {
@@ -61,6 +106,12 @@ export default class Game {
     this.bets = {};
     this.playersIterator = undefined;
     console.log('new Game', this);
+  }
+
+  checkEventsWhenHiden = (evt) => {
+    return setInterval(() =>{
+      console.error(this);
+    }, 1000);
   }
 
   turnTimerCallback(timeleft, totalTime) {
@@ -139,6 +190,7 @@ export default class Game {
     setTimeout(() => {
     this.gameField.drawQuestion(evt.question.string, () => {
       if (new User().name === this.master) this.canRaiseHand(this.players);
+      // if (new User().name !== this.master) this.canRaiseHand([new User().name]);
     });
     }, timeToPause);
   }
