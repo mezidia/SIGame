@@ -268,7 +268,7 @@ export default class GameField {
 
   drawPreStartText(number, minNumber) {
     document.getElementById('reply').innerHTML = `<div style="display: flex; align-items: center; justify-content: center">
-      <div class="custom-popup" id="count-players">${number.toString()}/${minNumber} players <br> to start the game</div>
+      <div class="custom-popup" id="count-players">${number.toString()}/${minNumber} <p data-localize="count-players-1">${Language.getTranslatedText('count-players-1')}</p><p data-localize="count-players-2">${Language.getTranslatedText('count-players-2')}</p></div>
     </div>`
   }
 

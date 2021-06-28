@@ -120,7 +120,8 @@ const de = {
   "appeal-approved": "Appeal approved!",
   "appeal-denied": "Appeal denied!",
   "someone's-move": "'s move.",
-
+  "count-players-1": "players",
+  "count-players-2": "to start the game",
   
 };
 
