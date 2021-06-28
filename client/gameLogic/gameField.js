@@ -13,7 +13,19 @@ export default class GameField {
   }
 
   // returns a game table used in classic mode
-  drawTable(deck) {
+  drawTable(deck, isGm = false) {
+    if (isGm) {
+      try {
+        document.getElementById('submitPoints-sums-btn').style.removeProperty('grid-area');
+      } catch(e) {}
+      try {
+        document.getElementById('changePoints-sums-btn').style.removeProperty('grid-area');
+      } catch(e) {}
+
+    }
+    document.getElementById('exit-btn').style.gridArea = '2 / 1 / 3 / 3'
+    document.getElementById('pause-btn').style.display = 'block';
+
     const gameDisplay = document.getElementById('game-display');
     const drawCells = (deck) => {
       console.log(deck[0]);
@@ -72,7 +84,18 @@ export default class GameField {
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
-  drawQuestion(str, callback, needToRead = true) {
+  drawQuestion(str, callback, isGm = false, needToRead = true) {
+    document.getElementById('pause-btn').style.display = 'none';
+    if (isGm) {
+      try {
+        document.getElementById('changePoints-sums-btn').style.gridArea = '1 / 1 / 2 / 3';
+      } catch(e) {}
+      try {
+        document.getElementById('submitPoints-sums-btn').style.gridArea = '1 / 1 / 2 / 3';
+      } catch(e) {}
+    } else {
+      document.getElementById('exit-btn').style.gridArea = '1 / 1 / 3 / 3';
+    }
     this.Qreader.drawQuestion(str, callback, needToRead);
   }
 
@@ -295,9 +318,6 @@ export default class GameField {
   }
 
   pause(timeStamp) {
-    if (this.Qreader.isActive = true) {
-      this.Qreader.isPaused ? this.Qreader.resume(timeStamp) : this.Qreader.pause(timeStamp);
-    }
     const overlay = document.getElementById('pause-overlay')
     overlay.style.width = overlay.style.width === '100%' ? '0' : '100%'
   }

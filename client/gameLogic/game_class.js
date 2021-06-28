@@ -139,7 +139,7 @@ export default class Game {
     setTimeout(() => {
     this.gameField.drawQuestion(evt.question.string, () => {
       if (new User().name === this.master) this.canRaiseHand(this.players);
-    });
+    }, new User().name === this.master);
     }, timeToPause);
   }
 
@@ -209,7 +209,7 @@ export default class Game {
     if (this.currentRound === 3) { // switch to 3 for production
       this.gameField.drawFinalRound(this.bundle.getFinalDecks());
     } else {
-      this.gameField.drawTable(this.rounds[this.currentRound]);
+      this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
     }
   }
 
@@ -292,25 +292,25 @@ export default class Game {
   onStartGame = evt => {
     this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
   }
 
   onPause = evt => {
     this.clickConfig.pause = this.resume;
     this.gameField.pause(evt.timeStamp);
     this.gameTimer.pause(evt.timeStamp);
-    this.turnTimer.pause();
-    if (this.appealTimerID) this.appealTimerID.pause();
-    if (this.turnTimerID) this.turnTimerID.pause();
+    // this.turnTimer.pause();
+    // if (this.appealTimerID) this.appealTimerID.pause();
+    // if (this.turnTimerID) this.turnTimerID.pause();
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
     this.gameField.pause(evt.timeStamp);
-    this.turnTimer.resume();
+    // this.turnTimer.resume();
     this.gameTimer.resume();
-    if (this.appealTimerID) this.appealTimerID.resume();
-    if (this.turnTimerID) this.turnTimerID.resume();
+    // if (this.appealTimerID) this.appealTimerID.resume();
+    // if (this.turnTimerID) this.turnTimerID.resume();
   }
 
   onClickedTheme = evt => {
@@ -360,7 +360,7 @@ export default class Game {
   forseShowQ = evt => {
     this.gameField.drawQuestion(this.currentQuestion.string, () => {
       if (new User().name === this.master) this.canRaiseHand(evt.canRaise);
-    });
+    }, new User().name === this.master);
   }
 
   onNewCurrentRound = evt => {
