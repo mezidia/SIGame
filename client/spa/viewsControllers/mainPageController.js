@@ -111,5 +111,3 @@ export default class MainPageController {
   }
 
 }
-
-

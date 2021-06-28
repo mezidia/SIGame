@@ -4,6 +4,7 @@ import BundleEditor from '../../gameLogic/bundleEditor_class.js';
 import { storage } from '../../main.js';
 import { changeHash } from '../spaControl.js';
 import { promisifySocketMSG } from '../../utils.js';
+import { loader } from '../../utils/loader.js';
 
 const bundleEditor = new BundleEditor();
 
@@ -30,6 +31,7 @@ export default class ChooseModeController {
   }
 
   createGameLobby() {
+    loader();
     const msg = {
       'mType': 'getAllBundles',
     };
@@ -44,5 +46,3 @@ export default class ChooseModeController {
   }
 
 }
-
-

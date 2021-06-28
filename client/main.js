@@ -8,6 +8,7 @@ import { loadView, changeHash, checkView, getHash, getController, сontrollersCo
 import Language from './changeLanguage.js';
 import { promisifySocketMSG } from './utils.js';
 import { errPopup, yesnoPopup } from './spa/uiElements.js';
+import { loader } from './utils/loader.js';
 
 //singleton
 const bundleEditor = new BundleEditor();
@@ -58,7 +59,7 @@ function disconnect() {
 
 //this config function returns function by mType of message, that came from socket
 const socketHandleConfig = mType => ({
-  'usersOnline': data => onUsersOnline(data),
+  'usersOnline': () => {}, // onUsersOnline
   'messageToGameChat': data => sendMessageToGameChat(data),
   'returnAllGames': data => updateGames(data),
 })[mType];
@@ -90,7 +91,7 @@ const createGame = () => {
   const gameModeSelect = document.getElementById('gameMode');
   const totalPlayers = 12; // max amount of players
   if (!reg.test(roomName)) return;
-
+  
   const gameMode = gameModeSelect.options[gameModeSelect.selectedIndex]
     .attributes['data-localize'].textContent
     .split('-')[0];
@@ -107,6 +108,7 @@ const createGame = () => {
   if (questionBundle.value === 'download') {
     const bundleFileImport = document.getElementById('bundle-file');
     const file = bundleFileImport.files[0];
+    loader();
     if (!file) return;
     const f = new FileReader();
     f.onload = (e) => {
@@ -128,6 +130,7 @@ const createGame = () => {
   } else if (questionBundle.value === 'findByName') {
     const bundleTitle = document.getElementById('bundleSearch-input').value;
     const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    loader();
     promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
       console.log(info);
       data.bundle = bundleEditor.parseBundle(info.data); //todo
@@ -148,6 +151,7 @@ const createGame = () => {
     const bByName = bundlesMeta.filter(el => el.langcode_name === currentLangcode);
     const bundleTitle = bByName.map(el => el.bundle_title).sort(() => Math.random() - 0.5)[0];
     const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
+    loader();
     promisifySocketMSG(message, 'bundleRows', socket).then(async (info) => {
       console.log(info);
       data.bundle = bundleEditor.parseBundle(info.data);
@@ -168,6 +172,7 @@ const createGame = () => {
 };
 
 const createGameLobby = () => {
+  loader();
   const msg = {
     'mType': 'getBundleNames',
   };
@@ -267,7 +272,6 @@ const handleClick = evt => {
     'help': [changeHash('help')],
     'home': [changeHash('chooseMode')],
     'dju': [changeHash('')],
-    'all-players': [showPlayers],
     'create-game-btn': [createGameLobby],
     'play-btn': [connectToSIgame],
     'de': [() => changeLanguage('de')],
@@ -293,6 +297,7 @@ const handleClick = evt => {
       'scroll-direct': [evt.target.scrollIntoView],
       'collapse-control': [collapseControl(evt.target.id)],
       'go-up-btn': [scrollToStart],
+      'home': [() => document.getElementById(evt.target.id).remove(), changeHash('chooseMode')],
     }[evt.target.classList[0]]
   }
   return funcs;
@@ -432,15 +437,6 @@ const onTypeOfPasswordChange = evt => {
   const handler = caseConfig[evt.target.value];
   if (!handler) return;
   handler();
-}
-
-//shows div with players
-const showPlayers = () => {
-  const allPlayersDiv = document.getElementById('all-players-div');
-  if (allPlayersDiv.style.display === 'none') {
-    //document.getElementById('all-players').style.;
-    allPlayersDiv.style.display = 'block';
-  } else allPlayersDiv.style.display = 'none';
 }
 
 //join-btn click handle

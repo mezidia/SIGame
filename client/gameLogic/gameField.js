@@ -6,14 +6,26 @@ import QReader from './question_reader.js'
 export default class GameField {
   constructor() {
     if (!GameField._instance) {
-      this.Qreader = new QReader();
+      this.Qreader = new QReader('game-display');
       GameField._instance = this;
     }
     return GameField._instance;
   }
 
   // returns a game table used in classic mode
-  drawTable(deck) {
+  drawTable(deck, isGm = false) {
+    if (isGm) {
+      try {
+        document.getElementById('submitPoints-sums-btn').style.removeProperty('grid-area');
+      } catch(e) {}
+      try {
+        document.getElementById('changePoints-sums-btn').style.removeProperty('grid-area');
+      } catch(e) {}
+
+    }
+    document.getElementById('exit-btn').style.gridArea = '2 / 1 / 3 / 3'
+    document.getElementById('pause-btn').style.display = 'block';
+
     const gameDisplay = document.getElementById('game-display');
     const drawCells = (deck) => {
       console.log(deck[0]);
@@ -72,21 +84,30 @@ export default class GameField {
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
-  drawQuestion(str, callback) {
-    const gameDisplay = document.getElementById('game-display');
-    // noinspection CssInvalidPropertyValue
-    gameDisplay.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
-      `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
-          class="question-letter">${letter}</span>`).join('')}
-    </span>`
-    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
-      callback();
-    });
-    //callback();
-    // this.readQuestion(document.getElementById('question-text'), Date.now());
-    this.Qreader.read(document.getElementById('question-text'), Date.now())
+  drawQuestion(str, callback, isGm = false, needToRead = true) {
+    document.getElementById('pause-btn').style.display = 'none';
+    if (isGm) {
+      try {
+        document.getElementById('changePoints-sums-btn').style.gridArea = '1 / 1 / 2 / 3';
+      } catch(e) {}
+      try {
+        document.getElementById('submitPoints-sums-btn').style.gridArea = '1 / 1 / 2 / 3';
+      } catch(e) {}
+    } else {
+      document.getElementById('exit-btn').style.gridArea = '1 / 1 / 3 / 3';
+    }
+    this.Qreader.drawQuestion(str, callback, needToRead);
   }
 
+  congratulate(name) {
+    this.Qreader.congratulate(name);
+    setTimeout(this.exitBtn, 1000); // exit button appears after 1 second
+  }
+
+  flash(text, delta = 400, total = 2800) { // tick every 0.4s for 2.8s
+    this.Qreader.flash(text, delta, total);
+    return total;
+  }
 
   scoreAsInput = (toChange = true) => () => {
     const divs = document.getElementsByClassName('player-display');
@@ -131,11 +152,13 @@ export default class GameField {
       <button id="btn-answer" class="btn btn-primary game-button" style="width: 100px; height: 100%"></button>`;
     document.getElementsByClassName('game-container')[0].style.gridTemplateRows = isGm ? '20px 1fr auto 0': '20px 1fr auto 50px';
     document.getElementById('changePoints-sums-btn').style.display = isGm ? 'block': 'none';
-    document.getElementById('report-btn').style.gridColumnStart = isGm ? '2': '1';
+    document.getElementById('pause-btn').style.gridColumnStart = isGm ? '2': '1';
   }
 
   // draws popup to grade players' answers
   gmPopUp(who, ans, t, f) {
+    Array.isArray(t) ? t = t.join(',') : false;
+    Array.isArray(f) ? f = f.join(',') : false;
     document.getElementById('reply').innerHTML = `<div class="container gm-popup">
         <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
           <span class="badge badge-primary" id="answer-author">${who}</span>
@@ -163,14 +186,16 @@ export default class GameField {
 
  // draws popup to grade players' answers
  appealPopUp(who, ans, t, f) {
-   document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
-     <p>${who} answered: ${ans}</p>
-     <h2 class="text-primary" data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
-     <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-     <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
-     <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-     <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal" data-localize="agree">${Language.getTranslatedText('agree')}</button>
-     <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal" data-localize="disagree">${Language.getTranslatedText('disagree')}</button>
+  Array.isArray(t) ? t = t.join(',') : false;
+  Array.isArray(f) ? f = f.join(',') : false;
+  document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
+    <p>${who} answered: ${ans}</p>
+    <h2 class="text-primary" data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
+    <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
+    <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
+    <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
+    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal" data-localize="agree">${Language.getTranslatedText('agree')}</button>
+    <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal" data-localize="disagree">${Language.getTranslatedText('disagree')}</button>
   </div>
   `;
 }
@@ -255,7 +280,7 @@ export default class GameField {
   buttonMode() {
     const inp = document.getElementById('input-answer');
     const but = document.getElementById('answer-btn');
-    but.innerHTML = ``;
+    if (but) but.innerHTML = ``;
     inp.style.display = 'none';
     but.style.width = '100%';
   }
@@ -292,10 +317,7 @@ export default class GameField {
     document.getElementById('popupPlaceholder').innerHTML = '';
   }
 
-  pause() {
-    if (this.Qreader.isActive = true) {
-      this.Qreader.isPaused ? this.Qreader.resume() : this.Qreader.pause();
-    }
+  pause(timeStamp) {
     const overlay = document.getElementById('pause-overlay')
     overlay.style.width = overlay.style.width === '100%' ? '0' : '100%'
   }
@@ -318,4 +340,15 @@ export default class GameField {
     setTimeout(() => answer.remove(), delay);
   }
 
+  highlightCurrentPlayer(name) {
+    document.getElementById(`icon-${name}`).style.backgroundColor = '#0399E1';
+  }
+
+  
+  exitBtn() {
+    const placeHolder = document.getElementById('popupPlaceholder');
+    placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
+        <button class="home btn btn-primary" id="startGame-btn" data-localize="home" style="top: 20vw">Home</button>
+      </div>`;
+  }
 }

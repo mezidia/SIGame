@@ -337,7 +337,7 @@ class Server {
     const connection = database.returnConnection();
     connection.on('error', e => console.log("on error: " + e));
     connection.connect( async err => {
-      if (err) console.log(err);
+      if (err) console.error('Issues with connection to Database \n' + err);
       console.log("Connected!");
       let bundleNames = null;
       try {
@@ -360,7 +360,7 @@ class Server {
     const connection = database.returnConnection();
     connection.on('error', e => console.log("on error: " + e));
     connection.connect( async err => {
-      if (err) console.log(err);
+      if (err) console.error('Issues with connection to Database \n' + err);
       console.log("Connected!");
       let bundleRows = null;
       try {
