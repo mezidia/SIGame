@@ -8,8 +8,7 @@ import BundleEditor from '../../gameLogic/bundleEditor_class.js';
 import Language from '../../changeLanguage.js';
 import User from '../../gameLogic/user_class.js';
 import Game from '../../gameLogic/game_class.js';
-//import SimpleGame from '../../gameLogic/simpleGame_class.js';
-
+import SimpleGame from '../../gameLogic/simpleGame_class.js';
 
 const reg = /^[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+$/;
 const bundleEditor = new BundleEditor();

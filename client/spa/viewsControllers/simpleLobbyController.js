@@ -11,6 +11,11 @@ export default class SimpleLobbyController {
 
   }
 
+  keydownConfig = {
+    'message-input': [this.sendMessageRoom],
+
+  }
+
   getHandlers(evt) {
     const configString = evt.type + 'Config';
     console.log(configString);
@@ -23,6 +28,15 @@ export default class SimpleLobbyController {
     if (storage.game) storage.game.exit();
     window.location.replace('#' + page.next);
     document.getElementById('popupPlaceholder').innerHTML = '';
+  }
+
+  sendMessageRoom(e) {
+    if (e.key !== 'Enter') return;
+    const inputFieldData = document.getElementById('message-input').value;
+    const reg = /.+/;//--------------------------------------------------------------------------
+    if (!reg.test(inputFieldData)) return;
+    storage.socket.send(JSON.stringify({mType: 'messageToGameChat', data: { message: inputFieldData, 'room': storage.roomId}}));
+    document.getElementById('message-input').value = '';
   }
 
 }
