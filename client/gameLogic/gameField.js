@@ -268,7 +268,9 @@ export default class GameField {
   }
 
   drawPreStartText(number, minNumber) {
-    document.getElementById('game-state-text').innerHTML = `${number.toString()}/${minNumber} players to start the game`
+    document.getElementById('game-state-text').innerHTML =
+      `${number.toString()}/${minNumber} <p data-localize="count-players-1">${Language.getTranslatedText('count-players-1')}
+      </p><p data-localize="count-players-2">${Language.getTranslatedText('count-players-2')}</p>`
   }
 
   hideStartButton() {

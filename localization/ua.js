@@ -78,6 +78,7 @@ const ua = {
   "bug-handling-text": "Теж саме, тільки українською",
   "save-to-db": "Додати низку питань в базу даних",
   "correct-answers": "Правильні відповіді",
+  "wrong-answers": "Неравильні відповіді",
   "correct": "Правильно",
   "wrong": "Неправильно",
   "onleave": "Ви дійсно хочете залишити цю гру?",
@@ -102,7 +103,9 @@ const ua = {
   "appeal": "Фаза апеляції.",
   "appeal-approved": "Апеляція схвалена!",
   "appeal-denied": "Апеляція відхилена!",
-  "someone's-move": " ходить."
+  "someone's-move": " ходить.",
+  "count-players-1": "гравців,",
+  "count-players-2": "щоб почати гру",
 
 }
 

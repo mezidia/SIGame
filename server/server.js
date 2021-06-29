@@ -44,7 +44,7 @@ class Server {
     'removeUserFromServer': data => this.removeUserFromServer(data),
     'updateGameStatus': data => this.updateGameStatus(data),
     'getBundleNames': data => this.getBundleNames(data),
-    'getBundleByName': data=> this.getBundleByName(data),
+    'getBundleByName': data => this.getBundleByName(data),
   };
 
   constructor(port) {
@@ -335,7 +335,7 @@ class Server {
   getBundleNames(data) {
     const database = new Database(databaseConfig);
     const connection = database.returnConnection();
-    connection.on('error', e=> console.log("on error: " + e));
+    connection.on('error', e => console.log("on error: " + e));
     connection.connect( async err => {
       if (err) console.error('Issues with connection to Database \n' + err);
       console.log("Connected!");
@@ -358,7 +358,7 @@ class Server {
     const name = data.data.name;
     const database = new Database(databaseConfig);
     const connection = database.returnConnection();
-    connection.on('error', e=> console.log("on error: " + e));
+    connection.on('error', e => console.log("on error: " + e));
     connection.connect( async err => {
       if (err) console.error('Issues with connection to Database \n' + err);
       console.log("Connected!");
@@ -370,7 +370,7 @@ class Server {
       }
       this.sendToUser(data.id, {mType: 'bundleRows', data: bundleRows});
       connection.end(err => {
-        if(err) console.log("error when connection ends: " + err);
+        if (err) console.log("error when connection ends: " + err);
         else console.log("closed");
       });
     });
