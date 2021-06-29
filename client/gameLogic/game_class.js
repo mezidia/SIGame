@@ -674,7 +674,7 @@ export default class Game {
     if (this.currentRound === 3 && this.answerCounter === 1) { //3, 1
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
-      this.gameField.congratulate(winner)
+      this.gameField.congratulate(winner);
       this.exit();
     } else if (this.answerCounter === 14) {
       this.answerCounter = 0;

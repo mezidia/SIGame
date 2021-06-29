@@ -24,6 +24,7 @@ let gameInSearchLobby = null;
 let storage = {
   socket,
   allBundles,
+  bundlesMeta,
   roomId,
   game,
   allGames,
@@ -32,26 +33,31 @@ let storage = {
 console.log(сontrollersConfig);
 const reg = /^[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+$/;
 
-//it runs click handler if it exists
-// function setupListeners() {
-//   const events = ['click', 'keydown', 'input', 'change'];
-//   for (const event of events) {
-//     document.addEventListener(event, async evt => {
-//       const controller = getController();
-//       console.log(`${evt.type} has handlers:`, controller.getHandlers(evt));
-//       const handlersArr = controller.getHandlers(evt);
-//       if (!handlersArr) return;
-//       console.log(handlersArr);
-//       for await(const handler of handlersArr) {
-//         console.log(handler);
-//         handler(evt);
-//       }
-//     });
-//   }
+//it runs handler if it exists
+function setupListeners() {
+  const events = ['click', 'keydown', 'input', 'change'];
+  for (const event of events) {
+    document.addEventListener(event, async evt => {
+      let controller = getController();
+      console.log(`${evt.type} has handlers:`, controller.getHandlers(evt));
+      let handlersArr = controller.getHandlers(evt);
+      if (!handlersArr) {
+        controller = getController('StaticElementsController');
+        console.log(`${evt.type} has handlers:`, controller.getHandlers(evt));
+        handlersArr = controller.getHandlers(evt);
+      }
+      if (!handlersArr) return;
+      console.log(handlersArr);
+      for await(const handler of handlersArr) {
+        console.log(handler);
+        handler(evt);
+      }
+    });
+  }
 
-// }
+}
 
-// setupListeners();
+setupListeners();
 
 function disconnect() {
   if (game) game.exit();
@@ -333,20 +339,6 @@ function onUserNameTaken () {
 
 const closeCustomPopup = () => document.getElementById('popupPlaceholder').innerHTML = '';
 
-//config function returns handlers by id
-const handleChange = evt => ({
-  'questionBundle': [onBundleCheckChange],
-  'type-of-password': [onTypeOfPasswordChange],
-  'select-games-by-type': [sortGames],
-})[evt.target.id];
-
-//config function returns handlers by id
-const handleInput = evt => ({
-  'find-games': [sortGames],
-  'bundleSearch-input': [onBundleSearchInput],
-  'totalPlayers': [onTotalPlayersInput],
-})[evt.target.id];
-
 function onTotalPlayersInput() {
   const number = document.getElementById('totalPlayers').value;
   document.getElementById('totalPlayers-number').innerText = number;
@@ -534,51 +526,51 @@ const handleKeydown = evt => ({
   'message-input': [sendMessageRoom],
 })[evt.target.id];
 
+//config function returns handlers by id
+const handleChange = evt => ({
+  'questionBundle': [onBundleCheckChange],
+  'type-of-password': [onTypeOfPasswordChange],
+  'select-games-by-type': [sortGames],
+})[evt.target.id];
+
+//config function returns handlers by id
+const handleInput = evt => ({
+  'find-games': [sortGames],
+  'bundleSearch-input': [onBundleSearchInput],
+  'totalPlayers': [onTotalPlayersInput],
+})[evt.target.id];
 
 // //it runs click handler if it exists
-document.addEventListener('click', async evt => {
-  if (!handleClick(evt)) return;
-  for await(const clickEvent of handleClick(evt)) {
-    clickEvent();
-  }
-});
-
-//it runs click handler if it exists
 // document.addEventListener('click', async evt => {
-//   const controller = getController();
-//   console.log('controller.getHandlers(evt)', controller.getHandlers(evt), !controller.getHandlers(evt));
-//   const handlersArr = controller.getHandlers(evt);
-//   if (!handlersArr) return;
-//   console.log(handlersArr)
-//   for await(const handler of handlersArr) {
-//     console.log(handler)
-//     handler(evt);
+//   if (!handleClick(evt)) return;
+//   for await(const clickEvent of handleClick(evt)) {
+//     clickEvent();
 //   }
 // });
 
 // it runs click handler if it exists
-document.addEventListener('change', async evt => {
-  if (!handleChange(evt)) return;
-  for await(const changeEvent of handleChange(evt)) {
-    changeEvent(evt);
-  }
-});
+// document.addEventListener('change', async evt => {
+//   if (!handleChange(evt)) return;
+//   for await(const changeEvent of handleChange(evt)) {
+//     changeEvent(evt);
+//   }
+// });
 
 // it runs keydown handler if it exists
-document.addEventListener('keydown', async evt => {
-  if (!handleKeydown(evt)) return;
-  for await(const keyDownEvent of handleKeydown(evt)) {
-    keyDownEvent(evt);
-  }
-});
+// document.addEventListener('keydown', async evt => {
+//   if (!handleKeydown(evt)) return;
+//   for await(const keyDownEvent of handleKeydown(evt)) {
+//     keyDownEvent(evt);
+//   }
+// });
 
 // it runs keydown handler if it exists
-document.addEventListener('input', async evt => {
-  if (!handleInput(evt)) return;
-  for await(const inputEvent of handleInput(evt)) {
-    inputEvent(evt);
-  }
-});
+// document.addEventListener('input', async evt => {
+//   if (!handleInput(evt)) return;
+//   for await(const inputEvent of handleInput(evt)) {
+//     inputEvent(evt);
+//   }
+// });
 
 const onBundleCheckChange = evt => {
   let fileInputDisplay = document.getElementById('bundle-file');

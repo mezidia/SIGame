@@ -79,8 +79,8 @@ const checkView = () => {
 
 const сontrollersConfig = Object.fromEntries(Object.entries(controllers));
 
-const getController = () => {
-  return new (сontrollersConfig[getViewControllerClassName()]);
+const getController = (name = undefined) => {
+  return new (сontrollersConfig[name || getViewControllerClassName()]);
 }
 
 export {
