@@ -100,8 +100,8 @@ export default class GameField {
   }
 
   congratulate(name) {
-    this.Qreader.congratulate(name);
     setTimeout(this.exitBtn, 1000); // exit button appears after 1 second
+    return this.Qreader.congratulate(name);
   }
 
   flash(text, delta = 400, total = 2800) { // tick every 0.4s for 2.8s
@@ -262,14 +262,13 @@ export default class GameField {
   drawStartButton() {
     const placeHolder = document.getElementById('reply');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-        <button class="btn btn-primary" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
-      </div>`
+      <button class="btn btn-primary" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
+    </div>`;
+    document.getElementById('game-state-text').innerHTML = '';
   }
 
   drawPreStartText(number, minNumber) {
-    document.getElementById('reply').innerHTML = `<div style="display: flex; align-items: center; justify-content: center">
-      <div class="custom-popup" id="count-players">${number.toString()}/${minNumber} players <br> to start the game</div>
-    </div>`
+    document.getElementById('game-state-text').innerHTML = `${number.toString()}/${minNumber} players to start the game`
   }
 
   hideStartButton() {

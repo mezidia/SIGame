@@ -185,7 +185,7 @@ export default class Game {
   onShowQuestion = evt => {
     this.currentQuestion = evt.question;
     const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
-    if (!qHandler) return console.log('Unknown q type');
+    if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
     qHandler(evt, this.qTypeAnnounce[this.currentQuestion.type]);
   }
 
@@ -674,8 +674,8 @@ export default class Game {
     if (this.currentRound === 3 && this.answerCounter === 1) { //3, 1
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
-      this.gameField.congratulate(winner)
-      this.exit();
+      const time = this.gameField.congratulate(winner);
+      setTimeout(this.exit(), time);
     } else if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;

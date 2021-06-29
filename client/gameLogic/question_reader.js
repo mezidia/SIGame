@@ -37,7 +37,7 @@ export default class QReader {
   }
  
   congratulate(name) {
-    this.drawQuestion(`Congratulations, ${name} has won!!`, () => {}, false);
+    return this.flash(`Congratulations, ${name} has won!!`, 400, 5000);
   }
 
   flash(text, delta, total) {
@@ -52,6 +52,7 @@ export default class QReader {
       isMainColor = !isMainColor;
     }, delta);
     setTimeout(() => clearInterval(interval), total);
+    return total;
   }
 
   read (textBlock, startTime = this._startTime, delta = 150) {

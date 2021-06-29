@@ -6,7 +6,7 @@ import Game from "./game_class.js";
 import { getRandomIntInclusive } from "../utils.js";
 
 const ANSWERTIME = 5; //sec
-const GAMETIME = 25; //sec
+const GAMETIME = 300; //sec
 const APPEALTIME = 5; //sec
 
 export default class SimpleGame extends Game {
@@ -41,8 +41,8 @@ export default class SimpleGame extends Game {
     const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
     console.log(this.currentQuestion);
     evt.question = this.currentQuestion;
-    if (!qHandler) return console.log('Unknown q type');
-    qHandler(evt);
+    if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
+    qHandler(evt, this.qTypeAnnounce[this.currentQuestion.type]);
   }
 
   eventsConfig = {
@@ -108,8 +108,8 @@ export default class SimpleGame extends Game {
     if (this.answerCounter === 25) {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
-      this.gameField.congratulate(winner);
-      this.exit();
+      const time = this.gameField.congratulate(winner);
+      setTimeout(this.exit(), time);
     } else if (this.answerCounter % 5 === 0) {
       this.currentRound++;
       this.answerCounter = 0;
