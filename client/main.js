@@ -1,6 +1,7 @@
 'use strict';
 
 import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig, page } from './spa/spaControl.js';
+import { disconnect } from './spa/viewsControllers/externalControlersFunctions.js';
 
 //storage
 let socket = null;
