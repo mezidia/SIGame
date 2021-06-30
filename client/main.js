@@ -1,6 +1,7 @@
 'use strict';
 
 import { loadView, changeHash, checkView, getHash, getController, сontrollersConfig, page } from './spa/spaControl.js';
+import { disconnect } from './spa/viewsControllers/externalControlersFunctions.js';
 
 //storage
 let socket = null;
@@ -48,7 +49,6 @@ function setupListeners() {
 
 setupListeners();
 
-
 function checkHash(e) {
   const name = checkView();
   if (name === 'lobbySearch' || name === 'createGame' || name === 'simpleLobby') {
@@ -93,7 +93,7 @@ loadViewSocket();
 window.addEventListener('hashchange', e => loadViewSocket(e));
 window.addEventListener('popstate', e => checkHash(e));
 window.addEventListener('scroll', checkGoUp);
-window.onload = () => {
+window.onload = () => () => {
   const name = window.localStorage.getItem('name');
   if (name) document.getElementById('name-input').value = name;
 }

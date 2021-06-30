@@ -14,7 +14,7 @@ export default class LobbySearchController {
   }
 
   clickConfig = {
-    'username-taken': [onUserNameTaken],
+    'username-taken': [this.onUserNameTaken],
 
   }
 
