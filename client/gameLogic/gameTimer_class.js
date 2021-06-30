@@ -46,9 +46,8 @@ export default class GameTimer {
     this._tick();
   }
 
-  reset(totalTime) {
+  reset() {
     clearTimeout(this._timerID);
-    this._callback(100, totalTime);
     this._currentTime = 0;
     this._lastTickTime = 0;
     this._pauseTime = 0;
