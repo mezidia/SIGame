@@ -1,5 +1,7 @@
 'use strict';
 import { sortGames, takeName } from './externalControlersFunctions.js';
+import User from '../../gameLogic/user_class.js';
+import { storage } from '../../main.js';
 
 export default class LobbySearchController {
 
@@ -42,7 +44,7 @@ export default class LobbySearchController {
       if (takeName() === null) return;
       new User().setName(name);
       storage.socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
-      closeCustomPopup();
+      document.getElementById('popupPlaceholder').innerHTML = '';
     })
     div.innerHTML += input;
     div.appendChild(okButton);
