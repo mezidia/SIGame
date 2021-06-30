@@ -302,7 +302,9 @@ class Server {
 
   //on new game master
   newGameMaster(data) {
-    this._games[data.data.roomID].settings.master = data.data.newGM;
+    const game = this._games[data.data.roomID];
+    if (!game) return;
+    game.settings.master = data.data.newGM;
     const gamesSend = this.prepareGamesForClient();
     this.sendToAll({mType: 'returnAllGames', data: gamesSend});
   }
