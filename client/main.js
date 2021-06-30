@@ -63,16 +63,9 @@ function checkHash(e) {
 
 // won't pass user to other than main and help pages if socket is not connected
 const loadViewSocket = e => {
-  if(getHash() === 'help') {
-    loadView();
-    return;
-  }
-
-  if(socket) {
-    loadView();
-  } else {
-    changeHash('')();
-  }
+  if(getHash() === 'help') loadView();
+  else if (socket) loadView();
+  else changeHash('')();
 }
 
 const checkGoUp = () => {
@@ -90,7 +83,7 @@ const checkGoUp = () => {
 loadViewSocket();
 
 //switches pages
-window.addEventListener('hashchange', e => loadViewSocket(e));
+window.addEventListener('hashchange', e => loadViewSocket(e), false);
 window.addEventListener('popstate', e => checkHash(e));
 window.addEventListener('scroll', checkGoUp);
 window.onload = () => () => {
@@ -99,4 +92,4 @@ window.onload = () => () => {
 }
 window.onbeforeunload = () => disconnect();
 
-export { game, storage };
+export { game, storage, loadViewSocket };
