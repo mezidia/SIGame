@@ -117,3 +117,6 @@ export default class SimpleGame extends Game {
   }
 
 }
+
+
+export { Game }

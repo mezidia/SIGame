@@ -5,6 +5,7 @@ import RenderEngine from './engine.js';
 import Router from './router.js';
 import Language from '../changeLanguage.js';
 import { yesnoPopup } from './uiElements.js';
+import { storage } from '../main.js';
 
 const page = {next: ''};
 
@@ -18,7 +19,7 @@ async function loadMainView() {
 
 const getHash = () => router.getHash();
 
-const changeHash = (hash) => async () => {
+const changeHash = hash => async () => {
   let ask = false;
   if (router.getHash()) {
     const parts = router.getHash().split('/');
@@ -35,6 +36,8 @@ const changeHash = (hash) => async () => {
   }
 
   router.change(hash);
+  console.log(hash);
+  if (!storage.socket && hash !== 'chooseMode' && hash !== 'help') router.change('mainPage');
   await loadView();
 };
 
@@ -79,8 +82,8 @@ const checkView = () => {
 
 const сontrollersConfig = Object.fromEntries(Object.entries(controllers));
 
-const getController = () => {
-  return new (сontrollersConfig[getViewControllerClassName()]);
+const getController = (name = undefined) => {
+  return new (сontrollersConfig[name || getViewControllerClassName()]);
 }
 
 export {
