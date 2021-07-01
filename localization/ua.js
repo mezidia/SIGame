@@ -64,6 +64,7 @@ const ua = {
   "change-sums": "Змінити бали",
   "report": "Поскаржитись",
   "pause": "Пауза",
+  "continue": "Продовжити",
   "exit": "Вихід",
   "rules": "Правила",
   "questions": "Питання",

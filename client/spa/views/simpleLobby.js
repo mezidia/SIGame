@@ -4,10 +4,10 @@ const view = () => {
   return `
   <div id="pause-overlay" class="overlay">
     <div class="overlay-content">
-      <h1 class="text-white">Pause</h1>
+      <h1 class="text-white" data-localize="pause">Pause</h1>
       <br>
       <br>
-      <button id="resume" class="btn bg-yellow">Continue</button>
+      <button id="resume" class="btn bg-yellow" data-localize="continue">Continue</button>
     </div>
   </div>
   <div class="row" style="margin: 0 0 0 0; height: 100%">
@@ -27,7 +27,7 @@ const view = () => {
       </div>
       <div id="reply" style="background-color: #7c7c7c">
         <input id="input-answer" type="text" style="display: block; width: calc(100% - 100px); height: 100%; float: left">
-        <button id="answer-btn" class="btn bg-blue game-button" style="width: 100px; height: 100%" disabled></button>
+        <button id="answer-btn" class="btn bg-blue game-button text-white" style="width: 100px; height: 100%" disabled></button>
       </div>
     </div>
     <div class="col-md-3 chat-container" style="padding: 0 0 0 0; overflow-y: auto; height: 100%">

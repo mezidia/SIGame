@@ -64,6 +64,7 @@ const de = {
   "change-sums": "Change sums",
   "report": "Report",
   "pause": "Pause",
+  "continue": "Continue",
   "exit": "Exit",
   "rules": "Rules",
   "questions": "Questions",
