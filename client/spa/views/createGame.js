@@ -33,7 +33,7 @@ const view = () => {
       </select>
 
       <br>
-      <button id="startGame" type="button" class="btn btn-primary" data-localize="play">Start game</button>
+      <button id="startGame" type="button" class="btn dark-b-hover" data-localize="play" style="width: 100%; padding-top: 10px; padding-bottom: 10px">Start game</button>
       
     </form>
   </div>

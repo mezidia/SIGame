@@ -459,6 +459,8 @@ const updateGames = data => {
     const joinGame = () => joinHandle(gameData);
     document.getElementById('join-player').addEventListener('click', joinGame);
     const gameDiv = document.createElement('div');
+    gameDiv.classList.add('game-icon-join');
+    gameDiv.classList.add('join-side-widget');
     gameDiv.setAttribute('id', gameId);
     gameDiv.addEventListener('click', () => gameDivOnClick(gameId, gm));
     gameDiv.innerHTML = gm.settings.roomName;

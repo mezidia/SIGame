@@ -21,7 +21,6 @@ export default class GameField {
       try {
         document.getElementById('changePoints-sums-btn').style.removeProperty('grid-area');
       } catch(e) {}
-
     }
     document.getElementById('exit-btn').style.gridArea = '2 / 1 / 3 / 3'
     document.getElementById('pause-btn').style.display = 'block';
@@ -41,16 +40,16 @@ export default class GameField {
       }
       return res.join('\n');
     }
-    gameDisplay.innerHTML = `<div class="col-3" style="background-color: #c7280e; padding: 0 0 0 0;">
+    gameDisplay.innerHTML = `<div class="col-3" style="padding: 0 0 0 0;">
       <div class="vertical-grid-5">
         <div class="centred-text" id="theme-1">${deck[0].subject}</div>
-        <div class="centred-text" id="theme-2">${deck[1].subject}</div>
-        <div class="centred-text" id="theme-3">${deck[2].subject}</div>
-        <div class="centred-text" id="theme-4">${deck[3].subject}</div>
-        <div class="centred-text" id="theme-5">${deck[4].subject}</div>
+        <div class="centred-text" id="theme-2" style="border-top: 2px solid #010101">${deck[1].subject}</div>
+        <div class="centred-text" id="theme-3" style="border-top: 2px solid #010101">${deck[2].subject}</div>
+        <div class="centred-text" id="theme-4" style="border-top: 2px solid #010101">${deck[3].subject}</div>
+        <div class="centred-text" id="theme-5" style="border-top: 2px solid #010101">${deck[4].subject}</div>
       </div>
     </div>
-    <div class="col-9" style="background-color: #f36a54; padding: 0 0 0 0;">
+    <div class="col-9" style="padding: 0 0 0 0;">
       <div class="table-25">
         ${drawCells(deck)}
       </div>
@@ -161,22 +160,24 @@ export default class GameField {
     Array.isArray(f) ? f = f.join(',') : false;
     document.getElementById('reply').innerHTML = `<div class="container gm-popup">
         <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
-          <span class="badge badge-primary" id="answer-author">${who}</span>
+          <span class="badge badge-primary" id="answer-author" style="font-size: 24px">${who}</span>
           <br>
           <span id="answer-text">${ans}</span>
         </div>
         <div class="row">
         
-          <div class="col-sm-6">
-            <h2 class="text-primary" data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
+          <div class="col-sm-6" style="display: flex; flex-direction: column">
+            <h2 data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="correct" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="correct">${Language.getTranslatedText('correct')}</div>
+            <div style="flex-grow: 1;"></div>
+            <div id="correct" class="btn dark-b-hover game-button btn-50" style="width: 100%" data-localize="correct">${Language.getTranslatedText('correct')}</div>
           </div>
           
-          <div class="col-sm-6">
-            <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
+          <div class="col-sm-6" style="display: flex; flex-direction: column">
+            <h2 data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
             <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-            <div id="uncorrect" class="btn btn-primary game-button btn-50" style="width: 100px" data-localize="wrong">${Language.getTranslatedText('wrong')}</div>
+            <div style="flex-grow: 1;"></div>
+            <div id="uncorrect" class="btn dark-r-hover game-button btn-50" style="width: 100%" data-localize="wrong">${Language.getTranslatedText('wrong')}</div>
           </div>
           
         </div>
@@ -194,8 +195,8 @@ export default class GameField {
     <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
     <h2 class="text-primary" data-localize="wrong-answers">${Language.getTranslatedText('wrong-answers')}</h2>
     <p id="wrong-answer-text">${f.split(',').map(el => el + '<br>').join(' ')}</p>
-    <button class="btn btn-primary" style="width: 50%; text-align: center; float: left" id="agreeWithApeal" data-localize="agree">${Language.getTranslatedText('agree')}</button>
-    <button class="btn btn-primary" style="width: 50%; text-align: center;" id="disagreeWithApeal" data-localize="disagree">${Language.getTranslatedText('disagree')}</button>
+    <button class="btn dark-b-hover" style="width: 50%; text-align: center; float: left" id="agreeWithApeal" data-localize="agree">${Language.getTranslatedText('agree')}</button>
+    <button class="btn dark-r-hover" style="width: 50%; text-align: center;" id="disagreeWithApeal" data-localize="disagree">${Language.getTranslatedText('disagree')}</button>
   </div>
   `;
 }
@@ -262,15 +263,15 @@ export default class GameField {
   drawStartButton() {
     const placeHolder = document.getElementById('reply');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-      <button class="btn btn-primary" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
+      <button class="btn dark-b-hover" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
     </div>`;
     document.getElementById('game-state-text').innerHTML = '';
   }
 
   drawPreStartText(number, minNumber) {
     document.getElementById('game-state-text').innerHTML =
-      `${number.toString()}/${minNumber} <p data-localize="count-players-1">${Language.getTranslatedText('count-players-1')}
-      </p><p data-localize="count-players-2">${Language.getTranslatedText('count-players-2')}</p>`
+      `${number.toString()}/${minNumber} <span data-localize="count-players-1">${Language.getTranslatedText('count-players-1')}
+      </span><span data-localize="count-players-2">${Language.getTranslatedText('count-players-2')}</span>`
   }
 
   hideStartButton() {
@@ -309,7 +310,7 @@ export default class GameField {
     document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
      <h2 class="text-primary" data-localize="make-bet">${Language.getTranslatedText('make-bet')}</h2>
      <input id="betSize" style="width: 100%" required>
-     <button id="bet-btn" class="btn btn-primary" style="width: 100%; text-align: center; float: left" id="place-bet">OK</button>
+     <button id="bet-btn" class="btn dark-r-hover" style="width: 100%; text-align: center; float: left" id="place-bet">OK</button>
   </div>
   `;
   }
@@ -349,7 +350,7 @@ export default class GameField {
   exitBtn() {
     const placeHolder = document.getElementById('popupPlaceholder');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-        <button class="home btn btn-primary" id="startGame-btn" data-localize="home" style="top: 20vw">Home</button>
+        <button class="home btn dark-r-hover" id="startGame-btn" data-localize="home" style="top: 20vw">Home</button>
       </div>`;
   }
 }
