@@ -61,8 +61,8 @@ export default class MainPageController {
     if (storage.socket) disconnect();
     const name = takeName();
     if (takeName() === null) return;
-    changeHash('redactor')();
     storage.socket = new WebSocket(`ws://localhost:5000`);
+    changeHash('redactor')();
     storage.socket.onopen = () => {
       const user = new User(name, storage.socket);
       user.setSocket(storage.socket);
