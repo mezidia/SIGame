@@ -7,19 +7,38 @@ const view = () => {
       <p>Separate true and wrong answers via comas</p>
       <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
       <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
-      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">`).join('\n');
+      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">
+      <h5>Optional (can choose only one)</h5>
+      <div>
+        <label for="audio">Select audio for a question</label>
+        <input type="file" id="audio-${roundNumber}-${themeNumber}-${i}" name="audio" accept=".mp3">
+      </div>
+      <div>
+        <label for="image">Select image for a question</label>
+        <input type="file" id="img-${roundNumber}-${themeNumber}-${i}" name="image" accept=".jpeg,.jpg,.png">
+      </div>
+      `).join('\n');
   }
 
   const finalQuestionList = () => {
     return [1, 2, 3, 4, 5, 6, 7].map(i => `
       <h5 data-localize="question">Question ${i}</h5>
-      <input type="text" placeholder="Category" id="final-theme-${i}" data-localize="input-category" required>  
+      <input value="azaza lalka kek" type="text" placeholder="Category" id="final-theme-${i}" data-localize="input-category" required>  
       <br>
       <br>
       <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-4-1-${i}" data-localize="input-question" required>
       <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-4-1-${i}" data-localize="answers" required>
       <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-4-1-${i}" data-localize="wrong-answers">
-      <input value="azaza lalka kek" type="text" placeholder="Question type" id="question-type-4-1-${i}" data-localize="question-type" hidden required>`).join('\n');
+      <input value="azaza lalka kek" type="text" placeholder="Question type" id="question-type-4-1-${i}" data-localize="question-type" required>
+      <h5>Optional (can choose only one)</h5>
+      <div>
+        <label for="audio">Select audio for a question</label>
+        <input type="file" id="audio-4-1-${i}" name="audio" accept=".mp3">
+      </div>
+      <div>
+        <label for="image">Select image for a question</label>
+        <input type="file" id="img-4-1-${i}" name="image" accept=".jpeg,.jpg,.png">
+      </div>`).join('\n');
   }
 
   const themesList = roundNumber => {
