@@ -5,9 +5,9 @@ const view = () => {
     return [1, 2, 3, 4, 5].map(i => `
       <h5><span data-localize="question">Question</span> ${i}: ${i*roundNumber}00 <span data-localize="points">points</span></h5>
       <p>Separate true and wrong answers via comas</p>
-      <input type="text" placeholder="Question" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
-      <input type="text" placeholder="Answers" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
-      <input type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">`).join('\n');
+      <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
+      <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
+      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">`).join('\n');
   }
 
   const finalQuestionList = () => {
@@ -16,10 +16,10 @@ const view = () => {
       <input type="text" placeholder="Category" id="final-theme-${i}" data-localize="input-category" required>  
       <br>
       <br>
-      <input type="text" placeholder="Question" maxlength=200 id="question-4-1-${i}" data-localize="input-question" required>
-      <input type="text" placeholder="Answers" maxlength=300 id="answer-4-1-${i}" data-localize="answers" required>
-      <input type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-4-1-${i}" data-localize="wrong-answers">
-      <input type="text" placeholder="Question type" id="question-type-4-1-${i}" data-localize="question-type" hidden required>`).join('\n');
+      <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-4-1-${i}" data-localize="input-question" required>
+      <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-4-1-${i}" data-localize="answers" required>
+      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-4-1-${i}" data-localize="wrong-answers">
+      <input value="azaza lalka kek" type="text" placeholder="Question type" id="question-type-4-1-${i}" data-localize="question-type" hidden required>`).join('\n');
   }
 
   const themesList = roundNumber => {
@@ -27,7 +27,7 @@ const view = () => {
         <h3><span data-localize="category">Category</span> ${i}</h3>
         <div class="collapse show">
           <h4 data-localize="category-name">Category name</h4>
-          <input type="text" maxlength=200 id="category-name-${roundNumber}-${i}" required>
+          <input value="azaza lalka kek" type="text" maxlength=200 id="category-name-${roundNumber}-${i}" required>
       
           <h5>Secret question</h5>
           <select id="secretIndex-select-${roundNumber}-${i}" class="form-control">
@@ -56,9 +56,9 @@ const view = () => {
   return `<div class="container">
     <form>
       <h2 data-localize="pack-title-word">Pack title</h2>
-      <input id="bundleTitle-input" type="text" maxlength=200 required>
+      <input value="azaza lalka kek" id="bundleTitle-input" type="text" maxlength=200 required>
       <h2 data-localize="author-word">Author</h2>
-      <input id="bundleAuthor-input" type="text" maxlength=34 required>
+      <input value="azaza lalka kek" id="bundleAuthor-input" type="text" maxlength=34 required>
       <h2 data-localize="language">Language:</h2>
       <select id="bundleLang-select" class="form-control">
         <option data-localize="german">German</option>

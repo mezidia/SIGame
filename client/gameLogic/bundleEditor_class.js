@@ -7,16 +7,37 @@ import User from "./user_class.js";
 import { getRandomIntInclusive } from '../utils.js';
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
 
-function getQData(r, c, q) {
+function blobFromInputFile(file) {
+  return new Promise((resolve, reject) => {
+    const f = new FileReader();
+    f.onloadend = evt => resolve(evt.result);
+    f.readAsArrayBuffer(file);
+  });
+}
+
+async function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;
+  const audioFile = document.getElementById(`audio-${r}-${c}-${q}`).files[0];
+  const imgFile = document.getElementById(`img-${r}-${c}-${q}`).files[0];
   const trueAns = document.getElementById(`answer-${r}-${c}-${q}`).value;
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
-  //const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
   if (!reg.test(string)) throw new Error(`failed reg test on string ${r}-${c}-${q}`);
   if (!reg.test(trueAns)) throw new Error(`failed reg test on trueAns ${r}-${c}-${q}`);
   if (falseAns.length > 0) if (!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
-  //if (!reg.test(type)) throw new Error(`failed reg test on type ${r}-${c}-${q}`);
-  return {string, trueAns, falseAns /*, type*/};
+  let audioBlob = null;
+  let imgBlob = null;
+  if (audioFile) {
+    await blobFromInputFile(audioFile)
+      .then(blob => {
+        audioBlob = blob;
+      }, err => console.error(err));
+  } else if (imgFile) {
+    await blobFromInputFile(imgFile)
+      .then(blob => {
+        imgBlob = blob;
+      }, err => console.error(err));
+  }
+  return { string, trueAns, falseAns, audio: audioBlob, img: imgBlob };
 }
 
 function getDomElemVal(elem) {
@@ -146,7 +167,7 @@ export default class BundleEditor {
     return new Bundle(bundleData);
   }
 
-  submitBundleEditor() {
+  async submitBundleEditor() {
     const iSBundleToSave = document.getElementById('saveBundle-checkBox').checked;
     const mainBundleFields = getMainFields();
     if (!mainBundleFields) return false;
@@ -169,7 +190,7 @@ export default class BundleEditor {
             questions: [],
           }
           for(let q = 1; q <= 5; q++) { //question
-            const qstn = new Question(getQData(r, c, q)); // submiting 3 rounds
+            const qstn = new Question(await getQData(r, c, q)); // submiting 3 rounds
             qstn.type = 'regular';
             deck.questions.push(qstn);
           }
@@ -186,7 +207,7 @@ export default class BundleEditor {
           subject,
           questions: [],
         };
-        const qstn = new Question(getQData(4, 1, q));
+        const qstn = new Question(await getQData(4, 1, q));
         qstn.type = 'final';
         deck.questions.push(qstn); //final questione
         bundleData.decks.push(new Deck(deck));
