@@ -5,14 +5,22 @@ import Deck from "./deck_class.js";
 import Question from "./question_class.js";
 import User from "./user_class.js";
 import { getRandomIntInclusive } from '../utils.js';
-const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
 
-function blobFromInputFile(file) {
+const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
+const MB = 1024**2;
+
+function inputFileToBlob(file) {
   return new Promise((resolve, reject) => {
     const f = new FileReader();
-    f.onloadend = evt => resolve(evt.result);
-    f.readAsArrayBuffer(file);
+    f.onload = evt => resolve(evt.target.result);
+    f.readAsDataURL(file);
   });
+}
+
+function isAcceptableSize(file, maxSizeMB = 10) {
+  if (!file.size) throw new Error('Invalid file: has not size property!');
+  const fileSizeMB = Math.ceil(file.size / MB);
+  return fileSizeMB < maxSizeMB;
 }
 
 async function getQData(r, c, q) {
@@ -27,15 +35,31 @@ async function getQData(r, c, q) {
   let audioBlob = null;
   let imgBlob = null;
   if (audioFile) {
-    await blobFromInputFile(audioFile)
+    if (isAcceptableSize(audioFile)) {
+      await inputFileToBlob(audioFile)
       .then(blob => {
         audioBlob = blob;
-      }, err => console.error(err));
+      }, err => {
+        console.error(err);
+        return false;
+      });
+    } else {
+      //popup max size = 10mb!
+      return false;
+    }
   } else if (imgFile) {
-    await blobFromInputFile(imgFile)
+    if (isAcceptableSize(imgFile)) {
+      await inputFileToBlob(imgFile)
       .then(blob => {
         imgBlob = blob;
-      }, err => console.error(err));
+      }, err => {
+        console.error(err);
+        return false;
+      });
+    } else {
+      //popup max size = 10mb!
+      return false;
+    }
   }
   return { string, trueAns, falseAns, audio: audioBlob, img: imgBlob };
 }
@@ -190,7 +214,9 @@ export default class BundleEditor {
             questions: [],
           }
           for(let q = 1; q <= 5; q++) { //question
-            const qstn = new Question(await getQData(r, c, q)); // submiting 3 rounds
+            const qData = await getQData(r, c, q);
+            if (!qData) throw new Error(`Invalid question data at: ${r}-${c}-${q}`);
+            const qstn = new Question(qData); // submiting 3 rounds
             qstn.type = 'regular';
             deck.questions.push(qstn);
           }
@@ -207,7 +233,9 @@ export default class BundleEditor {
           subject,
           questions: [],
         };
-        const qstn = new Question(await getQData(4, 1, q));
+        const qData = await getQData(4, 1, q);
+        if (!qData) throw new Error(`Invalid question data at: 4-1-${q}`);
+        const qstn = new Question(qData);
         qstn.type = 'final';
         deck.questions.push(qstn); //final questione
         bundleData.decks.push(new Deck(deck));
