@@ -5,21 +5,28 @@ import Language from '../../changeLanguage.js';
 
 export default class StaticElementsController {
 
-  clickConfig = {
+  clickConfig(evt, elementId) {
+    return {
     'help': [changeHash('help')],
     'home': [changeHash('chooseMode')],
     'dju': [changeHash('')],
     'de': [() => this.changeLanguage('de')],
     'ua': [() => this.changeLanguage('ua')],
     'close-popup': [this.closeCustomPopup],
+    'home-bt': [() => document.getElementsByClassName(elementId)[0].remove(), changeHash('chooseMode')],
+    }[elementId];
   }
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
     console.log(configString);
     if (!this[configString]) return false;
-    if (!this[configString][evt.target.id]) return false;
-    return this[configString][evt.target.id];
+    let handlers = this[configString](evt, evt.target.id);
+    if (!handlers) {
+      handlers = this[configString](evt, evt.target.classList[0]);
+    }
+    if (!handlers) return false;
+    return handlers;
   }
 
   changeLanguage(langcode) {

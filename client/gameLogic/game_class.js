@@ -299,18 +299,12 @@ export default class Game {
     this.clickConfig.pause = this.resume;
     this.gameField.pause(evt.timeStamp);
     this.gameTimer.pause(evt.timeStamp);
-    // this.turnTimer.pause();
-    // if (this.appealTimerID) this.appealTimerID.pause();
-    // if (this.turnTimerID) this.turnTimerID.pause();
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
     this.gameField.pause(evt.timeStamp);
-    // this.turnTimer.resume();
     this.gameTimer.resume();
-    // if (this.appealTimerID) this.appealTimerID.resume();
-    // if (this.turnTimerID) this.turnTimerID.resume();
   }
 
   onClickedTheme = evt => {
@@ -675,7 +669,7 @@ export default class Game {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
       const time = this.gameField.congratulate(winner);
-      setTimeout(this.exit(), time);
+      setTimeout(this.exit, time);
     } else if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;

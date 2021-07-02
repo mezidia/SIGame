@@ -13,9 +13,7 @@ export default class RedactorController {
       'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
       'scroll-to': [scrollToRef(evt.target.id)],
       'scroll-direct': [evt.target.scrollIntoView],
-      'collapse-control': [this.collapseControl(evt.target.id)],
-      'home': [() => document.getElementById(evt.target.id).remove(), changeHash('chooseMode')],
-  
+      'collapse-control': [this.collapseControl(evt.target.id)],  
     }[elementId];
   }
 

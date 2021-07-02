@@ -350,7 +350,7 @@ export default class GameField {
   exitBtn() {
     const placeHolder = document.getElementById('popupPlaceholder');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-        <button class="home btn dark-r-hover" id="startGame-btn" data-localize="home" style="top: 20vw">Home</button>
+        <button class="home-bt btn dark-r-hover" data-localize="home" id="startGame-btn" style="top: 20vw">Home</button>
       </div>`;
   }
 }
