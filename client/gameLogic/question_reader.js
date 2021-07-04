@@ -19,13 +19,21 @@ export default class QReader {
     }
   }
 
-  drawQuestion(str, callback, needToRead = true) {
+  
+  draw(question, callback, needToRead = true) {
+    if (question.audio) this.drawWithAudio(question, callback, needToRead);
+    else if (question.img) this.drawWithImage(question, callback, needToRead);
+    else this.drawQuestion(question, callback, needToRead);
+  }
+
+  drawQuestion(question, callback, needToRead = true) {
+    const str = question.string;
     this.initDisplay();
     // noinspection CssInvalidPropertyValue
     this._display.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter">${letter}</span>`).join('')}
-    </span>`
+    </span>`;
     document.getElementById('last-letter').addEventListener('animationend', (evt) => {
       callback();
     });
@@ -36,12 +44,54 @@ export default class QReader {
     }
   }
  
+  drawWithImage(question, callback, needToRead = true) {
+    const str = question.string;
+    const image = document.createElement('img');
+    image.src = question.img;
+    this.initDisplay();
+    this._display.innerHTML = '';
+    this._display.appendChild(image);
+    const q_text = document.createElement('span');
+    q_text.id = 'question-text';
+    q_text.innerHTML = `${[...str].map((letter, index) =>
+      `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
+          class="question-letter">${letter}</span>`).join('')}`
+    this._display.appendChild(q_text);
+    document.getElementById('last-letter').addEventListener('animationend', (evt) => {
+      callback();
+    });
+    this._textBlock = document.getElementById('question-text');
+
+    if (needToRead) {
+      this.read(this._textBlock, Date.now())
+    }
+  }
+
+  drawWithAudio(question, callback, needToRead = true) {
+    const audio = new Audio(question.audio);
+
+    const str = question.string;
+    this.initDisplay();
+    // noinspection CssInvalidPropertyValue
+    this._display.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
+      `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
+          class="question-letter">${letter}</span>`).join('')}
+    </span>`;
+    audio.onended = (evt) => {
+      callback();
+    }
+    audio.play().catch(e => {
+      console.error('Audio playback error ' + e.ToString());
+      setTimeout(callback(), 500);
+    });
+  }
+
   congratulate(name) {
     return this.flash(`Congratulations, ${name} has won!!`, 400, 5000);
   }
 
   flash(text, delta, total) {
-    this.drawQuestion(text, () => {}, false);
+    this.drawQuestion({string: text, getVisualizationType: () => 'txt'}, () => {}, false);
     this._textBlock.style.textAlign = 'center';
     let isMainColor = true;
     const interval = setInterval(() => {

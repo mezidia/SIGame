@@ -83,7 +83,7 @@ export default class GameField {
   // draws a question and reads it.
   // When the animation is over you can listen to it via
   // animationend listener. There's an example of it in main.js 141 line
-  drawQuestion(str, callback, isGm = false, needToRead = true) {
+  drawQuestion(question, callback, isGm = false, needToRead = true) {
     document.getElementById('pause-btn').style.display = 'none';
     if (isGm) {
       try {
@@ -95,7 +95,7 @@ export default class GameField {
     } else {
       document.getElementById('exit-btn').style.gridArea = '1 / 1 / 3 / 3';
     }
-    this.Qreader.drawQuestion(str, callback, needToRead);
+    this.Qreader.draw(question, callback, needToRead);
   }
 
   congratulate(name) {

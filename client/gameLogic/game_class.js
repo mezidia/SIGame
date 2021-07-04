@@ -137,7 +137,7 @@ export default class Game {
       timeToPause = this.gameField.flash(str);
     }
     setTimeout(() => {
-    this.gameField.drawQuestion(evt.question.string, () => {
+    this.gameField.drawQuestion(evt.question, () => {
       if (new User().name === this.master) this.canRaiseHand(this.players);
     }, new User().name === this.master);
     }, timeToPause);
@@ -352,7 +352,7 @@ export default class Game {
   }
 
   forseShowQ = evt => {
-    this.gameField.drawQuestion(this.currentQuestion.string, () => {
+    this.gameField.drawQuestion(this.currentQuestion, () => {
       if (new User().name === this.master) this.canRaiseHand(evt.canRaise);
     }, new User().name === this.master);
   }
