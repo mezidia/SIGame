@@ -80,8 +80,9 @@ export default class QReader {
     audio.onended = (evt) => {
       callback();
     }
-    audio.play().catch(e => {
-      console.error('Audio playback error ' + e.ToString());
+    audio.load();
+    audio.play().catch(e => { // https://github.com/elan-ev/opencast-studio/issues/581
+      console.log('Audio playback issue or you using Firefox ' + e); 
       setTimeout(callback(), 500);
     });
   }
