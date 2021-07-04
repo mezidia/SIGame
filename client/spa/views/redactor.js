@@ -33,7 +33,7 @@ const view = () => {
       <h5>Optional (can choose only one)</h5>
       <div>
         <label for="audio">Select audio for a question</label>
-        <input type="file" id="audio-4-1-${i}" name="audio" accept=".mp3">
+        <input type="file" id="audio-4-1-${i}" name="audio" accept=".mp3,.ogg">
       </div>
       <div>
         <label for="image">Select image for a question</label>
