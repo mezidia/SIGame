@@ -257,7 +257,7 @@ export default class GameField {
   waitForPlayersJpgShow() {
     console.log(document);
     const gameDisplay = document.getElementById('game-display');
-    gameDisplay.innerHTML = `<img style="display: block; width: 50%; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg" alt="Waiting for start">`;
+    gameDisplay.innerHTML = `<img style="display: block; width: auto; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg" alt="Waiting for start">`;
   }
 
   drawStartButton() {

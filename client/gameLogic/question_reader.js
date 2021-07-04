@@ -48,6 +48,10 @@ export default class QReader {
     const str = question.string;
     const image = document.createElement('img');
     image.src = question.img;
+    image.style.maxHeight = '50vh';
+    image.style.marginLeft = 'auto';
+    image.style.marginRight = 'auto';
+    image.style.width = 'auto';
     this.initDisplay();
     this._display.innerHTML = '';
     this._display.appendChild(image);
