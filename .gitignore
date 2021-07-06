@@ -1,5 +1,6 @@
 node_modules
 package-lock.json
+fileServer
 .idea
 ./database/database.config.json
 .vscode
