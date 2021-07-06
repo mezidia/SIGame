@@ -1,10 +1,11 @@
 'use strict';
 
-import Bundle from "./bundle_class.js";
-import Deck from "./deck_class.js";
-import Question from "./question_class.js";
-import User from "./user_class.js";
+import Bundle from './bundle_class.js';
+import Deck from './deck_class.js';
+import Question from './question_class.js';
+import User from './user_class.js';
 import { getRandomIntInclusive } from '../utils.js';
+import { storage } from '../main.js';
 
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
 const MB = 1024**2;
@@ -252,7 +253,7 @@ export default class BundleEditor {
         'mType': 'saveBundleToDB',
         data: bundleData,
       };
-      socket.send(JSON.stringify(msg, null, '\t'));
+      storage.socket.send(JSON.stringify(msg, null, '\t'));
     }
     return true;
   }

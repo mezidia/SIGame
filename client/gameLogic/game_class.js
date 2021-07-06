@@ -230,6 +230,7 @@ export default class Game {
     this.clickConfig.answer = this.appeal;
     this.appealTimerID = new Timer(() => {
       document.getElementById('answer-btn').disabled = true;
+      this.setNextPicker();
       this.nextTurn();
     }, APPEALTIME * 1000);
   }
@@ -253,8 +254,10 @@ export default class Game {
           }
         this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
+        this.setNextPicker(this.lastAnswer.who);
       } else {
         this.gameField.announceGameState(Language.getTranslatedText("appeal-denied"));
+        this.setNextPicker();
       }
       this.nextTurn();
     }
@@ -486,6 +489,7 @@ export default class Game {
     this.points[name] += cost;
     this.updatePoints();
     this.gameField.gmPopHide();
+    this.setNextPicker(name);
     this.nextTurn();
   }
 
@@ -495,7 +499,6 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
-    this.setNextPicker();
   }
 
   uncorrect = evt => {

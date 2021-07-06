@@ -296,7 +296,10 @@ class Server {
       console.log("Connected!");
       console.log('from saveBundle to db' , data.data);
       await database.insertBundle(data.data);
-      connection.destroy();
+      connection.end(err => {
+        if(err) console.log("error when connection ends: " + err);
+        else console.log("closed");
+      });
     });
   }
 
