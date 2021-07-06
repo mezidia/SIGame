@@ -11,7 +11,7 @@ const view = () => {
       <h5 data-localize="optional">Optional (can choose only one)</h5>
       <div>
         <label for="audio" data-localize="input-audio">Select audio for a question</label>
-        <input type="file" id="audio-${roundNumber}-${themeNumber}-${i}" name="audio" accept=".mp3">
+        <input type="file" id="audio-${roundNumber}-${themeNumber}-${i}" name="audio" accept=".mp3,.ogg">
       </div>
       <div>
         <label for="image" data-localize="input-image">Select image for a question</label>
