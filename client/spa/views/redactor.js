@@ -4,17 +4,17 @@ const view = () => {
   const questionList = (roundNumber, themeNumber) => {
     return [1, 2, 3, 4, 5].map(i => `
       <h5><span data-localize="question">Question</span> ${i}: ${i*roundNumber}00 <span data-localize="points">points</span></h5>
-      <p>Separate true and wrong answers via comas</p>
+      <p data-localize="sep-answers">Separate true and wrong answers via comas</p>
       <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
       <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
       <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">
-      <h5>Optional (can choose only one)</h5>
+      <h5 data-localize="optional">Optional (can choose only one)</h5>
       <div>
-        <label for="audio">Select audio for a question</label>
+        <label for="audio" data-localize="input-audio">Select audio for a question</label>
         <input type="file" id="audio-${roundNumber}-${themeNumber}-${i}" name="audio" accept=".mp3">
       </div>
       <div>
-        <label for="image">Select image for a question</label>
+        <label for="image" data-localize="input-image">Select image for a question</label>
         <input type="file" id="img-${roundNumber}-${themeNumber}-${i}" name="image" accept=".jpeg,.jpg,.png">
       </div>
       `).join('\n');
