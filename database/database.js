@@ -1,6 +1,7 @@
 'use strict';
 
 const mysql = require('mysql');
+const fs = require('fs');
 
 class Database {
   constructor (config) {
@@ -10,42 +11,48 @@ class Database {
 
   //check if needed tables exist and create if not
   async checkExistance() {
-    const dbschema = `CREATE TABLE IF NOT EXISTS langcode (
-      langcode_id int PRIMARY KEY,
+    const dblangcode = `
+    CREATE TABLE IF NOT EXISTS langcode (
+      langcode_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
       langcode_name varchar(10)
-    );
-    
+    );`;
+    const dbbundle = `
     CREATE TABLE IF NOT EXISTS bundle (
-      bundle_id int PRIMARY KEY,
+      bundle_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
       bundle_author varchar(34),
       bundle_langcode int,
-      CONSTRAINT fk_bundle_on_langcode
-      FOREIGN KEY (bundle_langcode)
-      REFERENCES langcode(langcode_id),
+      FOREIGN KEY (bundle_langcode) REFERENCES langcode(langcode_id),
       bundle_title varchar(200)
     );
-    
+    `;
+    const dbdeck = `
     CREATE TABLE IF NOT EXISTS deck (
       bundle_id int,
-      deck_id int PRIMARY KEY,
+      deck_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
       deck_subject varchar(200),
       CONSTRAINT fk_deck_on_bundle
       FOREIGN KEY (bundle_id)
       REFERENCES bundle(bundle_id)
-    );
-    
+    );`; 
+    const dbquestion = `
     CREATE TABLE IF NOT EXISTS question (
+      question_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
       deck_id int,
       question_type varchar(50),
       question_string varchar(200),
+      question_date datetime,
       question_trueans varchar(300),
       question_falseans varchar(300),
       CONSTRAINT fk_question_on_deck
       FOREIGN KEY (deck_id)
       REFERENCES deck(deck_id)
     );`;
-    await this.promisifyConQuery(dbschema)
-    .catch(err => console.log(err));
+    const dbschema = [dblangcode, dbbundle, dbdeck, dbquestion];
+    for (let schema of dbschema) {
+      this.con.query(schema, err => {
+        if (err) console.error(err);
+      });
+    }
   }
 
   //return connection
@@ -83,6 +90,8 @@ class Database {
     let question = {
       type: null,
       string: null,
+      img: null,
+      audio: null,
       trueAns: null,
       falseAns: null
     };
@@ -102,6 +111,28 @@ class Database {
       let bundleId = 1;
       let deckId = 1;
       for (let i = 0; i < rows.length; i++) {
+        const id = rows[i].question_id;
+        const date = new Date(Date.parse(rows[i].question_date.toString().replace(/-/g, '/')));
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        let img = null;
+        const imagePath = `./fileServer/${year}/${month}/${id}_image.txt`;
+        if (fs.existsSync(imagePath)) {
+          fs.readFile(imagePath, (err, data) => {
+            if (err) console.error('Error while reading image ', err);
+            img = data;
+          });
+        }
+        let audio = null;
+        const audioPath = `./fileServer/${year}/${month}/${id}_audio.txt`;
+        if (fs.existsSync(audioPath)) {
+          fs.readFile(audioPath, (err, data) => {
+            if (err) console.error('Error while reading audio ', err);
+            img = data;
+          });
+        }
+        question.img = img;
+        question.audio = audio;
         question.type = rows[i].question_type;
         question.string = rows[i].question_string;
         question.trueAns = rows[i].question_trueans;
@@ -111,6 +142,8 @@ class Database {
         question = {
           type: null,
           string: null,
+          img: null,
+          audio: null,
           trueAns: null,
           falseAns: null
         }
@@ -148,27 +181,44 @@ class Database {
     return returnBundles;
   }
 
+  saveAudioAndImageFiles(image, audio, question_id) {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    if (!fs.existsSync(`./fileServer/${year}/${month}`)) {
+      fs.mkdirSync(`./fileServer/${year}/${month}`, { recursive: true }, err => {
+        if (err) console.error('error when creating date dir ' + err);
+      });
+    }
+    if (image) {
+      fs.writeFile(`./fileServer/${year}/${month}/${question_id}_image.txt`, image, 'utf8', err => {
+        if (err) console.error('Error when saving image to file server '+ err);
+      });
+    }
+    if (audio) {
+      fs.writeFile(`./fileServer/${year}/${month}/${question_id}_audio.txt`, audio, 'utf8', err => {
+        if (err) console.error('Error when saving audio to file server '+ err);
+      });
+    }
+  }
+
   //insert new bundle to database
   async insertBundle(bundle) {
     await this.checkExistance();
-    let insertLangcodeSqlStr = `INSERT INTO langcode (langcode_name)
-    SELECT * FROM (SELECT '${bundle.langcode}') AS tmp
-    WHERE NOT EXISTS ( SELECT langcode_name 
-    FROM langcode 
-    WHERE langcode_name = '${bundle.langcode}')
-    LIMIT 1`;
+    let insertLangcodeSqlStr = `INSERT IGNORE INTO langcode 
+    SET langcode_name = '${bundle.langcode}'`;
     await this.promisifyConQuery(insertLangcodeSqlStr)
     .catch(err => console.log(err))
-    .then(() => {
+    .then(async () => {
       const getlangIDSqlStr = `SELECT langcode_id FROM langcode WHERE langcode_name = '${bundle.langcode}'`;
-      return this.promisifyConQuery(getlangIDSqlStr);
+      return await this.promisifyConQuery(getlangIDSqlStr);
     })
     .catch(err => console.log(err))
-    .then(rows => {
+    .then(async rows => {
       const langcodeId = rows[0].langcode_id;
       const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode) 
                                   VALUES('${bundle.author.replace(/[']{1}/g, "''")}', '${bundle.title.replace(/[']{1}/g, "''")}', '${langcodeId}')`;
-      return this.promisifyConQuery(insertBundleSqlStr);
+      return await this.promisifyConQuery(insertBundleSqlStr);
     })
     .catch(err => console.log(err))
     .then(async rows => {
@@ -179,10 +229,13 @@ class Database {
         await this.promisifyConQuery(insertDeckSqlStr)
         .then(async rowsD => {
           for (const q of deck.questions) {
-            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_trueans, question_falseans, deck_id) 
-                                          VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${q.trueAns.toString().replace(/[']{1}/g, "''")}', '${q.falseAns.toString().replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
-            await this.promisifyConQuery(insertQuestionSqlStr)
-            .catch(err => console.log(err));
+            const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_date, question_trueans, question_falseans, deck_id) 
+                                          VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${date}', '${q.trueAns.toString().replace(/[']{1}/g, "''")}', '${q.falseAns.toString().replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
+            this.con.query(insertQuestionSqlStr, (err, res) => {
+              if (err) console.error(err);
+              this.saveAudioAndImageFiles(q.img, q.audio, res.insertId);
+            })
           }
         })
         .catch(err => console.log(err));
@@ -224,6 +277,8 @@ class Database {
     let question = {
       type: null,
       string: null,
+      img: null,
+      audio: null,
       trueAns: null,
       falseAns: null
     };
@@ -241,6 +296,28 @@ class Database {
     .then(rows => {
       let deckId = 1;
       for (let i = 0; i < rows.length; i++) {
+        const id = rows[i].question_id;
+        const date = new Date(Date.parse(rows[i].question_date.toString().replace(/-/g, '/')));
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        let img = null;
+        const imagePath = `./fileServer/${year}/${month}/${id}_image.txt`;
+        if (fs.existsSync(imagePath)) {
+          fs.readFile(imagePath, (err, data) => {
+            if (err) console.error('Error while reading image ', err);
+            img = data;
+          });
+        }
+        let audio = null;
+        const audioPath = `./fileServer/${year}/${month}/${id}_audio.txt`;
+        if (fs.existsSync(audioPath)) {
+          fs.readFile(audioPath, (err, data) => {
+            if (err) console.error('Error while reading audio ', err);
+            img = data;
+          });
+        }
+        question.img = img;
+        question.audio = audio;
         question.type = rows[i].question_type;
         question.string = rows[i].question_string;
         question.trueAns = rows[i].question_trueans;
@@ -250,6 +327,8 @@ class Database {
         question = {
           type: null,
           string: null,
+          img: null,
+          audio: null,
           trueAns: null,
           falseAns: null
         }
