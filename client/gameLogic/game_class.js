@@ -174,19 +174,12 @@ export default class Game {
     'sponsored': this.onRegularQ,
   }
 
-  qTypeAnnounce = {
-    'regular': 'Regular question',
-    'secret': 'Question with secret',
-    'bet': 'Question with bet',
-    'final': 'Final question',
-    'sponsored': 'Sponsored question',
-  }
 
   onShowQuestion = evt => {
     this.currentQuestion = evt.question;
     const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
     if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
-    qHandler(evt, this.qTypeAnnounce[this.currentQuestion.type]);
+    qHandler(evt, Language.getTranslatedText(this.currentQuestion.type));
   }
 
   onNextTurn = evt => {
@@ -484,7 +477,7 @@ export default class Game {
   }
 
   correct = evt => {
-    const name = document.getElementById('answer-author').textContent;
+    const name = document.getElementById('answr-author').textContent;
     let cost = this.currentQuestion.cost;
     if (this.currentQuestion.type === 'final' ||
         this.currentQuestion.type === 'bet') {
@@ -506,7 +499,7 @@ export default class Game {
   }
 
   uncorrect = evt => {
-    const name = document.getElementById('answer-author').textContent;
+    const name = document.getElementById('answr-author').textContent;
     if (this.currentQuestion.type !== 'sponsored') {
       let cost = this.currentQuestion.cost;
       if (this.currentQuestion.type === 'final' || 
