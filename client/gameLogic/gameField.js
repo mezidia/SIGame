@@ -160,7 +160,7 @@ export default class GameField {
     Array.isArray(f) ? f = f.join(',') : false;
     document.getElementById('reply').innerHTML = `<div class="container gm-popup">
         <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
-          <span class="badge badge-primary" id="answer-author" style="font-size: 24px">${who}</span>
+          <span class="badge badge-primary" id="answr-author" style="font-size: 24px">${who}</span>
           <br>
           <span id="answer-text">${ans}</span>
         </div>

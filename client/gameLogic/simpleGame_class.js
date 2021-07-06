@@ -4,6 +4,7 @@
 import User from "./user_class.js";
 import Game from "./game_class.js";
 import { getRandomIntInclusive } from "../utils.js";
+import Language from "../changeLanguage.js";
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 300; //sec
@@ -42,7 +43,7 @@ export default class SimpleGame extends Game {
     console.log(this.currentQuestion);
     evt.question = this.currentQuestion;
     if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
-    qHandler(evt, this.qTypeAnnounce[this.currentQuestion.type]);
+    qHandler(evt, Language.getTranslatedText(this.currentQuestion.type));
   }
 
   eventsConfig = {
