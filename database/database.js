@@ -115,24 +115,14 @@ class Database {
         const date = new Date(Date.parse(rows[i].question_date.toString().replace(/-/g, '/')));
         const year = date.getFullYear();
         const month = date.getMonth();
-        let img = null;
         const imagePath = `./fileServer/${year}/${month}/${id}_image.txt`;
         if (fs.existsSync(imagePath)) {
-          fs.readFile(imagePath, (err, data) => {
-            if (err) console.error('Error while reading image ', err);
-            img = data;
-          });
+          question.img = fs.readFileSync(imagePath, 'utf8');
         }
-        let audio = null;
         const audioPath = `./fileServer/${year}/${month}/${id}_audio.txt`;
         if (fs.existsSync(audioPath)) {
-          fs.readFile(audioPath, (err, data) => {
-            if (err) console.error('Error while reading audio ', err);
-            img = data;
-          });
+          question.audio = fs.readFileSync(audioPath, 'utf8');
         }
-        question.img = img;
-        question.audio = audio;
         question.type = rows[i].question_type;
         question.string = rows[i].question_string;
         question.trueAns = rows[i].question_trueans;
@@ -255,7 +245,6 @@ class Database {
     await this.promisifyConQuery(query)
     .catch(err => console.log(err))
     .then(rows => {
-      console.log(rows);
       result = rows;
     })
     .finally(() => console.log('done'));
@@ -294,30 +283,20 @@ class Database {
     await this.promisifyConQuery(getDeckSqlStr)
     .catch(err => console.log(err))
     .then(rows => {
-      let deckId = 1;
+      let deckId = rows[0].deck_id;
       for (let i = 0; i < rows.length; i++) {
         const id = rows[i].question_id;
         const date = new Date(Date.parse(rows[i].question_date.toString().replace(/-/g, '/')));
         const year = date.getFullYear();
         const month = date.getMonth();
-        let img = null;
         const imagePath = `./fileServer/${year}/${month}/${id}_image.txt`;
         if (fs.existsSync(imagePath)) {
-          fs.readFile(imagePath, (err, data) => {
-            if (err) console.error('Error while reading image ', err);
-            img = data;
-          });
+          question.img = fs.readFileSync(imagePath, 'utf8');
         }
-        let audio = null;
         const audioPath = `./fileServer/${year}/${month}/${id}_audio.txt`;
         if (fs.existsSync(audioPath)) {
-          fs.readFile(audioPath, (err, data) => {
-            if (err) console.error('Error while reading audio ', err);
-            img = data;
-          });
+          question.audio = fs.readFileSync(audioPath, 'utf8');
         }
-        question.img = img;
-        question.audio = audio;
         question.type = rows[i].question_type;
         question.string = rows[i].question_string;
         question.trueAns = rows[i].question_trueans;

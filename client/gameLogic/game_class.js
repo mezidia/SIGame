@@ -60,6 +60,7 @@ export default class Game {
     this.appealDecision = [];
     this.bets = {};
     this.playersIterator = undefined;
+    this.gTimerCallback = null;
     console.log('new Game', this);
   }
 
@@ -133,7 +134,7 @@ export default class Game {
 
   onRegularQ = (evt, str) => {
     let timeToPause = 0;
-    if (str !== 'Regular question') {
+    if (str !== Language.getTranslatedText('regular')) {
       timeToPause = this.gameField.flash(str);
     }
     setTimeout(() => {
@@ -289,18 +290,26 @@ export default class Game {
     this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
+    this.gTimerCallback = new Timer(() => {
+      const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
+      //show win window
+      const time = this.gameField.congratulate(winner);
+      setTimeout(this.exit, time);
+    }, GAMETIME * 1000);
   }
 
   onPause = evt => {
     this.clickConfig.pause = this.resume;
     this.gameField.pause(evt.timeStamp);
     this.gameTimer.pause(evt.timeStamp);
+    this.gTimerCallback.pause();
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
     this.gameField.pause(evt.timeStamp);
     this.gameTimer.resume();
+    this.gTimerCallback.resume();
   }
 
   onClickedTheme = evt => {
@@ -449,9 +458,10 @@ export default class Game {
     document.getElementById('answer-btn').disabled = true;
     const event = {
       eType: 'answerCheck',
-      answer: ans.value,
+      answer: ans.value + '',
       who: new User().name,
     };
+    ans.value = '';
     this.broadcast(event);
   }
 

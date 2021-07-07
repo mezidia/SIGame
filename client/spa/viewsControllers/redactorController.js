@@ -10,11 +10,21 @@ export default class RedactorController {
 
   clickConfig(evt, elementId) {
     return {
-      'submitBundleEditor-btn': [() => bundleEditor.submitBundleEditor().then(() => changeHash('')())],
+      'submitBundleEditor-btn': [() => bundleEditor.submitBundleEditor().then(success => {
+        if (success) {
+          changeHash('')();
+        }
+      })],
       'scroll-to': [scrollToRef(evt.target.id)],
       'scroll-direct': [evt.target.scrollIntoView],
       'collapse-control': [this.collapseControl(evt.target.id)],  
     }[elementId];
+  }
+
+  changeConfig(evt, elementId) {
+    return {
+      'exclude': [() => this.delAlternative(evt.target.id)],
+    }[elementId]
   }
 
   getHandlers(evt) {
@@ -27,6 +37,16 @@ export default class RedactorController {
     }
     if (!handlers) return false;
     return handlers;
+  }
+
+  imgAud(str) {
+    return str === 'img' ? 'audio_cont' : 'img_cont';
+  }
+
+  delAlternative(id) {
+    const temp = id.split('-');
+    const dom = temp.shift();
+    document.getElementById(this.imgAud(dom) + '-' + temp.join('-')).style.display = 'none';
   }
 
   collapseControl(id) {

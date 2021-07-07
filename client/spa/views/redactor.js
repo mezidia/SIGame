@@ -7,15 +7,15 @@ const view = () => {
       <p data-localize="sep-answers">Separate true and wrong answers via comas</p>
       <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
       <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
-      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">
-      <h5 data-localize="optional">Optional (can choose only one)</h5>
-      <div>
+      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers-input">
+      <h5 data-localize="optional">Optional</h5>
+      <div id="audio_cont-${roundNumber}-${themeNumber}-${i}">
         <label for="audio" data-localize="input-audio">Select audio for a question</label>
-        <input type="file" id="audio-${roundNumber}-${themeNumber}-${i}" name="audio" accept=".mp3">
+        <input type="file" class="exclude" id="audio-${roundNumber}-${themeNumber}-${i}" name="audio" accept=".mp3,.ogg">
       </div>
-      <div>
+      <div id="img_cont-${roundNumber}-${themeNumber}-${i}">
         <label for="image" data-localize="input-image">Select image for a question</label>
-        <input type="file" id="img-${roundNumber}-${themeNumber}-${i}" name="image" accept=".jpeg,.jpg,.png">
+        <input type="file" class="exclude" id="img-${roundNumber}-${themeNumber}-${i}" name="image" accept=".jpeg,.jpg,.png">
       </div>
       `).join('\n');
   }
@@ -28,16 +28,16 @@ const view = () => {
       <br>
       <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-4-1-${i}" data-localize="input-question" required>
       <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-4-1-${i}" data-localize="answers" required>
-      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-4-1-${i}" data-localize="wrong-answers">
+      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-4-1-${i}" data-localize="wrong-answers-input">
       <input value="azaza lalka kek" type="text" placeholder="Question type" id="question-type-4-1-${i}" data-localize="question-type" required>
-      <h5>Optional (can choose only one)</h5>
-      <div>
-        <label for="audio">Select audio for a question</label>
-        <input type="file" id="audio-4-1-${i}" name="audio" accept=".mp3,.ogg">
+      <h5 data-localize="optional">Optional</h5>
+      <div id="audio_cont-4-1-${i}">
+        <label for="audio" data-localize="input-audio">Select audio for a question</label>
+        <input type="file" class="exclude" id="audio-4-1-${i}" name="audio" accept=".mp3,.ogg">
       </div>
-      <div>
-        <label for="image">Select image for a question</label>
-        <input type="file" id="img-4-1-${i}" name="image" accept=".jpeg,.jpg,.png">
+      <div id="img_cont-4-1-${i}">
+        <label for="image" data-localize="input-audio">Select image for a question</label>
+        <input type="file" class="exclude" id="img-4-1-${i}" name="image" accept=".jpeg,.jpg,.png">
       </div>`).join('\n');
   }
 
@@ -75,7 +75,8 @@ const view = () => {
   return `<div class="container">
     <form>
       <h2 data-localize="pack-title-word">Pack title</h2>
-      <input value="azaza lalka kek" id="bundleTitle-input" type="text" maxlength=200 required>
+      <input value="azaza lalka kek" id="bundleTitle-input" type="text" maxlength=200 required> <span>${new Date().toLocaleString('en-GB')}</span>
+      <p data-localize="prime-meridian"></p>
       <h2 data-localize="author-word">Author</h2>
       <input value="azaza lalka kek" id="bundleAuthor-input" type="text" maxlength=34 required>
       <h2 data-localize="language">Language:</h2>

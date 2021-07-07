@@ -38,11 +38,12 @@ const de = {
   "round": "Round",
   "final-round": "Final Round",
   "question": "Question",
-  "regular": "Regular Question",
+  "regular": "Regular question",
   "bet": "Question with bet",
   "secret": "Question with secret",
   "final": "Final question",
   "sponsored": "Sponsored question",
+  'invalid': "Invalid question data at",
   "points": "points",
   "category": "Category",
   "category-name": "Category name",
@@ -54,12 +55,12 @@ const de = {
   },
   "input-image": "Select image for a question",
   "input-audio": "Select audio for a question",
-  "optional": "Optional (can choose only one)",
+  "optional": "Optional",
   "sep-answers": "Separate true and wrong answers via comas",
   "answers": {
     "placeholder": "Answers"
   },
-  "wrong-answers": {
+  "wrong-answers-input": {
     "placeholder": "Wrong answers(optional)"
   },
   "input-category": {
@@ -130,7 +131,7 @@ const de = {
   "someone's-move": "'s move.",
   "count-players-1": "players",
   "count-players-2": "to start the game",
-  
+  "prime-meridian": "time (prime meridian) is added to the bundle name",
 };
 
 export { de };
