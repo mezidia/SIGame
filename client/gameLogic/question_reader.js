@@ -110,7 +110,7 @@ export default class QReader {
     return total;
   }
 
-  read (textBlock, startTime = this._startTime, delta = 150) {
+  read (textBlock, startTime = this._startTime, delta = 90) {
     this.isActive = true;
     this._textBlock = textBlock;
 

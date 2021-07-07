@@ -60,6 +60,7 @@ export default class Game {
     this.appealDecision = [];
     this.bets = {};
     this.playersIterator = undefined;
+    this.gTimerCallback = null;
     console.log('new Game', this);
   }
 
@@ -133,7 +134,7 @@ export default class Game {
 
   onRegularQ = (evt, str) => {
     let timeToPause = 0;
-    if (str !== 'Regular question') {
+    if (str !== Language.getTranslatedText('regular')) {
       timeToPause = this.gameField.flash(str);
     }
     setTimeout(() => {
@@ -174,19 +175,12 @@ export default class Game {
     'sponsored': this.onRegularQ,
   }
 
-  qTypeAnnounce = {
-    'regular': 'Regular question',
-    'secret': 'Question with secret',
-    'bet': 'Question with bet',
-    'final': 'Final question',
-    'sponsored': 'Sponsored question',
-  }
 
   onShowQuestion = evt => {
     this.currentQuestion = evt.question;
     const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
     if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
-    qHandler(evt, this.qTypeAnnounce[this.currentQuestion.type]);
+    qHandler(evt, Language.getTranslatedText(this.currentQuestion.type));
   }
 
   onNextTurn = evt => {
@@ -237,6 +231,7 @@ export default class Game {
     this.clickConfig.answer = this.appeal;
     this.appealTimerID = new Timer(() => {
       document.getElementById('answer-btn').disabled = true;
+      this.setNextPicker();
       this.nextTurn();
     }, APPEALTIME * 1000);
   }
@@ -260,8 +255,10 @@ export default class Game {
           }
         this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
+        this.setNextPicker(this.lastAnswer.who);
       } else {
         this.gameField.announceGameState(Language.getTranslatedText("appeal-denied"));
+        this.setNextPicker();
       }
       this.nextTurn();
     }
@@ -293,18 +290,26 @@ export default class Game {
     this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
     this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
+    this.gTimerCallback = new Timer(() => {
+      const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
+      //show win window
+      const time = this.gameField.congratulate(winner);
+      setTimeout(this.exit, time);
+    }, GAMETIME * 1000);
   }
 
   onPause = evt => {
     this.clickConfig.pause = this.resume;
     this.gameField.pause(evt.timeStamp);
     this.gameTimer.pause(evt.timeStamp);
+    this.gTimerCallback.pause();
   }
 
   onResume = evt => {
     this.clickConfig.pause = this.pause;
     this.gameField.pause(evt.timeStamp);
     this.gameTimer.resume();
+    this.gTimerCallback.resume();
   }
 
   onClickedTheme = evt => {
@@ -453,9 +458,10 @@ export default class Game {
     document.getElementById('answer-btn').disabled = true;
     const event = {
       eType: 'answerCheck',
-      answer: ans.value,
+      answer: ans.value + '',
       who: new User().name,
     };
+    ans.value = '';
     this.broadcast(event);
   }
 
@@ -484,7 +490,7 @@ export default class Game {
   }
 
   correct = evt => {
-    const name = document.getElementById('answer-author').textContent;
+    const name = document.getElementById('answr-author').textContent;
     let cost = this.currentQuestion.cost;
     if (this.currentQuestion.type === 'final' ||
         this.currentQuestion.type === 'bet') {
@@ -493,6 +499,7 @@ export default class Game {
     this.points[name] += cost;
     this.updatePoints();
     this.gameField.gmPopHide();
+    this.setNextPicker(name);
     this.nextTurn();
   }
 
@@ -502,11 +509,10 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
-    this.setNextPicker();
   }
 
   uncorrect = evt => {
-    const name = document.getElementById('answer-author').textContent;
+    const name = document.getElementById('answr-author').textContent;
     if (this.currentQuestion.type !== 'sponsored') {
       let cost = this.currentQuestion.cost;
       if (this.currentQuestion.type === 'final' || 

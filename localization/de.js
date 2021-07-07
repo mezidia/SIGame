@@ -35,11 +35,14 @@ const de = {
   "german": "German",
   "ukrainian": "Ukrainian",
   "mode": "Mode",
-  "classic": "Classic",
-  "simplified": "Simplified",
   "round": "Round",
   "final-round": "Final Round",
   "question": "Question",
+  "regular": "Regular question",
+  "bet": "Question with bet",
+  "secret": "Question with secret",
+  "final": "Final question",
+  "sponsored": "Sponsored question",
   "points": "points",
   "category": "Category",
   "category-name": "Category name",
@@ -49,6 +52,10 @@ const de = {
   "input-question": {
     "placeholder": "Question"
   },
+  "input-image": "Select image for a question",
+  "input-audio": "Select audio for a question",
+  "optional": "Optional",
+  "sep-answers": "Separate true and wrong answers via comas",
   "answers": {
     "placeholder": "Answers"
   },
