@@ -130,7 +130,7 @@ const de = {
   "someone's-move": "'s move.",
   "count-players-1": "players",
   "count-players-2": "to start the game",
-  
+  "prime-meridian": "time (prime meridian) is added to the bundle name",
 };
 
 export { de };

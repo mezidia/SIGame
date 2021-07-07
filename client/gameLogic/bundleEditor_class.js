@@ -204,7 +204,7 @@ export default class BundleEditor {
     };
     bundleData.langcode = toLangCode(mainBundleFields[0]);
     bundleData.author = mainBundleFields[1];
-    bundleData.title = mainBundleFields[2];
+    bundleData.title = mainBundleFields[2] + new Date().toLocaleString('en-GB');
     try {
       for (let r = 1; r < 4; r++) { //round
         for (let c = 1; c <= 5; c++) { //category

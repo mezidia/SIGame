@@ -75,7 +75,8 @@ const view = () => {
   return `<div class="container">
     <form>
       <h2 data-localize="pack-title-word">Pack title</h2>
-      <input value="azaza lalka kek" id="bundleTitle-input" type="text" maxlength=200 required>
+      <input value="azaza lalka kek" id="bundleTitle-input" type="text" maxlength=200 required> <span>${new Date().toLocaleString('en-GB')}</span>
+      <p data-localize="prime-meridian"></p>
       <h2 data-localize="author-word">Author</h2>
       <input value="azaza lalka kek" id="bundleAuthor-input" type="text" maxlength=34 required>
       <h2 data-localize="language">Language:</h2>
