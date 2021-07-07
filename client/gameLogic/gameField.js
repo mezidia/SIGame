@@ -310,7 +310,7 @@ export default class GameField {
     document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
      <h2 class="text-primary" data-localize="make-bet">${Language.getTranslatedText('make-bet')}</h2>
      <input id="betSize" style="width: 100%" required>
-     <button id="bet-btn" class="btn dark-r-hover" style="width: 100%; text-align: center; float: left" id="place-bet">OK</button>
+     <button id="bet-btn" class="btn dark-r-hover" style="width: 100%; text-align: center; float: left">OK</button>
   </div>
   `;
   }
