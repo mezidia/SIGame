@@ -254,12 +254,12 @@ export default class Game {
           }
         this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
-        this.setNextPicker(this.lastAnswer.who);
+        if (new User().name === this.master) this.setNextPicker(this.lastAnswer.who);
       } else {
         this.gameField.announceGameState(Language.getTranslatedText("appeal-denied"));
-        this.setNextPicker();
+        if (new User().name === this.master) this.setNextPicker();
       }
-      this.nextTurn();
+      if (new User().name === this.master) this.nextTurn();
     }
   }
 
