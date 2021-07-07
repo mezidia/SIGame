@@ -3,7 +3,7 @@ import User from '../../gameLogic/user_class.js';
 import { changeHash } from '../spaControl.js';
 import { yesnoPopup } from '../uiElements.js';
 import Game from '../../gameLogic/game_class.js';
-//import SimpleGame from '../../gameLogic/simpleGame_class.js';
+import SimpleGame from '../../gameLogic/simpleGame_class.js';
 
 const reg = /^[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+$/;
 
