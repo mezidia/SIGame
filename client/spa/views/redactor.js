@@ -7,7 +7,7 @@ const view = () => {
       <p data-localize="sep-answers">Separate true and wrong answers via comas</p>
       <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
       <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
-      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers">
+      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers-input">
       <h5 data-localize="optional">Optional</h5>
       <div id="audio_cont-${roundNumber}-${themeNumber}-${i}">
         <label for="audio" data-localize="input-audio">Select audio for a question</label>
@@ -28,7 +28,7 @@ const view = () => {
       <br>
       <input value="azaza lalka kek" type="text" placeholder="Question" maxlength=200 id="question-4-1-${i}" data-localize="input-question" required>
       <input value="azaza lalka kek" type="text" placeholder="Answers" maxlength=300 id="answer-4-1-${i}" data-localize="answers" required>
-      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-4-1-${i}" data-localize="wrong-answers">
+      <input value="azaza lalka kek" type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-4-1-${i}" data-localize="wrong-answers-input">
       <input value="azaza lalka kek" type="text" placeholder="Question type" id="question-type-4-1-${i}" data-localize="question-type" required>
       <h5 data-localize="optional">Optional</h5>
       <div id="audio_cont-4-1-${i}">
@@ -112,7 +112,6 @@ const view = () => {
       <button id="submitBundleEditor-btn" type="button" class="btn dark-b-hover btn-lg btn-block" style="margin-top: 40px" data-localize="bundle">Create bundle</button>
       <div style="height: 40px">      
     </form>
-    <div id="popupPlaceholder" style="height: 0"></div>
   </div>
   `;
 };

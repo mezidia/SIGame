@@ -1,4 +1,4 @@
 'use strict';
 const Server = require('./server/server').Server;
 
-const server = new Server(5000);
+const server = new Server(process.env.PORT || 5000);

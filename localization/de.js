@@ -60,7 +60,7 @@ const de = {
   "answers": {
     "placeholder": "Answers"
   },
-  "wrong-answers": {
+  "wrong-answers-input": {
     "placeholder": "Wrong answers(optional)"
   },
   "input-category": {

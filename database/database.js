@@ -216,14 +216,12 @@ class Database {
       for (const deck of bundle.decks) {
         const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) 
                                   VALUES('${deck.subject.replace(/[']{1}/g, "''")}', '${bundleId}')`;
-        console.log(deck.questions.length);
         await this.promisifyConQuery(insertDeckSqlStr)
         .then(async rowsD => {
           for (const q of deck.questions) {
             const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_date, question_trueans, question_falseans, deck_id) 
                                           VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${date}', '${q.trueAns.toString().replace(/[']{1}/g, "''")}', '${q.falseAns.toString().replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
-            console.log(deck.questions.length, rowsD.insertId, q.string);
             this.con.query(insertQuestionSqlStr, (err, res) => {
               if (err) console.error(err);
               this.saveAudioAndImageFiles(q.img, q.audio, res.insertId);
@@ -247,7 +245,6 @@ class Database {
     await this.promisifyConQuery(query)
     .catch(err => console.log(err))
     .then(rows => {
-      console.log(rows);
       result = rows;
     })
     .finally(() => console.log('done'));
