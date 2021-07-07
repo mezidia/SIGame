@@ -1,22 +1,69 @@
 'use strict';
 
-import Bundle from "./bundle_class.js";
-import Deck from "./deck_class.js";
-import Question from "./question_class.js";
-import User from "./user_class.js";
+import Bundle from './bundle_class.js';
+import Deck from './deck_class.js';
+import Question from './question_class.js';
+import User from './user_class.js';
 import { getRandomIntInclusive } from '../utils.js';
-const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
+import { storage } from '../main.js';
+import { errPopup } from '../spa/uiElements.js';
 
-function getQData(r, c, q) {
+const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
+const MB = 1024**2;
+
+function inputFileToBlob(file) {
+  return new Promise((resolve, reject) => {
+    const f = new FileReader();
+    f.onload = evt => resolve(evt.target.result);
+    f.readAsDataURL(file);
+  });
+}
+
+function isAcceptableSize(file, maxSizeMB = 10) {
+  if (!file.size) throw new Error('Invalid file: has not size property!');
+  const fileSizeMB = Math.ceil(file.size / MB);
+  return fileSizeMB < maxSizeMB;
+}
+
+async function getQData(r, c, q) {
   const string = document.getElementById(`question-${r}-${c}-${q}`).value;
+  const audioFile = document.getElementById(`audio-${r}-${c}-${q}`).files[0];
+  const imgFile = document.getElementById(`img-${r}-${c}-${q}`).files[0];
   const trueAns = document.getElementById(`answer-${r}-${c}-${q}`).value;
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
-  const type = document.getElementById(`question-type-${r}-${c}-${q}`).value
-  if (!reg.test(string)) throw new Error(`failed reg test on string ${r}-${c}-${q}`);
-  if (!reg.test(trueAns)) throw new Error(`failed reg test on trueAns ${r}-${c}-${q}`);
-  if (falseAns.length > 0) if (!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
-  if (!reg.test(type)) throw new Error(`failed reg test on type ${r}-${c}-${q}`);
-  return {string, trueAns, falseAns, type};
+  if (!reg.test(string)) return false;
+  if (!reg.test(trueAns)) return false;
+  if (falseAns.length > 0) if (!reg.test(falseAns)) return false;
+  let audioBlob = null;
+  let imgBlob = null;
+  if (audioFile) {
+    if (isAcceptableSize(audioFile)) {
+      await inputFileToBlob(audioFile)
+      .then(blob => {
+        audioBlob = blob;
+      }, err => {
+        console.error(err);
+        return false;
+      });
+    } else {
+      //popup max size = 10mb!
+      return false;
+    }
+  } else if (imgFile) {
+    if (isAcceptableSize(imgFile)) {
+      await inputFileToBlob(imgFile)
+      .then(blob => {
+        imgBlob = blob;
+      }, err => {
+        console.error(err);
+        return false;
+      });
+    } else {
+      //popup max size = 10mb!
+      return false;
+    }
+  }
+  return { string, trueAns, falseAns, audio: audioBlob, img: imgBlob };
 }
 
 function getDomElemVal(elem) {
@@ -25,6 +72,12 @@ function getDomElemVal(elem) {
     throw new Error(`failed reg test on ${elem.id}`);
   }
   return val;
+}
+
+function getSpecialQIndex(r, c) {
+  const secretIndex = document.getElementById(`secretIndex-select-${r}-${c}`).value;
+  const betIndex = document.getElementById(`betIndex-select-${r}-${c}`).value;
+  return { secretIndex, betIndex };
 }
 
 function toLangCode(language) {
@@ -140,7 +193,7 @@ export default class BundleEditor {
     return new Bundle(bundleData);
   }
 
-  submitBundleEditor() {
+  async submitBundleEditor() {
     const iSBundleToSave = document.getElementById('saveBundle-checkBox').checked;
     const mainBundleFields = getMainFields();
     if (!mainBundleFields) return false;
@@ -152,7 +205,7 @@ export default class BundleEditor {
     };
     bundleData.langcode = toLangCode(mainBundleFields[0]);
     bundleData.author = mainBundleFields[1];
-    bundleData.title = mainBundleFields[2];
+    bundleData.title = mainBundleFields[2] + ' ' + new Date().toLocaleString('en-GB');
     try {
       for (let r = 1; r < 4; r++) { //round
         for (let c = 1; c <= 5; c++) { //category
@@ -163,9 +216,18 @@ export default class BundleEditor {
             questions: [],
           }
           for(let q = 1; q <= 5; q++) { //question
-            const qstn = new Question(getQData(r, c, q)); // submiting 3 rounds
+            const qData = await getQData(r, c, q);
+            if (!qData) {
+              errPopup('invalid', 'popupPlaceholder', ` ${r}-${c}-${q}`);
+              return false;
+            }
+            const qstn = new Question(qData); // submiting 3 rounds
+            qstn.type = 'regular';
             deck.questions.push(qstn);
           }
+          const { secretIndex: secret, betIndex: bet } = getSpecialQIndex(r, c);
+          if (secret !== 'none') deck.questions[secret - 1].type = 'secret';
+          if (bet !== 'none') deck.questions[bet - 1].type = 'bet';
           bundleData.decks.push(new Deck(deck));
         }
       }
@@ -176,7 +238,13 @@ export default class BundleEditor {
           subject,
           questions: [],
         };
-        const qstn = new Question(getQData(4, 1, q));
+        const qData = await getQData(4, 1, q);
+        if (!qData) {
+          errPopup('invalid', 'popupPlaceholder', ` final-${q}`);
+          return false;
+        }
+          const qstn = new Question(qData);
+        qstn.type = 'final';
         deck.questions.push(qstn); //final questione
         bundleData.decks.push(new Deck(deck));
       } 
@@ -185,15 +253,14 @@ export default class BundleEditor {
       return false;
     }
     console.log(bundleData);
-    downloadAsFile(JSON.stringify(new Bundle(bundleData), null, '\t'));
     if (iSBundleToSave) {
-      const socket = new User().socket;
       const msg = {
         'mType': 'saveBundleToDB',
         data: bundleData,
       };
-      socket.send(JSON.stringify(msg, null, '\t'));
+      storage.socket.send(JSON.stringify(msg, null, '\t'));
     }
+    downloadAsFile(JSON.stringify(new Bundle(bundleData), null, '\t'));
     return true;
   }
 

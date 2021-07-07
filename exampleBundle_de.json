@@ -7,19 +7,19 @@
         "subject": "Culture of countries at Eurovision",
         "questions": [
           {
-            "type": "gamble",
+            "type": "bet",
             "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
             "trueAns": ["3"],
             "falseAns": ["2"]
           },
           {
-            "type": "regular",
+            "type": "secret",
             "string": "How many songs from the UK were not your native language?",
             "trueAns": ["0"],
             "falseAns": ["1", "3", "100"]
           },
           {
-            "type": "regular",
+            "type": "bet",
             "string": "How many countries in 2020 wanted to present their songs in their native language (in full)?",
             "trueAns": ["10"],
             "falseAns": ["2004", "2016", "1999"]
@@ -42,7 +42,7 @@
       "subject": "Ukraine at Eurovision",
       "questions": [
         {
-          "type": "gamble",
+          "type": "bet",
           "string": "Ukraine s first Eurovision winner",
           "trueAns": ["Ruslana"],
           "falseAns": ["Jamala"]
@@ -153,7 +153,7 @@
             "falseAns": [""]
           },
           {
-              "type": "gamble",
+              "type": "bet",
               "string": "In what year was the feature film for Eurovision made?",
               "trueAns": ["2020"],
               "falseAns": ["1", "3", "100"]
@@ -182,7 +182,7 @@
         "subject": "Culture of countries at Eurovision",
         "questions": [
           {
-            "type": "gamble",
+            "type": "bet",
             "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
             "trueAns": ["3"],
             "falseAns": ["2"]
@@ -217,7 +217,7 @@
         "subject": "Ukraine at Eurovision",
         "questions": [
           {
-            "type": "gamble",
+            "type": "bet",
             "string": "Ukraine s first Eurovision winner",
             "trueAns": ["Ruslana"],
             "falseAns": ["Jamala"]
@@ -328,7 +328,7 @@
               "falseAns": [""]
             },
             {
-                "type": "gamble",
+                "type": "bet",
                 "string": "In what year was the feature film for Eurovision made?",
                 "trueAns": ["2020"],
                 "falseAns": ["1", "3", "100"]
@@ -357,7 +357,7 @@
             "subject": "Culture of countries at Eurovision",
             "questions": [
               {
-                "type": "gamble",
+                "type": "bet",
                 "string": "How many of Ukraine s songs were native languages ​​(until 2021, at least partially including Crimean Tatar)?",
                 "trueAns": ["3"],
                 "falseAns": ["2"]
@@ -392,7 +392,7 @@
           "subject": "Ukraine at Eurovision",
           "questions": [
             {
-              "type": "gamble",
+              "type": "bet",
               "string": "Ukraine s first Eurovision winner",
               "trueAns": ["Ruslana"],
               "falseAns": ["Jamala"]
@@ -503,7 +503,7 @@
                   "falseAns": [""]
                 },
                 {
-                    "type": "gamble",
+                    "type": "bet",
                     "string": "In what year was the feature film for Eurovision made?",
                     "trueAns": ["2020"],
                     "falseAns": ["1", "3", "100"]

@@ -1,22 +1,23 @@
 'use strict';
-
-import BundleEditor from '../../gameLogic/bundleEditor_class.js';
+import { sortGames, takeName } from './externalControlersFunctions.js';
+import User from '../../gameLogic/user_class.js';
 import { storage } from '../../main.js';
-import { changeHash } from '../spaControl.js';
-
-const bundleEditor = new BundleEditor();
 
 export default class LobbySearchController {
 
-  clickConfig = {
-    'submitBundleEditor-btn': [bundleEditor.submitBundleEditor, changeHash('')],
+  changeConfig = {
+    'select-games-by-type': [sortGames],
 
   }
 
-  changeConfig = {
-    'questionBundle': [this.onBundleCheckChange],
-    'type-of-password': [this.onTypeOfPasswordChange],
-    'select-games-by-type': [this.sortGames],
+  inputConfig = {
+    'find-games': [sortGames],
+
+  }
+
+  clickConfig = {
+    'username-taken': [this.onUserNameTaken],
+
   }
 
   getHandlers(evt) {
@@ -27,50 +28,31 @@ export default class LobbySearchController {
     return this[configString][evt.target.id];
   }
 
-  onBundleCheckChange(evt) {
-    let fileInputDisplay = document.getElementById('bundle-file');
-    let textInputDisplay = document.getElementById('bundleSearch-input');
-    const caseConfig = {
-      'random': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'none'; },
-      'download': () => { fileInputDisplay.style.display = 'block'; textInputDisplay.style.display = 'none'; },
-      'findByName': () => { fileInputDisplay.style.display = 'none'; textInputDisplay.style.display = 'block'; },
-    }
-    const handler = caseConfig[evt.target.value];
-    if (!handler) return;
-    handler();
+  onUserNameTaken () {
+    document.getElementById('username-taken').style.display = 'none';
+    document.getElementById('close-popup').style.display = 'none';
+    const div = document.getElementsByClassName('custom-popup')[0];
+    const input = `<input id="name-input" type="text" placeholder="Enter your name" pattern="[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+" title="May contain letters and/or numbers only" maxlength=34 style="min-height: 50px" data-localize="name" required>`;
+    const okButton = document.createElement('button');
+    okButton.setAttribute('class', 'btn btn-primary');
+    okButton.style.width = '50%';
+    okButton.style.margin = '10px';
+    okButton.innerText = 'OK';
+    okButton.addEventListener('click', () => {
+      const name = takeName()
+      console.log('okButton ' + takeName());
+      if (takeName() === null) return;
+      new User().setName(name);
+      storage.socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
+      document.getElementById('popupPlaceholder').innerHTML = '';
+    })
+    div.innerHTML += input;
+    div.appendChild(okButton);
+    document.getElementById('name-input').value = window.localStorage.getItem('name');
   }
 
-  onTypeOfPasswordChange(evt) {
-    let roomInputPassword = document.getElementById('roomPassword');
-    const caseConfig = {
-      'nopass': () => { roomInputPassword.style.display = 'none'; },
-      'pass': () => { roomInputPassword.style.display = 'block'; },
-    }
-    const handler = caseConfig[evt.target.value];
-    if (!handler) return;
-    handler();
-  }
-
-  sortGames() {
-    const input = document.getElementById('find-games').value;
-    const sortParameter = document.getElementById('select-games-by-type').value;
-    const games = storage.allGames.data;
-    for (let i in games) {
-      if (sortParameter === 'nopass') {
-        if (games[i].settings.hasPassword) {
-          document.getElementById(i).style.display = 'none';
-          continue;
-        }
-      } else if (sortParameter === 'pass')  {
-        if (!games[i].settings.hasPassword) {
-          document.getElementById(i).style.display = 'none';
-          continue;
-        }
-      }
-      const comp = games[i].settings.roomName.substring(0, input.length);
-      if (comp !== input) document.getElementById(i).style.display = 'none';
-      else document.getElementById(i).style.display = 'block';
-    }
+  closeCustomPopup() {
+    document.getElementById('popupPlaceholder').innerHTML = '';
   }
 
 }
