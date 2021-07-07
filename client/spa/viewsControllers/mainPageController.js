@@ -39,7 +39,7 @@ export default class MainPageController {
     const name = takeName();
     if (takeName() === null) return;
     changeHash('chooseMode')();
-    storage.socket = new WebSocket(`ws://our-si-game.herokuapp.com`);
+    storage.socket = new WebSocket(`wss://our-si-game.herokuapp.com`);
     storage.socket.onopen = () => {
       const user = new User(name, storage.socket);
       user.setSocket(storage.socket);
@@ -61,7 +61,7 @@ export default class MainPageController {
     if (storage.socket) disconnect();
     const name = takeName();
     if (takeName() === null) return;
-    storage.socket = new WebSocket(`ws://our-si-game.herokuapp.com`);
+    storage.socket = new WebSocket(`wss://our-si-game.herokuapp.com`);
     changeHash('redactor')();
     storage.socket.onopen = () => {
       const user = new User(name, storage.socket);
