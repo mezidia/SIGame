@@ -449,9 +449,10 @@ export default class Game {
     document.getElementById('answer-btn').disabled = true;
     const event = {
       eType: 'answerCheck',
-      answer: ans.value,
+      answer: ans.value + '',
       who: new User().name,
     };
+    ans.value = '';
     this.broadcast(event);
   }
 
