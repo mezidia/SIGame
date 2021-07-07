@@ -1,9 +1,9 @@
 {
-  "name": "SIGame",
+  "name": "sigame",
   "version": "0.9.2",
   "private": "false",
   "scripts": {
-    "run": "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "mysql": "^2.18.1",
