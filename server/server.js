@@ -5,8 +5,7 @@ const WebSocket = require('ws');
 const FileManager = require('./fileManager').FileManager;
 const IDGenerator = require('./IDGenerator');
 const Database = require('../database/database').Database;
-//const bundleua = require('../exampleBundle_ua.json');
-//const bundlede = require('../exampleBundle_de.json');
+const databaseConfig = require('../database/database.config.json');
 
 const fileManager = new FileManager();
 const idGenerator = new IDGenerator();
@@ -44,6 +43,8 @@ class Server {
     'sendName': data => this.sendName(data),
     'removeUserFromServer': data => this.removeUserFromServer(data),
     'updateGameStatus': data => this.updateGameStatus(data),
+    'getBundleNames': data => this.getBundleNames(data),
+    'getBundleByName': data => this.getBundleByName(data),
   };
 
   constructor(port) {
@@ -152,20 +153,13 @@ class Server {
 
   //gets all bundles from database
   getAllBundles(message) {
-    const database = new Database({
-      host: 'db4free.net',
-      user: 'sigameadmin',
-      password: '#Ananas208',
-      database: 'sigame',
-    });
+    const database = new Database(databaseConfig);
     const connection = database.returnConnection();
     connection.connect( async err => {
       if (err) throw err;
       console.log("Connected!");
       let bundles = null;
       try {
-        //await database.insertBundle(bundleua);
-        //await database.insertBundle(bundlede);
         bundles = await database.getAllBundles();
       } catch (err) {
         console.log(('(getAllBundles) error when awaiting bundles from db occured ', err));
@@ -280,8 +274,6 @@ class Server {
     
   }
 
-  // in {mType: , data: {id: , }}
-  // returns nothing yet
   joinGame(data) {
     const id = data.id;
     const message = data.data;
@@ -297,25 +289,25 @@ class Server {
 
   //saves bundle to db
   saveBundleToDB(data) {
-    const database = new Database({
-      host: 'db4free.net',
-      user: 'sigameadmin',
-      password: '#Ananas208',
-      database: 'sigame',
-    });
+    const database = new Database(databaseConfig);
     const connection = database.returnConnection();
     connection.connect( async err => {
       if (err) throw err;
       console.log("Connected!");
       console.log('from saveBundle to db' , data.data);
       await database.insertBundle(data.data);
-      connection.destroy();
+      connection.end(err => {
+        if(err) console.log("error when connection ends: " + err);
+        else console.log("closed");
+      });
     });
   }
 
   //on new game master
   newGameMaster(data) {
-    this._games[data.data.roomID].settings.master = data.data.newGM;
+    const game = this._games[data.data.roomID];
+    if (!game) return;
+    game.settings.master = data.data.newGM;
     const gamesSend = this.prepareGamesForClient();
     this.sendToAll({mType: 'returnAllGames', data: gamesSend});
   }
@@ -342,6 +334,52 @@ class Server {
     for (let [id, info] of Object.entries(this._users)) {
       if (info.connection === connection) return id;
     }
+  }
+
+  //get all bundle names
+  getBundleNames(data) {
+    const database = new Database(databaseConfig);
+    const connection = database.returnConnection();
+    connection.on('error', e => console.log("on error: " + e));
+    connection.connect( async err => {
+      if (err) console.error('Issues with connection to Database \n' + err);
+      console.log("Connected!");
+      let bundleNames = null;
+      try {
+        bundleNames = await database.getBundleNames();
+      } catch (err) {
+        console.log(err);
+      } 
+      this.sendToUser(data.id, {mType: 'bundleNames', data: bundleNames});
+      connection.end(err => {
+        if(err) console.log("error when connection ends: " + err);
+        else console.log("closed");
+      });
+    });
+  }
+
+  //get bundle by name
+  getBundleByName(data) {
+    const name = data.data.name;
+    const database = new Database(databaseConfig);
+    const connection = database.returnConnection();
+    connection.on('error', e => console.log("on error: " + e));
+    connection.connect( async err => {
+      if (err) console.error('Issues with connection to Database \n' + err);
+      console.log("Connected!");
+      let bundleRows = null;
+      try {
+        bundleRows = await database.getBundleByName(name);
+      } catch (err) {
+        console.log(err);
+      }
+      this.sendToUser(data.id, {mType: 'bundleRows', data: bundleRows});
+      connection.end(err => {
+        if (err) console.log("error when connection ends: " + err);
+        else console.log("closed");
+      });
+    });
+    
   }
 }
 

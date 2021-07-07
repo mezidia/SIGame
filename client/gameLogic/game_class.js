@@ -1,17 +1,17 @@
 'use strict';
 
-import GameField from "../spa/views/gameField.js";
+import GameField from "./gameField.js";
 import User from "./user_class.js";
 import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
+import Timer from './timer_class.js';
 import { changeHash } from "../spa/spaControl.js";
-import { errPopup } from "../spa/uiElements.js";
+import Language from "../changeLanguage.js";
 
-
-
-const ANSWERTIME = 5; //sec
-const GAMETIME = 25; //sec
+const ANSWERTIME = 10; //sec
+const GAMETIME = 500; //sec
 const APPEALTIME = 5; //sec
+const MIN_PLAYERS = 3; // minimum amount of players 
 
 export default class Game {
   _setListeners() {
@@ -28,13 +28,14 @@ export default class Game {
     this._removeListeners();
     this.turnTimer.reset();
     this.gameTimer.reset();
-    clearTimeout(this.turnTimerID);
-    clearTimeout(this.appealTimerID);
+    if (this.turnTimerID) this.turnTimerID.pause();
+    if (this.appealTimerID) this.appealTimerID.pause();
   }
 
   constructor(bundle, settings, players) {
     this._id = undefined;
     this._socket = new User().socket;
+    this.gameStatus = 0;           // [0, 1, 2] - [not started, started, paused]
     this.master = settings.master;
     this.roomName = settings.roomName;
     this.maxPpl = settings.ppl;
@@ -44,8 +45,8 @@ export default class Game {
     this.players = players ? players : [settings.master];
     this.points = {[settings.master]: 0};
     this.gameField = new GameField();
-    this.turnTimer = new GameTimer('answer-timer');
-    this.gameTimer = new GameTimer('game-timer');
+    this.turnTimer = new GameTimer(this.turnTimerCallback);
+    this.gameTimer = new GameTimer(this.globalTimerCallback);
     this._setListeners();
     this.rounds = this.bundle.getRoundsArr();
     this.currentQuestion = undefined;
@@ -57,10 +58,34 @@ export default class Game {
     this.canMove = [];
     this.aleadyMoved = [];
     this.appealDecision = [];
+    this.bets = {};
+    this.playersIterator = undefined;
+    this.gTimerCallback = null;
     console.log('new Game', this);
   }
 
+  turnTimerCallback(timeleft, totalTime) {
+    const percent = Math.floor(timeleft/totalTime*100)
+    const bar = document.getElementById('answer-timer').children[1];
+    bar.style.width = `${percent}%`;
+  }
+
+  globalTimerCallback(timeleft, totalTime) {
+    const percent = Math.floor(timeleft/totalTime*100)
+    const bar = document.getElementById('game-global-timer').children[0];
+    bar.style.width = `${percent}%`;
+  }
+
+  drawStartOrWait() {
+    if (this.players.length >= MIN_PLAYERS) {
+      this.gameField.drawStartButton();
+    } else {
+      this.gameField.drawPreStartText(this.players.length, MIN_PLAYERS)
+    }
+  }
+
   onLeaveGame = evt => {
+    console.log(evt.name + ' left');
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
     this.gameField.removePlayer(evt.name);
@@ -71,6 +96,9 @@ export default class Game {
     if (this.master === new User().name) {
       this.gameField.switchGameMode(true);
       this.clickConfig.cell = null;
+      if (this.gameStatus === 0) {
+        this.drawStartOrWait();
+      }
     }
   }
 
@@ -88,7 +116,10 @@ export default class Game {
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
-    if (new User().name === this.master) this.updatePoints();
+    if (new User().name === this.master) {
+      this.drawStartOrWait();
+      this.updatePoints();
+    }
   }
 
   onPoints = evt => {
@@ -101,13 +132,61 @@ export default class Game {
     this.master = evt.name;
   }
 
+  onRegularQ = (evt, str) => {
+    let timeToPause = 0;
+    if (str !== Language.getTranslatedText('regular')) {
+      timeToPause = this.gameField.flash(str);
+    }
+    setTimeout(() => {
+    this.gameField.drawQuestion(evt.question, () => {
+      if (new User().name === this.master) this.canRaiseHand(this.players);
+    }, new User().name === this.master);
+    }, timeToPause);
+  }
+
+  onSecretQ = (evt, str) => {
+    console.log(evt.who);
+    const timeToPause = this.gameField.flash(str);
+    setTimeout(() => {
+      this.gameField.announceGameState(evt.who + Language.getTranslatedText("choose-person-to-answer"));
+      if (new User().name === evt.who) this.clickConfig.icon = this.onIconClick;
+    }, timeToPause);
+  }
+
+  onBetQ = (evt, str) => {
+    const timeToPause = this.gameField.flash(str);
+    setTimeout(() => {
+      if (new User().name !== this.master) this.gameField.bet();
+    }, timeToPause);
+  }
+
+  onFinalQ = (evt, str) => {
+    const timeToPause = this.gameField.flash(str);
+    setTimeout(() => {
+    if (new User().name !== this.master) this.gameField.bet();
+    }, timeToPause);
+  }
+
+  qTypeConfig = {
+    'regular': this.onRegularQ,
+    'secret': this.onSecretQ,
+    'bet': this.onBetQ,
+    'final': this.onFinalQ,
+    'sponsored': this.onRegularQ,
+  }
+
+
   onShowQuestion = evt => {
-    this.gameField.drawQuestion(evt.question.string);
     this.currentQuestion = evt.question;
+    const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
+    if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
+    qHandler(evt, Language.getTranslatedText(this.currentQuestion.type));
   }
 
   onNextTurn = evt => {
     this.appealDecision = [];
+    this.bets = {};
+    if (new User().name !== this.master) this.gameField.buttonMode();
     this.clickConfig.answer = this.raiseHand;
     const decks = this.rounds[this.currentRound];
     for (const dIndex in decks) {
@@ -121,10 +200,15 @@ export default class Game {
       }
     }
     this.checkAnswerCounter();
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    if (this.currentRound === 3) { // switch to 3 for production
+      this.gameField.drawFinalRound(this.bundle.getFinalDecks());
+    } else {
+      this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
+    }
   }
 
   onAnswerCheck = evt => {
+    this.gameField.announceGameState(Language.getTranslatedText("gamemaster-checks-answers"));
     const t = this.currentQuestion.trueAns;
     const f = this.currentQuestion.falseAns;
     this.lastAnswer = { 
@@ -133,17 +217,21 @@ export default class Game {
       t,
       f,
     };
+    this.gameField.displayAnswer(evt.who, evt.answer);
     if (this.master !== new User().name) return;
     console.log(this.currentQuestion);
     this.gameField.gmPopUp(evt.who, evt.answer, t, f);
   }
 
   onCanAppeal = evt => {
+    this.gameField.announceGameState(Language.getTranslatedText("appeal"));
     if (evt.who !== new User().name) return;
+    this.gameField.appealMode();
     document.getElementById('answer-btn').disabled = false;
     this.clickConfig.answer = this.appeal;
-    this.appealTimerID = setTimeout(() => {
+    this.appealTimerID = new Timer(() => {
       document.getElementById('answer-btn').disabled = true;
+      this.setNextPicker();
       this.nextTurn();
     }, APPEALTIME * 1000);
   }
@@ -159,8 +247,18 @@ export default class Game {
         res += d.decision ? 1 : -1;
       }
       if (res > 0) {
-        this.points[this.lastAnswer.who] += this.currentQuestion.cost * 2;
+        this.gameField.announceGameState(Language.getTranslatedText("appeal-approved"));
+        let cost = this.currentQuestion.cost;
+        if (this.currentQuestion.type === 'final' || 
+            this.currentQuestion.type === 'bet') {
+              cost = this.bets[this.lastAnswer.who];
+          }
+        this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
+        this.setNextPicker(this.lastAnswer.who);
+      } else {
+        this.gameField.announceGameState(Language.getTranslatedText("appeal-denied"));
+        this.setNextPicker();
       }
       this.nextTurn();
     }
@@ -169,7 +267,6 @@ export default class Game {
   onAppeal = evt => {
     if (new User().name === evt.who) return;
     if (new User().name === this.master) return;
-    //appealPopup(this.lastAnswer);
     this.gameField.appealPopUp(
       this.lastAnswer.who,
       this.lastAnswer.ans,
@@ -179,18 +276,96 @@ export default class Game {
   }
 
   onNextPicker = evt => {
+    this.gameField.announceGameState(evt.who + Language.getTranslatedText("someone's-move"));
     if (new User().name !== evt.who) {
       this.clickConfig.cell = null;
+      this.clickConfig.theme = null;
     } else if (new User().name === evt.who) {
       this.clickConfig.cell = this.onQuestionClick;
+      this.clickConfig.theme = this.onThemeClick;
     }
   }
 
   onStartGame = evt => {
+    this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
-    this.gameField.drawTable(this.rounds[this.currentRound]);
+    this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
+    this.gTimerCallback = new Timer(() => {
+      const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
+      //show win window
+      const time = this.gameField.congratulate(winner);
+      setTimeout(this.exit, time);
+    }, GAMETIME * 1000);
   }
 
+  onPause = evt => {
+    this.clickConfig.pause = this.resume;
+    this.gameField.pause(evt.timeStamp);
+    this.gameTimer.pause(evt.timeStamp);
+    this.gTimerCallback.pause();
+  }
+
+  onResume = evt => {
+    this.clickConfig.pause = this.pause;
+    this.gameField.pause(evt.timeStamp);
+    this.gameTimer.resume();
+    this.gTimerCallback.resume();
+  }
+
+  onClickedTheme = evt => {
+    if (new User().name === this.master) this.setNextPicker();
+    const theme = this.gameField.removeFinalTheme(evt.index);
+    if (this.gameField.isNullThemes()) {
+      console.log('LastTheme', theme);
+      let q = null;
+      for (let d of this.bundle.getFinalDecks()) {
+        console.log(d);
+        if (d.subject === theme) q = d.questions[0];
+      }
+      console.log(q);
+      const event = {
+        eType: 'showQuestion',
+        question: q,
+      };
+      this.broadcast(event);
+    }
+  }
+
+  onBetBtn = evt => {
+    const cost = +document.getElementById('betSize').value;
+    if (cost < 0) return;
+    const event = {
+      eType: 'setBetCost',
+      who: new User().name,
+      'cost': cost,
+    };
+    this.gameField.hideBet();
+    this.broadcast(event);
+  }
+
+  onSetBetCost = evt => {
+    this.bets[evt.who] = evt.cost;
+    if (new User().name !== this.master) return;
+    if (Object.keys(this.bets).length === this.players.length - 1) {
+      const event = {
+        eType: 'forseShowQ',
+        who: new User().name,
+        canRaise: this.players,
+      };
+      this.broadcast(event);
+    }
+  }
+
+  forseShowQ = evt => {
+    this.gameField.drawQuestion(this.currentQuestion, () => {
+      if (new User().name === this.master) this.canRaiseHand(evt.canRaise);
+    }, new User().name === this.master);
+  }
+
+  onNewCurrentRound = evt => {
+    this.currentRound = evt.round;
+  }
+  
   eventsConfig = {
     'leave': this.onLeaveGame,
     'turnOrder': this.onTurnOrder,
@@ -203,8 +378,15 @@ export default class Game {
     'canAppeal': this.onCanAppeal,
     'appeal': this.onAppeal,
     'nextPicker': this.onNextPicker,
+    'clickedTheme': this.onClickedTheme,
     'startGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
+    'pause': this.onPause,
+    'resume': this.onResume,
+    'setBetCost': this.onSetBetCost,
+    'forseShowQ': this.forseShowQ,
+    'newCurrentRound': this.onNewCurrentRound,
+     
   };
 
   socketHandler = msg => {
@@ -212,8 +394,9 @@ export default class Game {
     if (prsdMsg.mType !== 'broadcastedEvent') return;
     const event = prsdMsg.data.data.event;
     const handler = this.eventsConfig[event.eType];
-    if (!handler) console.log(`no handler for |${event.eType}| type event`);
+    if (!handler) return console.log(`no handler for |${event.eType}| type event`);
     handler(event);
+    this.gameField.highlightCurrentPlayer(new User().name);
   }
 
   exit = () => {
@@ -241,6 +424,7 @@ export default class Game {
   }
 
   join() {
+    this.gameField.buttonMode();
     this.gameField.waitForPlayersJpgShow();
     for (const player of this.players) this.gameField.addPlayer(player);
     const event = {
@@ -259,39 +443,30 @@ export default class Game {
     const event = {
       eType: 'showQuestion',
       question: q,
+      who: new User().name,
     };
     this.broadcast(event);
     console.log(q);
-    this.gameField.drawQuestion(q.string);
-    this.currentQuestion = q;
-    const canAnswer = evt => {
-      if (evt.target.id === 'last-letter') {
-        const event = {
-          eType: 'turnOrder',
-          who: this.players,
-        };
-        this.broadcast(event);
-        document.removeEventListener('animationend', canAnswer);
-      }
-    }
-    document.addEventListener('animationend', canAnswer);
   }
 
   answer = () => {
-    const ans = document.getElementById('answerInput');
+    const ans = document.getElementById('input-answer');
     if (!ans.value) return;
-    clearTimeout(this.turnTimerID);
+    this.turnTimerID.pause();
+    this.turnTimerCallback(0, 1);
+    this.turnTimer.pause();
     document.getElementById('answer-btn').disabled = true;
     const event = {
       eType: 'answerCheck',
-      answer: ans.value,
+      answer: ans.value + '',
       who: new User().name,
     };
+    ans.value = '';
     this.broadcast(event);
   }
 
   appeal = () => {
-    clearTimeout(this.appealTimerID);
+    this.appealTimerID.pause();
     const event = {
       eType: 'appeal',
       who: new User().name,
@@ -302,26 +477,29 @@ export default class Game {
 
   raiseHand = () => {
     this.turnTimer.setTimer(ANSWERTIME);
+    this.gameField.answerMode();
     this.clickConfig.answer = this.answer;
-    const event = {
-      eType: 'turnOrder',
-      who: [new User().name],
-    };
-    this.broadcast(event);
-    this.turnTimerID = setTimeout(() => {
+    this.turnOrder([new User().name]);
+    this.turnTimerID = new Timer(() => {
       this.points[new User().name] -= this.currentQuestion.cost;
       this.updatePoints();
+      this.gameField.buttonMode();
       document.getElementById('answer-btn').disabled = true;
       this.nextTurn();
     }, ANSWERTIME * 1000);
-
   }
 
   correct = evt => {
-    const name = document.getElementById('answer-author').textContent;
-    this.points[name] += this.currentQuestion.cost;
+    const name = document.getElementById('answr-author').textContent;
+    let cost = this.currentQuestion.cost;
+    if (this.currentQuestion.type === 'final' ||
+        this.currentQuestion.type === 'bet') {
+          cost = +this.bets[name];
+      }
+    this.points[name] += cost;
     this.updatePoints();
     this.gameField.gmPopHide();
+    this.setNextPicker(name);
     this.nextTurn();
   }
 
@@ -331,13 +509,17 @@ export default class Game {
       who: this.players,
     };
     this.broadcast(event);
-    this.setNextPicker();
   }
 
   uncorrect = evt => {
-    const name = document.getElementById('answer-author').textContent;
-    if (this.currentQuestion.type !== 'noRisk') {
-      this.points[name] -= +this.currentQuestion.cost;
+    const name = document.getElementById('answr-author').textContent;
+    if (this.currentQuestion.type !== 'sponsored') {
+      let cost = this.currentQuestion.cost;
+      if (this.currentQuestion.type === 'final' || 
+          this.currentQuestion.type === 'bet') {
+            cost = this.bets[name];
+        }
+      this.points[name] -= +cost;
       this.updatePoints();
       const appealEvent = {
         eType: 'canAppeal',
@@ -371,7 +553,6 @@ export default class Game {
 
   startGame = () => {
     if (this.players.length < 3) {
-      errPopup('min 3 players!');
       return false;
     }
     this.setNextPicker();
@@ -387,12 +568,15 @@ export default class Game {
   }
 
   setNextPicker(name) {
-    if (this.canMove.length < 2) {
-      this.canMove = [...this.players];
-      this.canMove.splice(this.canMove.indexOf(this.master), 1);
-      this.canMove.sort(() => Math.random() - 0.5);
+    if (!name) {
+      let next = this.playersIterator ? this.playersIterator.next() : false;
+      if (!next || next.value === undefined || next.done === true) {
+        this.playersIterator = this.players.values();
+        this.playersIterator.next(); // skip GM
+        next = this.playersIterator.next();
+      }
+      name = next.value
     }
-    name = name || this.canMove.pop();
     const event = {
       eType: 'nextPicker',
       who: name,
@@ -400,24 +584,74 @@ export default class Game {
     this.broadcast(event);
   }
 
+  submitPoints = () => {
+    this.gameField.scoreAsInput(false)();
+    this.points = this.gameField.collectScores();
+    this.updatePoints();
+  }
+
+  changePoints = () => {
+    this.gameField.scoreAsInput(true)();
+  }
+
+  pause = () => {
+    const event = {
+      eType: 'pause',
+      timeStamp: Date.now(),
+    };
+    this.broadcast(event);
+  }
+
+  resume = () => {
+    const event = {
+      eType: 'resume',
+      timeStamp: Date.now(),
+    };
+    this.broadcast(event);
+  }
+
+  onThemeClick = e => {
+    const target = e.target;
+    const splitedID = target.id.split('-');
+    const i = splitedID[1];
+    const event = {
+      eType: 'clickedTheme',
+      index: i,
+    };
+    this.broadcast(event);
+  }
+
+  onIconClick = e => {
+    this.clickConfig.icon = null;
+    const target = e.target;
+    const splitedID = target.id.split('-');
+    const name = splitedID[1];
+    this.canRaiseHand(name);
+    const event = {
+      eType: 'forseShowQ',
+      who: new User().name,
+      canRaise: [name],
+    };
+    this.broadcast(event);
+  }
+
   clickConfig = {
     'cell': this.onQuestionClick,
+    'theme': this.onThemeClick,
     'answer': this.raiseHand,
     'correct': this.correct,
     'uncorrect': this.uncorrect,
     'exit': changeHash('chooseMode'),
     'disagreeWithApeal': this.disagreeWithApeal,
     'agreeWithApeal': this.agreeWithApeal,
-    'report': 'report',
-    'pause': 'pause',
-    'resume': 'resume',
+    'pause': this.pause,
     'startGame': this.startGame,
-    'changePoints': () => this.gameField.scoreAsInput(true)(),
-    'submitPoints': () => {
-      this.gameField.scoreAsInput(false)();
-      this.points = this.gameField.collectScores();
-      this.updatePoints();
-    },
+    'changePoints': this.changePoints,
+    'submitPoints': this.submitPoints,
+    'resume': this.resume,
+    'bet': this.onBetBtn,
+    'icon': null,
+
   };
 
   clickHandler = (e) => {
@@ -432,19 +666,33 @@ export default class Game {
     this.gameField.addPlayer(new User().name);
     this.gameField.switchGameMode(true);
     this.clickConfig.cell = null;
-    this.gameField.drawStartButton();
+    this.drawStartOrWait();
   }
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.currentRound === 3 && this.answerCounter === 1) {
+    if (this.currentRound === 3 && this.answerCounter === 1) { //3, 1
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
-      this.exit();
+      const time = this.gameField.congratulate(winner);
+      setTimeout(this.exit, time);
     } else if (this.answerCounter === 14) {
       this.answerCounter = 0;
       this.currentRound++;
     }
+  }
+
+  turnOrder(who) {
+    const event = {
+      eType: 'turnOrder',
+      who: who,
+      calledBy: new User().name,
+    };
+    this.broadcast(event);
+  }
+
+  canRaiseHand(who) {
+    this.turnOrder(who);
   }
 
   updatePoints() {
@@ -466,14 +714,6 @@ export default class Game {
 
   addPlayer(name) {
     this.players.push(name);
-  }
-
-  kickPlayer() {
-
-  }
-
-  pause() {
-   
   }
 
   setMaster(master) {

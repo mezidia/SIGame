@@ -1,11 +1,10 @@
 'use strict';
 
-import BundleEditor from '../../gameLogic/bundleEditor_class.js';
 import { storage } from '../../main.js';
+import { updateGames } from './externalControlersFunctions.js';
 import { changeHash } from '../spaControl.js';
 import { promisifySocketMSG } from '../../utils.js';
-
-const bundleEditor = new BundleEditor();
+import { loader } from '../../utils/loader.js';
 
 export default class ChooseModeController {
 
@@ -30,19 +29,16 @@ export default class ChooseModeController {
   }
 
   createGameLobby() {
+    loader();
     const msg = {
-      'mType': 'getAllBundles',
+      'mType': 'getBundleNames',
     };
-    promisifySocketMSG(msg, 'allBundles', socket).then(msg => {
-      storage.allBundles = msg.data;
-      for (const i in allBundles) {
-        allBundles[i] = bundleEditor.parseBundle(allBundles[i]);
+    promisifySocketMSG(msg, 'bundleNames', storage.socket).then(msg => {
+      for (const i in msg.data) {
+        storage.bundlesMeta[i] = msg.data[i];
       }
-      console.log(allBundles);
       changeHash('createGame')();
     });
   }
 
 }
-
-

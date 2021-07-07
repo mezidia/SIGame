@@ -3,15 +3,11 @@
 import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
-import { changeLanguage, language } from '../changeLanguage.js';
-import { leavePopup } from './uiElements.js';
-import { de } from '../../localization/de.js';
-import { ua } from '../../localization/ua.js';
+import Language from '../changeLanguage.js';
+import { yesnoPopup } from './uiElements.js';
+import { storage } from '../main.js';
 
-const languages = {
-  de: de,
-  ua: ua
-}
+const page = {next: ''};
 
 const router = new Router();
 const engine = new RenderEngine();
@@ -23,7 +19,7 @@ async function loadMainView() {
 
 const getHash = () => router.getHash();
 
-const changeHash = (hash) => async () => {
+const changeHash = hash => async () => {
   let ask = false;
   if (router.getHash()) {
     const parts = router.getHash().split('/');
@@ -34,11 +30,14 @@ const changeHash = (hash) => async () => {
   }
   
   if(ask) {
-    leavePopup(language.json['onleave']);
+    page.next = hash;
+    yesnoPopup('onleave');
     return;
   }
 
   router.change(hash);
+  console.log(hash);
+  if (!storage.socket && hash !== 'chooseMode' && hash !== 'help') router.change('mainPage');
   await loadView();
 };
 
@@ -63,7 +62,8 @@ const loadView = async () => {
         if (name) document.getElementById('name-input').value = name;
       }
       const langcode = window.localStorage.getItem('language');
-      if (langcode) changeLanguage(languages[langcode])();
+      const language = Language.getLanguage(langcode);
+      if (language) Language.changeLanguage(language);
     });
 };
 
@@ -82,8 +82,8 @@ const checkView = () => {
 
 const сontrollersConfig = Object.fromEntries(Object.entries(controllers));
 
-const getController = () => {
-  return new (сontrollersConfig[getViewControllerClassName()]);
+const getController = (name = undefined) => {
+  return new (сontrollersConfig[name || getViewControllerClassName()]);
 }
 
 export {
@@ -95,4 +95,5 @@ export {
   getViewControllerClassName,
   сontrollersConfig,
   getController,
+  page,
 };

@@ -4,9 +4,10 @@
 import User from "./user_class.js";
 import Game from "./game_class.js";
 import { getRandomIntInclusive } from "../utils.js";
+import Language from "../changeLanguage.js";
 
 const ANSWERTIME = 5; //sec
-const GAMETIME = 25; //sec
+const GAMETIME = 300; //sec
 const APPEALTIME = 5; //sec
 
 export default class SimpleGame extends Game {
@@ -17,42 +18,32 @@ export default class SimpleGame extends Game {
 
   onNextTurn = evt => {
     this.appealDecision = [];
+    this.bets = {};
     this.clickConfig.answer = this.raiseHand;
     this.checkAnswerCounter();
+    
+    if (new User().name !== this.master) this.gameField.buttonMode();
+    this.clickConfig.answer = this.raiseHand;
     this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
-    this.gameField.drawQuestion(this.currentQuestion.string);
-    if (new User().name === this.master) {
-      const canAnswer = evt => {
-        if (evt.target.id === 'last-letter') {
-          const event = {
-            eType: 'turnOrder',
-            who: this.players,
-          };
-          this.broadcast(event);
-          document.removeEventListener('animationend', canAnswer);
-        }
-      }
-      document.addEventListener('animationend', canAnswer);
-    }
+    if (this.currentQuestion.type === 'secret') this.currentQuestion.type = 'regular';
+    const event = {
+      eType: 'showQuestion',
+      question: this.currentQuestion,
+      who: new User().name,
+    };
+    if (new User().name === this.master) this.broadcast(event);
   }
 
   onStartGame = evt => {
-    this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
+    this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
-    this.gameField.drawQuestion(this.currentQuestion.string);
-    if (new User().name === this.master) {
-      const canAnswer = evt => {
-        if (evt.target.id === 'last-letter') {
-          const event = {
-            eType: 'turnOrder',
-            who: this.players,
-          };
-          this.broadcast(event);
-          document.removeEventListener('animationend', canAnswer);
-        }
-      }
-      document.addEventListener('animationend', canAnswer);
-    }
+    this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
+    if (this.currentQuestion.type === 'secret') this.currentQuestion.type = 'regular';
+    const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
+    console.log(this.currentQuestion);
+    evt.question = this.currentQuestion;
+    if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
+    qHandler(evt, Language.getTranslatedText(this.currentQuestion.type));
   }
 
   eventsConfig = {
@@ -70,6 +61,10 @@ export default class SimpleGame extends Game {
     'startGame': this.onStartGame,
     'appealDecision': this.onAppealDecision,
     'newCurrentRound': this.onNewCurrentRound,
+    'pause': this.onPause,
+    'resume': this.onResume,
+    'setBetCost': this.onSetBetCost,
+    'forseShowQ': this.forseShowQ,
   };
 
   onNewCurrentRound = evt => {
@@ -86,7 +81,7 @@ export default class SimpleGame extends Game {
 
   startGame = () => {
     if (this.players.length < 3) {
-      errPopup('min 3 players!');
+      errPopup('start-min');
       return false;
     }
     this.currentRound = getRandomIntInclusive(0, this.rounds.length - 1);
@@ -114,7 +109,8 @@ export default class SimpleGame extends Game {
     if (this.answerCounter === 25) {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
-      this.exit();
+      const time = this.gameField.congratulate(winner);
+      setTimeout(this.exit(), time);
     } else if (this.answerCounter % 5 === 0) {
       this.currentRound++;
       this.answerCounter = 0;
@@ -122,3 +118,6 @@ export default class SimpleGame extends Game {
   }
 
 }
+
+
+export { Game }

@@ -12,11 +12,18 @@ export default class User {
       'roomId': null,
     };
     return User._instance;
-
   }
 
   sendServerMsg() {
     
+  }
+
+  setName(name) {
+    this.name = name;
+  }
+
+  setSocket(socket) {
+    this.socket = socket;
   }
 
 }
