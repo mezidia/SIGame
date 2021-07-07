@@ -43,6 +43,7 @@ const de = {
   "secret": "Question with secret",
   "final": "Final question",
   "sponsored": "Sponsored question",
+  'invalid': "Invalid question data at",
   "points": "points",
   "category": "Category",
   "category-name": "Category name",

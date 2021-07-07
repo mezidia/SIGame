@@ -10,7 +10,11 @@ export default class RedactorController {
 
   clickConfig(evt, elementId) {
     return {
-      'submitBundleEditor-btn': [() => bundleEditor.submitBundleEditor().then(() => changeHash('')())],
+      'submitBundleEditor-btn': [() => bundleEditor.submitBundleEditor().then(success => {
+        if (success) {
+          changeHash('')();
+        }
+      })],
       'scroll-to': [scrollToRef(evt.target.id)],
       'scroll-direct': [evt.target.scrollIntoView],
       'collapse-control': [this.collapseControl(evt.target.id)],  
