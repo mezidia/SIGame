@@ -54,7 +54,7 @@ const de = {
   },
   "input-image": "Select image for a question",
   "input-audio": "Select audio for a question",
-  "optional": "Optional (can choose only one)",
+  "optional": "Optional",
   "sep-answers": "Separate true and wrong answers via comas",
   "answers": {
     "placeholder": "Answers"

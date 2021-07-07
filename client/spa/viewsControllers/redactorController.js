@@ -17,6 +17,12 @@ export default class RedactorController {
     }[elementId];
   }
 
+  changeConfig(evt, elementId) {
+    return {
+      'exclude': [() => this.delAlternative(evt.target.id)],
+    }[elementId]
+  }
+
   getHandlers(evt) {
     const configString = evt.type + 'Config';
     console.log(configString);
@@ -27,6 +33,16 @@ export default class RedactorController {
     }
     if (!handlers) return false;
     return handlers;
+  }
+
+  imgAud(str) {
+    return str === 'img' ? 'audio_cont' : 'img_cont';
+  }
+
+  delAlternative(id) {
+    const temp = id.split('-');
+    const dom = temp.shift();
+    document.getElementById(this.imgAud(dom) + '-' + temp.join('-')).style.display = 'none';
   }
 
   collapseControl(id) {
