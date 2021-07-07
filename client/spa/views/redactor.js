@@ -111,6 +111,7 @@ const view = () => {
       <button id="submitBundleEditor-btn" type="button" class="btn dark-b-hover btn-lg btn-block" style="margin-top: 40px" data-localize="bundle">Create bundle</button>
       <div style="height: 40px">      
     </form>
+    <div id="popupPlaceholder" style="height: 0"></div>
   </div>
   `;
 };

@@ -6,6 +6,7 @@ import Question from './question_class.js';
 import User from './user_class.js';
 import { getRandomIntInclusive } from '../utils.js';
 import { storage } from '../main.js';
+import { errPopup } from '../spa/uiElements.js';
 
 const reg = /[A-Za-zА-яҐґЇїІіЄєäöüÄÖÜß0-9']+/; 
 const MB = 1024**2;
@@ -30,9 +31,9 @@ async function getQData(r, c, q) {
   const imgFile = document.getElementById(`img-${r}-${c}-${q}`).files[0];
   const trueAns = document.getElementById(`answer-${r}-${c}-${q}`).value;
   const falseAns = document.getElementById(`wrong-answer-${r}-${c}-${q}`).value;
-  if (!reg.test(string)) throw new Error(`failed reg test on string ${r}-${c}-${q}`);
-  if (!reg.test(trueAns)) throw new Error(`failed reg test on trueAns ${r}-${c}-${q}`);
-  if (falseAns.length > 0) if (!reg.test(falseAns)) throw new Error(`failed reg test on falseAns ${r}-${c}-${q}`);
+  if (!reg.test(string)) return false;
+  if (!reg.test(trueAns)) return false;
+  if (falseAns.length > 0) if (!reg.test(falseAns)) return false;
   let audioBlob = null;
   let imgBlob = null;
   if (audioFile) {
@@ -216,7 +217,10 @@ export default class BundleEditor {
           }
           for(let q = 1; q <= 5; q++) { //question
             const qData = await getQData(r, c, q);
-            if (!qData) throw new Error(`Invalid question data at: ${r}-${c}-${q}`);
+            if (!qData) {
+              errPopup('invalid', 'popupPlaceholder', ` ${r}-${c}-${q}`);
+              return false;
+            }
             const qstn = new Question(qData); // submiting 3 rounds
             qstn.type = 'regular';
             deck.questions.push(qstn);
@@ -235,8 +239,11 @@ export default class BundleEditor {
           questions: [],
         };
         const qData = await getQData(4, 1, q);
-        if (!qData) throw new Error(`Invalid question data at: 4-1-${q}`);
-        const qstn = new Question(qData);
+        if (!qData) {
+          errPopup('invalid', 'popupPlaceholder', ` final-${q}`);
+          return false;
+        }
+          const qstn = new Question(qData);
         qstn.type = 'final';
         deck.questions.push(qstn); //final questione
         bundleData.decks.push(new Deck(deck));
@@ -246,15 +253,14 @@ export default class BundleEditor {
       return false;
     }
     console.log(bundleData);
-    downloadAsFile(JSON.stringify(new Bundle(bundleData), null, '\t'));
     if (iSBundleToSave) {
-      const socket = new User().socket;
       const msg = {
         'mType': 'saveBundleToDB',
         data: bundleData,
       };
       storage.socket.send(JSON.stringify(msg, null, '\t'));
     }
+    downloadAsFile(JSON.stringify(new Bundle(bundleData), null, '\t'));
     return true;
   }
 
