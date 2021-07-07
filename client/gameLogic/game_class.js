@@ -134,7 +134,7 @@ export default class Game {
 
   onRegularQ = (evt, str) => {
     let timeToPause = 0;
-    if (str !== 'Regular question') {
+    if (str !== Language.getTranslatedText('regular')) {
       timeToPause = this.gameField.flash(str);
     }
     setTimeout(() => {

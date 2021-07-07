@@ -38,7 +38,7 @@ const de = {
   "round": "Round",
   "final-round": "Final Round",
   "question": "Question",
-  "regular": "Regular Question",
+  "regular": "Regular question",
   "bet": "Question with bet",
   "secret": "Question with secret",
   "final": "Final question",
