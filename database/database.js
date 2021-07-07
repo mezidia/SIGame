@@ -115,24 +115,14 @@ class Database {
         const date = new Date(Date.parse(rows[i].question_date.toString().replace(/-/g, '/')));
         const year = date.getFullYear();
         const month = date.getMonth();
-        let img = null;
         const imagePath = `./fileServer/${year}/${month}/${id}_image.txt`;
         if (fs.existsSync(imagePath)) {
-          fs.readFile(imagePath, (err, data) => {
-            if (err) console.error('Error while reading image ', err);
-            img = data;
-          });
+          question.img = fs.readFileSync(imagePath, 'utf8');
         }
-        let audio = null;
         const audioPath = `./fileServer/${year}/${month}/${id}_audio.txt`;
         if (fs.existsSync(audioPath)) {
-          fs.readFile(audioPath, (err, data) => {
-            if (err) console.error('Error while reading audio ', err);
-            img = data;
-          });
+          question.audio = fs.readFileSync(audioPath, 'utf8');
         }
-        question.img = img;
-        question.audio = audio;
         question.type = rows[i].question_type;
         question.string = rows[i].question_string;
         question.trueAns = rows[i].question_trueans;
@@ -226,12 +216,14 @@ class Database {
       for (const deck of bundle.decks) {
         const insertDeckSqlStr = `INSERT INTO deck (deck_subject, bundle_id) 
                                   VALUES('${deck.subject.replace(/[']{1}/g, "''")}', '${bundleId}')`;
+        console.log(deck.questions.length);
         await this.promisifyConQuery(insertDeckSqlStr)
         .then(async rowsD => {
           for (const q of deck.questions) {
             const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const insertQuestionSqlStr = `INSERT INTO question (question_type, question_string, question_date, question_trueans, question_falseans, deck_id) 
                                           VALUES('${q.type.replace(/[']{1}/g, "''")}', '${q.string.replace(/[']{1}/g, "''")}', '${date}', '${q.trueAns.toString().replace(/[']{1}/g, "''")}', '${q.falseAns.toString().replace(/[']{1}/g, "''")}', '${rowsD.insertId}')`;
+            console.log(deck.questions.length, rowsD.insertId, q.string);
             this.con.query(insertQuestionSqlStr, (err, res) => {
               if (err) console.error(err);
               this.saveAudioAndImageFiles(q.img, q.audio, res.insertId);
@@ -294,30 +286,20 @@ class Database {
     await this.promisifyConQuery(getDeckSqlStr)
     .catch(err => console.log(err))
     .then(rows => {
-      let deckId = 1;
+      let deckId = rows[0].deck_id;
       for (let i = 0; i < rows.length; i++) {
         const id = rows[i].question_id;
         const date = new Date(Date.parse(rows[i].question_date.toString().replace(/-/g, '/')));
         const year = date.getFullYear();
         const month = date.getMonth();
-        let img = null;
         const imagePath = `./fileServer/${year}/${month}/${id}_image.txt`;
         if (fs.existsSync(imagePath)) {
-          fs.readFile(imagePath, (err, data) => {
-            if (err) console.error('Error while reading image ', err);
-            img = data;
-          });
+          question.img = fs.readFileSync(imagePath, 'utf8');
         }
-        let audio = null;
         const audioPath = `./fileServer/${year}/${month}/${id}_audio.txt`;
         if (fs.existsSync(audioPath)) {
-          fs.readFile(audioPath, (err, data) => {
-            if (err) console.error('Error while reading audio ', err);
-            img = data;
-          });
+          question.audio = fs.readFileSync(audioPath, 'utf8');
         }
-        question.img = img;
-        question.audio = audio;
         question.type = rows[i].question_type;
         question.string = rows[i].question_string;
         question.trueAns = rows[i].question_trueans;
