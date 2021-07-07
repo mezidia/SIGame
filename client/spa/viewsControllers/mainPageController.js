@@ -72,7 +72,7 @@ export default class MainPageController {
     if (!validator.isValidName(name)) return;
     window.localStorage.setItem('name', name);
     changeHash('chooseMode')();
-    storage.socket = new WebSocket(`ws://localhost:5000`);
+    storage.socket = new WebSocket(`ws://our-si-game.herokuapp.com`);
     storage.socket.onopen = () => {
       new User(name, storage.socket);
       storage.socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
@@ -94,7 +94,7 @@ export default class MainPageController {
     if (!validator.isValidName(name)) return;
     window.localStorage.setItem('name', name);
     changeHash('redactor')();
-    storage.socket = new WebSocket(`ws://localhost:5000`);
+    storage.socket = new WebSocket(`ws://our-si-game.herokuapp.com`);
     storage.socket.onopen = () => {
       new User(name, storage.socket);
       storage.socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
