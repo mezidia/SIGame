@@ -3,7 +3,6 @@
 import Bundle from './bundle_class.js';
 import Deck from './deck_class.js';
 import Question from './question_class.js';
-import User from './user_class.js';
 import { getRandomIntInclusive } from '../utils.js';
 import { storage } from '../main.js';
 import { errPopup } from '../spa/uiElements.js';

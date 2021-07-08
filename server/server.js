@@ -157,7 +157,7 @@ class Server {
     const connection = database.returnConnection();
     connection.connect( async err => {
       if (err) throw err;
-      console.log("Connected!");
+      console.log('Connected!');
       let bundles = null;
       try {
         bundles = await database.getAllBundles();
@@ -293,12 +293,12 @@ class Server {
     const connection = database.returnConnection();
     connection.connect( async err => {
       if (err) throw err;
-      console.log("Connected!");
+      console.log('Connected!');
       console.log('from saveBundle to db' , data.data);
       await database.insertBundle(data.data);
       connection.end(err => {
-        if(err) console.log("error when connection ends: " + err);
-        else console.log("closed");
+        if(err) console.log('error when connection ends: ' + err);
+        else console.log('closed');
       });
     });
   }
@@ -340,10 +340,10 @@ class Server {
   getBundleNames(data) {
     const database = new Database(databaseConfig);
     const connection = database.returnConnection();
-    connection.on('error', e => console.log("on error: " + e));
+    connection.on('error', e => console.log('on error: ' + e));
     connection.connect( async err => {
       if (err) console.error('Issues with connection to Database \n' + err);
-      console.log("Connected!");
+      console.log('Connected!');
       let bundleNames = null;
       try {
         bundleNames = await database.getBundleNames();
@@ -352,8 +352,8 @@ class Server {
       } 
       this.sendToUser(data.id, {mType: 'bundleNames', data: bundleNames});
       connection.end(err => {
-        if(err) console.log("error when connection ends: " + err);
-        else console.log("closed");
+        if(err) console.log('error when connection ends: ' + err);
+        else console.log('closed');
       });
     });
   }
@@ -363,10 +363,10 @@ class Server {
     const name = data.data.name;
     const database = new Database(databaseConfig);
     const connection = database.returnConnection();
-    connection.on('error', e => console.log("on error: " + e));
+    connection.on('error', e => console.log('on error: ' + e));
     connection.connect( async err => {
       if (err) console.error('Issues with connection to Database \n' + err);
-      console.log("Connected!");
+      console.log('Connected!');
       let bundleRows = null;
       try {
         bundleRows = await database.getBundleByName(name);
@@ -375,8 +375,8 @@ class Server {
       }
       this.sendToUser(data.id, {mType: 'bundleRows', data: bundleRows});
       connection.end(err => {
-        if (err) console.log("error when connection ends: " + err);
-        else console.log("closed");
+        if (err) console.log('error when connection ends: ' + err);
+        else console.log('closed');
       });
     });
     
