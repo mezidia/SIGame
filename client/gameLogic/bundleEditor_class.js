@@ -163,7 +163,6 @@ export default class BundleEditor {
     const bundlesByLang = this.getBundlesByLangcode(allBundles, langcode);
     // get 15 regular decks
     const usedDecksSubjects = [];
-    console.log(allBundles, bundlesByLang);
     for (let c = 0; c < 15; c++) {
       const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
       const allRegularDecks = bundle.getRegularDecks();
@@ -177,7 +176,6 @@ export default class BundleEditor {
     }
     // get 7 final decks
     usedDecksSubjects.length = 0;
-    console.log(usedDecksSubjects);
     for (let c = 0; c < 7; c++) {
       const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
       const finalDecks = bundle.getFinalDecks();
@@ -189,7 +187,6 @@ export default class BundleEditor {
 
       bundleData.decks.push(deck);
     }
-    console.log(bundleData.decks);
     return new Bundle(bundleData);
   }
 
@@ -252,7 +249,6 @@ export default class BundleEditor {
       console.log(err);
       return false;
     }
-    console.log(bundleData);
     if (iSBundleToSave) {
       const msg = {
         'mType': 'saveBundleToDB',

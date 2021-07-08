@@ -28,7 +28,6 @@ export default class MainPageController {
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
-    console.log(configString);
     if (!this[configString]) return false;
     if (!this[configString][evt.target.id]) return false;
     return this[configString][evt.target.id];
@@ -51,7 +50,6 @@ export default class MainPageController {
         console.log('closed');
       };
       storage.socket.onmessage = msg => {
-        console.log(JSON.parse(msg.data));
         socketHandle(JSON.parse(msg.data), socketHandleConfig);
       };
     };
@@ -73,7 +71,6 @@ export default class MainPageController {
         console.log('closed');
       };
       storage.socket.onmessage = msg => {
-        console.log(JSON.parse(msg.data));
         socketHandle(JSON.parse(msg.data), socketHandleConfig);
       };
     };

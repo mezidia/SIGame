@@ -21,25 +21,19 @@ let storage = {
   gameInSearchLobby,
 };
 
-console.log(сontrollersConfig);
-
 //it runs handler if it exists
 function setupListeners() {
   const events = ['click', 'keydown', 'input', 'change'];
   for (const event of events) {
     document.addEventListener(event, async evt => {
       let controller = getController();
-      console.log(`${evt.type} has handlers:`, controller.getHandlers(evt));
       let handlersArr = controller.getHandlers(evt);
       if (!handlersArr) {
         controller = getController('StaticElementsController');
-        console.log(`${evt.type} has handlers:`, controller.getHandlers(evt));
         handlersArr = controller.getHandlers(evt);
       }
       if (!handlersArr) return;
-      console.log(handlersArr);
       for await(const handler of handlersArr) {
-        console.log(handler);
         handler(evt);
       }
     });

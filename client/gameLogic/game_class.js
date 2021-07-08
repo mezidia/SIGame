@@ -61,7 +61,6 @@ export default class Game {
     this.bets = {};
     this.playersIterator = undefined;
     this.gTimerCallback = null;
-    console.log('new Game', this);
   }
 
   turnTimerCallback(timeleft, totalTime) {
@@ -85,7 +84,6 @@ export default class Game {
   }
 
   onLeaveGame = evt => {
-    console.log(evt.name + ' left');
     const index = this.players.indexOf(evt.name);
     this.players.splice(index, 1);
     this.gameField.removePlayer(evt.name);
@@ -103,7 +101,7 @@ export default class Game {
   }
 
   onTurnOrder = evt => {
-    if (this.master === new User().name) return console.log('i am game master' + this.master);
+    if (this.master === new User().name) return;
     if (evt.who.includes(new User().name)) {
       document.getElementById('answer-btn').disabled = false;
     } else {
@@ -112,7 +110,6 @@ export default class Game {
   }
 
   onJoinGame = evt => {
-    console.log(`${evt.name} joined:`, this.players);
     this.players.push(evt.name);
     this.points[evt.name] = 0;
     this.gameField.addPlayer(evt.name);
@@ -124,7 +121,6 @@ export default class Game {
 
   onPoints = evt => {
     this.points = evt.points;
-    console.log(evt.points);
     this.gameField.updatePlayers(this.players, this.points);
   }
 
@@ -145,7 +141,6 @@ export default class Game {
   }
 
   onSecretQ = (evt, str) => {
-    console.log(evt.who);
     const timeToPause = this.gameField.flash(str);
     setTimeout(() => {
       this.gameField.announceGameState(evt.who + Language.getTranslatedText("choose-person-to-answer"));
@@ -193,7 +188,6 @@ export default class Game {
       for (const qIndex in decks[dIndex].questions) {
         if (!decks[dIndex].questions[qIndex]) continue;
         if (decks[dIndex].questions[qIndex].string === this.currentQuestion.string) {
-          console.log(decks[dIndex].questions[qIndex].string, this.currentQuestion.string);
           decks[dIndex].questions[qIndex] = null;
           break;
         }
@@ -219,7 +213,6 @@ export default class Game {
     };
     this.gameField.displayAnswer(evt.who, evt.answer);
     if (this.master !== new User().name) return;
-    console.log(this.currentQuestion);
     this.gameField.gmPopUp(evt.who, evt.answer, t, f);
   }
 
@@ -316,13 +309,10 @@ export default class Game {
     if (new User().name === this.master) this.setNextPicker();
     const theme = this.gameField.removeFinalTheme(evt.index);
     if (this.gameField.isNullThemes()) {
-      console.log('LastTheme', theme);
       let q = null;
       for (let d of this.bundle.getFinalDecks()) {
-        console.log(d);
         if (d.subject === theme) q = d.questions[0];
       }
-      console.log(q);
       const event = {
         eType: 'showQuestion',
         question: q,
@@ -394,7 +384,7 @@ export default class Game {
     if (prsdMsg.mType !== 'broadcastedEvent') return;
     const event = prsdMsg.data.data.event;
     const handler = this.eventsConfig[event.eType];
-    if (!handler) return console.log(`no handler for |${event.eType}| type event`);
+    if (!handler) return;
     handler(event);
     this.gameField.highlightCurrentPlayer(new User().name);
   }
@@ -417,7 +407,6 @@ export default class Game {
       };
       this._socket.send(JSON.stringify(msg));
     }
-    console.log('leave game-id ' + this._id);
     this._socket.send(JSON.stringify({mType: 'leaveGame', data: { roomID: this._id }}));
     this.broadcast(event);
     delete this;
@@ -446,7 +435,6 @@ export default class Game {
       who: new User().name,
     };
     this.broadcast(event);
-    console.log(q);
   }
 
   answer = () => {

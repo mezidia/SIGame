@@ -27,7 +27,6 @@ export default class GameField {
 
     const gameDisplay = document.getElementById('game-display');
     const drawCells = (deck) => {
-      console.log(deck[0]);
       const res = [];
       for(let i = 1; i <= deck.length; ++i) {
         for(let j = 1; j <= deck[i - 1].questions.length; ++j) {
@@ -255,7 +254,6 @@ export default class GameField {
   }
 
   waitForPlayersJpgShow() {
-    console.log(document);
     const gameDisplay = document.getElementById('game-display');
     gameDisplay.innerHTML = `<img style="display: block; width: auto; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg" alt="Waiting for start">`;
   }

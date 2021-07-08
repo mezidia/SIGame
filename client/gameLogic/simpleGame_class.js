@@ -40,7 +40,6 @@ export default class SimpleGame extends Game {
     this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
     if (this.currentQuestion.type === 'secret') this.currentQuestion.type = 'regular';
     const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
-    console.log(this.currentQuestion);
     evt.question = this.currentQuestion;
     if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
     qHandler(evt, Language.getTranslatedText(this.currentQuestion.type));
