@@ -143,6 +143,20 @@ of our event.
 
 ### Game logic
 
+File structure:
+* *.\client\gameLogic\bundle_class.js* - data class.
+* *.\client\gameLogic\bundleEditor_class.js* - manages bundles, submiting bundles in bundles editor.
+* *.\client\gameLogic\deck_class.js* - data class.
+* *.\client\gameLogic\game_class.js* - game logic class, mod: classic.
+* *.\client\gameLogic\gameField_class.js* - operating game field DOM.
+* *.\client\gameLogic\gameTimer_class.js* - animates visualized game timers.
+* *.\client\gameLogic\question_class.js* - data class.
+* *.\client\gameLogic\question_reader.js* - we store our external ui elements.
+* *.\client\gameLogic\simpleGame_class.js* - game logic class, mod: simple.
+* *.\client\gameLogic\timer_class.js* - timer class.
+* *.\client\gameLogic\user_class.js* - singleton user class, stores user data.
+
+
 ### Language  
 
 
