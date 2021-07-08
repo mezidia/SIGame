@@ -158,7 +158,30 @@ File structure:
 
 The work of auxiliary classes does not have any peculiarities in the implementation, so we will focus only on the class of game logic.
 
-### Language  
+### Localization  
+To translate text in html we use *data-localize* tag. It is used like id:
+```
+data-localize="translateme"
+```
+We store translation for each text in *localization* directory. In each file we store data-localize ids and translations.  
+```
+de.js  
+
+..."translateme": "Translate me!",...
+```
+```
+ua.js  
+  
+..."translateme": "Переклади мене!",...  
+```
+To translate website we use Language class. There we import localization files and save them in the *_languages* field. Active language you can get by using *getLanguage* or *getLangcode* functions. *getTranslatedText* can be used in popups, text in their html should be styled like this:  
+```
+<p data-localize="translateme">Language.getTranslatedText('translateme')</p>
+```
+When langcode button is being clicked on the page, *changeLanguage* is executed.  
+  
+### Local Storage  
+To save name and preferable language we use local storage.
 
 
 ## Backend
