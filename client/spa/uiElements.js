@@ -2,7 +2,7 @@
 
 import Language from "../changeLanguage.js"
 
-const errPopup = (id, placeholderId = 'popupPlaceholder', addInfo) => {
+const errPopup = (id, placeholderId = 'popupPlaceholder', addInfo = '') => {
   const placeholder = document.getElementById(placeholderId);
   placeholder.innerHTML = `<div id="gray-space"></div>
   <div class="custom-popup err-popup">
