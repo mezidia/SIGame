@@ -113,5 +113,46 @@ Let's analyze a typical page controller class.
 ## Backend
 
 ### Server
+This server is written without any frameworks, using only vanilla js (node js).  
+To start the server create a new instance of class Server and pass there a port (example in file index.js). Class Server is singleton.  
+Connection between backend and frontend happens with the help of websockets and ws framework.  
+#### Messages to server
+Message, that comes to server should have the following structure:  
+```
+{mType: "sometype", data: {somedata}}
+```  
+With the help of *_messageConfig* field you can track what functions handle different types of messages. To add a new type of message add there a new line:  
+```
+... 'newmType': data => functionToHandleNewmType(data) ...,  
+```
+than add new function, be aware that data passed to it will have the following structure:  
+```
+{id: usersId, data: dataFromMessage}  
+```
+Message to the client should have the same structure as messages to the server.  
+To pass your message to all the clients use *sendToAll* function and pass there message. To pass it to the specific client use *sendToUser* function, pass there id of the client, you want to send your message to.  
+#### Clients online  
+When user connects to the website, function *connectionOpen* is being executed. It stores his connection. When client sends some messages to the server, *connectionMessage* handles it (we discussed it in details in previous section). When user leaves, *connectionClose* deletes his info.  
+Clients online are stored in Server class field called *_users*. For every user we generate his own unique id, so everybody is being saved in the object using the following structure:  
+```
+... uniqueUserId: {connection: usersWebSocketConnection, name: usersName} ...  
+```
+To get id from connection you can use *getIdByConnection* function.
+#### Available games
+All games are being stored in *_games* field with the following structure:  
+```
+... uniqueIdForTheGame: {players: { uniqueUserId: {userInfoLikeInUsersField}, }, bundle: bundleForThisGame, settings: settingsForThisGame} ...  
+```    
+#### Connection with database  
+To connect to db from server we use database class and pass there parameters:  
+```
+const database = new Database(databaseConfig);
+```  
+See example of *databaseConfig* in database.config.json.  
+We use mysql framework for connecting with db, so we need only connection, which we can get by using  
+```
+const connection = database.returnConnection();
+```
+and then using mysql framework and Database class functions.
 
 ### DB
