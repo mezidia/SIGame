@@ -248,12 +248,12 @@ export default class Game {
           }
         this.points[this.lastAnswer.who] += +cost * 2;
         this.updatePoints();
-        this.setNextPicker(this.lastAnswer.who);
+        if (new User().name === this.master) this.setNextPicker(this.lastAnswer.who);
       } else {
-        this.gameField.announceGameState(Language.getTranslatedText('appeal-denied'));
-        this.setNextPicker();
+        this.gameField.announceGameState(Language.getTranslatedText("appeal-denied"));
+        if (new User().name === this.master) this.setNextPicker();
       }
-      this.nextTurn();
+      if (new User().name === this.master) this.nextTurn();
     }
   }
 
@@ -486,7 +486,7 @@ export default class Game {
       }
     this.points[name] += cost;
     this.updatePoints();
-    this.gameField.gmPopHide();
+    this.gameField.hidePopUp();
     this.setNextPicker(name);
     this.nextTurn();
   }
@@ -515,7 +515,7 @@ export default class Game {
       };
       this.broadcast(appealEvent);
     }
-    this.gameField.gmPopHide();
+    this.gameField.hidePopUp();
 
   }
 
@@ -526,7 +526,7 @@ export default class Game {
       decision: false,
     };
     this.broadcast(appealEvent);
-    this.gameField.appealPopHide();
+    this.gameField.hidePopUp();
   }
 
   agreeWithApeal = evt => {
@@ -536,7 +536,7 @@ export default class Game {
       decision: true,
     };
     this.broadcast(appealEvent);
-    this.gameField.appealPopHide();
+    this.gameField.hidePopUp();
   }
 
   startGame = () => {
