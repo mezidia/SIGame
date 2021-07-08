@@ -4,7 +4,7 @@
 import User from "./user_class.js";
 import Game from "./game_class.js";
 import { getRandomIntInclusive } from "../utils.js";
-import Language from "../changeLanguage.js";
+import Language from "../language.js";
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 300; //sec

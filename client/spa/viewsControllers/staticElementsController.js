@@ -1,7 +1,7 @@
 'use strict';
 
 import { changeHash } from '../spaControl.js';
-import Language from '../../changeLanguage.js';
+import Language from '../../language.js';
 
 export default class StaticElementsController {
 

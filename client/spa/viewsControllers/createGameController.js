@@ -5,7 +5,7 @@ import { changeHash } from '../spaControl.js';
 import { loader } from '../../utils/loader.js';
 import { promisifySocketMSG } from '../../utils.js';
 import BundleEditor from '../../gameLogic/bundleEditor_class.js';
-import Language from '../../changeLanguage.js';
+import Language from '../../language.js';
 import User from '../../gameLogic/user_class.js';
 import Game from '../../gameLogic/game_class.js';
 import SimpleGame from '../../gameLogic/simpleGame_class.js';

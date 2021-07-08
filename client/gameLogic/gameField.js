@@ -1,6 +1,6 @@
 'use strict';
 
-import Language from '../changeLanguage.js';
+import Language from '../language.js';
 import QReader from './question_reader.js'
 
 export default class GameField {

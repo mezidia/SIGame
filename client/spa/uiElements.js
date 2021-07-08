@@ -1,6 +1,6 @@
 'use strict';
 
-import Language from "../changeLanguage.js"
+import Language from "../language.js"
 
 const errPopup = (id, placeholderId = 'popupPlaceholder', addInfo) => {
   const placeholder = document.getElementById(placeholderId);

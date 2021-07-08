@@ -3,7 +3,7 @@
 import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
-import Language from '../changeLanguage.js';
+import Language from '../language.js';
 import { yesnoPopup } from './uiElements.js';
 import { storage } from '../main.js';
 

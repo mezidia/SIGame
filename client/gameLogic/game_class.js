@@ -6,7 +6,7 @@ import Bundle from "./bundle_class.js";
 import GameTimer from "./gameTimer_class.js";
 import Timer from './timer_class.js';
 import { changeHash } from "../spa/spaControl.js";
-import Language from "../changeLanguage.js";
+import Language from "../language.js";
 
 const ANSWERTIME = 10; //sec
 const GAMETIME = 500; //sec
