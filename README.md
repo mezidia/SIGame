@@ -5,6 +5,8 @@ Won't work if you stop your activity for 55 seconds (because of free hosting).
 
 ## Table of Contents
 
+- [Our web-version of SIGame](#our-web-version-of-sigame)
+  - [Table of Contents](#table-of-contents)
   - [Technology stack](#technology-stack)
   - [Start](#start)
     - [Preparation](#preparation)
@@ -17,6 +19,7 @@ Won't work if you stop your activity for 55 seconds (because of free hosting).
     - [Routing](#routing)
     - [Controllers and events handling](#controllers-and-events-handling)
     - [Game logic](#game-logic)
+    - [Timers and In-Game UI](#timers-and-in-game-ui)
     - [Localization](#localization)
     - [Local Storage](#local-storage)
   - [Backend](#backend)
@@ -93,8 +96,8 @@ hang listeners for different types of events and load the main page.
 In general we have a typical SPA app with client side routing.
 
 File structure:
-* In `./client/gameLogic/ - we have all the logic regarding the game.
-* In `./client/spa/views/ - we keep page layouts.
+* In `./client/gameLogic/` - we have all the logic regarding the game.
+* In `./client/spa/views/` - we keep page layouts.
 * In `./client/spa/viewsControllers` - we store all the page controllers that are responsible for their logic.
 * In `./client/spa/utils/ - we store auxiliary tools.
 * In `./client/spa/engine.js` - we store our render engine.
@@ -298,6 +301,23 @@ const MIN_PLAYERS = 3; // minimum amount of players
 ```
 
 The simple game class follows the classic game class, but changes some of its methods to change the course of the game.
+
+### Timers and In-Game UI
+There are two types of timers: `Timer` and `GameTimer`.
+- `Timer` calls callback function when ended, often game logic stuff
+- `GameTimer` calls callback every time it ticks(1 second by default). Used to display how much time left.
+
+Every other UI action in the game is controlled by `gameField.js`:
+- changing layout
+- drawing in-game popups
+- displaying questions using `QReader` class from `question_reader.js`.
+  
+`question_reader.js` is responsible for work with text on the screen:
+- displaying text
+- reading text
+- dispatching event when reading is done
+- displaying questions with images
+- playing audio-questions
 
 ### Localization  
 To translate text in html we use `data-localize` tag. It is used like id:
