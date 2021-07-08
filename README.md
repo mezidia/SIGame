@@ -8,6 +8,7 @@ Our web-version of SIGame
 - [Differences from the original](#differences-from-the-original)
 - [Frontend](#frontend)
     - [General architecture](#general-architecture)
+    - [Controllers and events handling](#controllers-and-events-handling)
     - [Game logic](#game-logic)
 - [Backend](#backend)
     - [Server](#server)
@@ -20,11 +21,26 @@ Our web-version of SIGame
 ## Frontend
 
 ### General architecture
-The entry point is main.js, where we create a state object of our program,
+The entry point is *main.js*, where we create a state object of our program,
 hang listeners for different types of events and load the main page.
+In general we have a typical SPA app.
+
+File structure:
+* In *.\client\gameLogic* - we have all the logic regarding the game.
+* In *.\client\spa\views* - we keep page layouts.
+* In *.\client\spa\viewsControllers* - we store all the page controllers that are responsible for their logic.
+* In *.\client\spa\utils* - we store auxiliary tools.
+* In *.\client\spa\engine.js* - we store our render engine.
+* In *.\client\spa\router.js* - we store our client router.
+* In *.\client\spa\spaControl.js* - we store our site navigation logic.
+* In *.\client\spa\uiElements.js* - we store our external ui elements.
+* In *.\client\language.js* - we store the logic responsible for site localization.
+* In *.\client\utils.js* - we store helpfull functions.
+* In *.\client\main.js* - entry point.
 
 Our storage is object with the state of the program, which is imported in the module and changed by reference.
 
+    //main.js
     let storage = {
       socket: null,
       allBundles: null,
@@ -34,12 +50,13 @@ Our storage is object with the state of the program, which is imported in the mo
       allGames: null,
       gameInSearchLobby: null,
     };
+    
+### Controllers and events handling
+In *.\client\spa\viewsControllers* folder we keep all the controllers of the corresponding pages.
+*spaControl* creates a config of pages and their corresponding controllers based on
+*indexControllers.js* in which we import page logic classes.
 
-In .\client\spa\viewsControllers folder we keep all the controllers of the corresponding pages.
-spaControl creates a config of pages and their corresponding controllers based on indexControllers.js
-in which we import page logic classes.
-
-*example:*
+**example:**
 
     export { default as CreateGameController } from './createGameController.js';
    
@@ -48,11 +65,11 @@ elements - they have a separate controller. All universal interface elements suc
 have logic inside their files.
 
 So when we create an event on a certain page, our spaControl gets the name of the current page and
-calls the getHandlers function in its controller.
+calls the *getHandlers* method in its controller.
 
 Let's analyze a typical page controller class.
 
-*example:*
+**example:**
 
     export default class ChooseModeController {
 
@@ -89,7 +106,17 @@ Let's analyze a typical page controller class.
       }
 
     }
+    
+*getHandlers* gets the event in arguments, takes its type and adds 'Config'. An event config is an object in which the key is the class or ID of the target, and the value must
+be an array of event handler functions. All event handlers are executed asynchronously and sequentially.
+In this case, our page should process only 2 buttons, the corresponding handlers are prescribed by class methods. If the controller has handlers - it returns an array of
+functions in *main.js* where they are called.
 
+**!Note:** The page controllers can have any inventory configurations, depending on which events they have to process: changeConfig, inputConfig etc.
+
+Function of hanging listeners of events.
+    
+    //main.js
     function setupListeners() {
       const events = ['click', 'keydown', 'input', 'change'];
       for (const event of events) {
@@ -108,51 +135,16 @@ Let's analyze a typical page controller class.
       }
     }
 
+On all necessary types of events we hang an asynchronous lambda that, by means of *getController*, takes the controller of the
+current page, and calls *getHandlers* in the necessary controller. Further, if the given controller does not know how to process
+event we consider that it is a static element of the interface and we look for handlers in the controller of static elements. If
+in any of the cases we get an array of handlers - the functions in it are sequentially called with retransmission to the arguments
+of our event.
+
 ### Game logic
 
 ## Backend
 
 ### Server
-This server is written without any frameworks, using only vanilla js (node js).  
-To start the server create a new instance of class Server and pass there a port (example in file index.js). Class Server is singleton.  
-Connection between backend and frontend happens with the help of websockets and ws framework.  
-#### Messages to server
-Message, that comes to server should have the following structure:  
-```
-{mType: "sometype", data: {somedata}}
-```  
-With the help of *_messageConfig* field you can track what functions handle different types of messages. To add a new type of message add there a new line:  
-```
-... 'newmType': data => functionToHandleNewmType(data) ...,  
-```
-than add new function, be aware that data passed to it will have the following structure:  
-```
-{id: usersId, data: dataFromMessage}  
-```
-Message to the client should have the same structure as messages to the server.  
-To pass your message to all the clients use *sendToAll* function and pass there message. To pass it to the specific client use *sendToUser* function, pass there id of the client, you want to send your message to.  
-#### Clients online  
-When user connects to the website, function *connectionOpen* is being executed. It stores his connection. When client sends some messages to the server, *connectionMessage* handles it (we discussed it in details in previous section). When user leaves, *connectionClose* deletes his info.  
-Clients online are stored in Server class field called *_users*. For every user we generate his own unique id, so everybody is being saved in the object using the following structure:  
-```
-... uniqueUserId: {connection: usersWebSocketConnection, name: usersName} ...  
-```
-To get id from connection you can use *getIdByConnection* function.
-#### Available games
-All games are being stored in *_games* field with the following structure:  
-```
-... uniqueIdForTheGame: {players: { uniqueUserId: {userInfoLikeInUsersField}, }, bundle: bundleForThisGame, settings: settingsForThisGame} ...  
-```    
-#### Connection with database  
-To connect to db from server we use database class and pass there parameters:  
-```
-const database = new Database(databaseConfig);
-```  
-See example of *databaseConfig* in database.config.json.  
-We use mysql framework for connecting with db, so we need only connection, which we can get by using  
-```
-const connection = database.returnConnection();
-```
-and then using mysql framework and Database class functions.
 
 ### DB
