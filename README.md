@@ -180,7 +180,7 @@ To translate text in html we use *data-localize* tag. It is used like id:
 ```
 data-localize="translateme"
 ```
-We store translation for each text in *localization* directory. In each file we store data-localize ids and translations.  
+We store translation for each text in [*localization* directory](./localization). In each file we store data-localize ids and translations.  
 ```
 de.js  
 
@@ -191,7 +191,7 @@ ua.js
   
 ..."translateme": "Переклади мене!",...  
 ```
-To translate website we use Language class. There we import localization files and save them in the *_languages* field. Active language you can get by using *getLanguage* or *getLangcode* functions. *getTranslatedText* can be used in popups, text in their html should be styled like this:  
+To translate website we use [Language class](./client/changeLanguage.js). There we import localization files and save them in the *_languages* field. Active language you can get by using *getLanguage* or *getLangcode* functions. *getTranslatedText* can be used in popups, text in their html should be styled like this:  
 ```
 <p data-localize="translateme">Language.getTranslatedText('translateme')</p>
 ```
@@ -205,8 +205,8 @@ To save name and preferable language we use local storage.
 
 ### Server
 This server is written without any frameworks, using only vanilla js (node js).  
-To start the server create a new instance of class Server and pass there a port (example in file index.js). Class Server is singleton.  
-Connection between backend and frontend happens with the help of websockets and ws framework.  
+To start the server create a new instance of [class Server](./server/server.js) and pass there a port ([example](index.js)). Class Server is singleton.  
+Connection between backend and frontend happens with the help of websockets and [ws framework](https://github.com/websockets/ws).  
 #### Messages to server
 Message, that comes to server should have the following structure:  
 ```
@@ -235,15 +235,15 @@ All games are being stored in *_games* field with the following structure:
 ... uniqueIdForTheGame: {players: { uniqueUserId: {userInfoLikeInUsersField}, }, bundle: bundleForThisGame, settings: settingsForThisGame} ...  
 ```    
 #### Connection with database  
-To connect to db from server we use database class and pass there parameters:  
+To connect to db from server we use [database class](./database/database.js) and pass there parameters:  
 ```
 const database = new Database(databaseConfig);
 ```  
-See example of *databaseConfig* in database.config.json.  
-We use mysql framework for connecting with db, so we need only connection, which we can get by using  
+See example of *databaseConfig* [there](./database/database.config.json).  
+We use [mysql framework](https://github.com/mysqljs/mysql) for connecting with db, so we need only connection, which we can get by using  
 ```
 const connection = database.returnConnection();
 ```
 and then using mysql framework and Database class functions.
 ### DB  
-All database functions are stored in the Database class. We use mysql database for this project. Class diagram of it can be found in ClassDiagram.png. Before inserting or selecting something from db use *checkExistance* function to be sure that tables exist (this function creates them even if they don't). To store audio and images we use file server, which is positioned in the *fileServer*, than it is split by year and month directories. We use date and question_id to get audio and images.
+All database functions are stored in the Database class. We use mysql database for this project. Class diagram of it can be found in [there](ClassDiagram.png). Before inserting or selecting something from db use *checkExistance* function to be sure that tables exist (this function creates them even if they don't). To store audio and images we use file server, which is positioned in the [*fileServer*](./fileServer), than it is split by year and month directories. We use date and question_id to get audio and images.
