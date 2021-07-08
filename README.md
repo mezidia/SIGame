@@ -156,6 +156,7 @@ File structure:
 * *.\client\gameLogic\timer_class.js* - timer class.
 * *.\client\gameLogic\user_class.js* - singleton user class, stores user data.
 
+The work of auxiliary classes does not have any peculiarities in the implementation, so we will focus only on the class of game logic.
 
 ### Language  
 
