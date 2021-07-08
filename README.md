@@ -151,7 +151,7 @@ File structure:
 * *.\client\gameLogic\gameField_class.js* - operating game field DOM.
 * *.\client\gameLogic\gameTimer_class.js* - animates visualized game timers.
 * *.\client\gameLogic\question_class.js* - data class.
-* *.\client\gameLogic\question_reader.js* - we store our external ui elements.
+* *.\client\gameLogic\question_reader.js* - shows quenstion text, audio and img.
 * *.\client\gameLogic\simpleGame_class.js* - game logic class, mod: simple.
 * *.\client\gameLogic\timer_class.js* - timer class.
 * *.\client\gameLogic\user_class.js* - singleton user class, stores user data.
