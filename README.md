@@ -143,6 +143,9 @@ of our event.
 
 ### Game logic
 
+### Language  
+
+
 ## Backend
 
 ### Server
@@ -187,4 +190,5 @@ We use mysql framework for connecting with db, so we need only connection, which
 const connection = database.returnConnection();
 ```
 and then using mysql framework and Database class functions.
-### DB
+### DB  
+All database functions are stored in the Database class. We use mysql database for this project. Class diagram of it can be found in ClassDiagram.png. Before inserting or selecting something from db use *checkExistance* function to be sure that tables exist (this function creates them even if they don't). To store audio and images we use file server, which is positioned in the *fileServer*, than it is split by year and month directories. We use date and question_id to get audio and images.
