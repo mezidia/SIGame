@@ -1,6 +1,8 @@
 
 # Our web-version of SIGame
-Our web-version of SIGame
+Our web-version of SIGame.
+See [there](https://our-si-game.herokuapp.com/#mainPage). 
+Won't work if you stop your activity for 55 seconds (because of free hosting).
 
 ## Table of Contents
 
@@ -14,7 +16,16 @@ Our web-version of SIGame
     - [Server](#server)
     - [DB](#db)
 
-## Start
+## Start  
+To start app go to the main directory and write 
+```
+node index.js
+```
+then type
+```
+http://localhost:5000/#
+```
+in browser and enjoy=)
 
 ## Differences from the original
 
