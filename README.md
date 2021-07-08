@@ -185,6 +185,44 @@ All events are sent using the *broadcast* function.
 The function receives an array of events and sends a message to the server, specifying its own room ID. The server sends this event to all participants in the room.
 To avoid re-uploading events, after processing them, or repeatedly sending events, in the main handlers there is a check: whether the client is a master of the game.
 
+**example:**
+
+    const event = {
+      eType: 'appeal',
+      who: new User().name,
+    };
+    this.broadcast(event);
+
+**!Note:** 'eType' field is required.
+
+The logic of processing clicks and events is concentrated in the main configs.
+
+      eventsConfig = {
+        'leave': this.onLeaveGame,
+        'turnOrder': this.onTurnOrder,
+        'join': this.onJoinGame,
+        'points': this.onPoints,
+        ...
+      }
+      
+        clickConfig = {
+         'cell': this.onQuestionClick,
+         'theme': this.onThemeClick,
+         ...
+      }
+
+When creating a new copy of the game, we have listeners of events for clicks and server messages. After leaving the game, they are removed. The clicker handler looks for a
+handler in the configuration by the ID of the clicked target.
+
+      _setListeners() {
+        document.addEventListener('click', this.clickHandler);
+        this._socket.addEventListener('message', this.socketHandler);
+      }
+
+      _removeListeners() {
+        document.removeEventListener('click', this.clickHandler);
+        this._socket.removeEventListener('message', this.socketHandler);
+      }
 
 ### Localization  
 To translate text in html we use *data-localize* tag. It is used like id:
