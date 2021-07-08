@@ -223,6 +223,15 @@ handler in the configuration by the ID of the clicked target.
         document.removeEventListener('click', this.clickHandler);
         this._socket.removeEventListener('message', this.socketHandler);
       }
+At the beginning of the file we have several constants that control the minimum number of players, turn time, appeal time and game time. 
+
+    //game_class.js
+    const ANSWERTIME = 10; //sec
+    const GAMETIME = 500; //sec
+    const APPEALTIME = 5; //sec
+    const MIN_PLAYERS = 3; // minimum amount of players 
+
+The simple game class follows the classic game class, but changes some of its methods to change the course of the game.
 
 ### Localization  
 To translate text in html we use *data-localize* tag. It is used like id:
