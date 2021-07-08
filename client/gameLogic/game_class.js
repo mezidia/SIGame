@@ -498,7 +498,7 @@ export default class Game {
       }
     this.points[name] += cost;
     this.updatePoints();
-    this.gameField.gmPopHide();
+    this.gameField.hidePopUp();
     this.setNextPicker(name);
     this.nextTurn();
   }
@@ -527,7 +527,7 @@ export default class Game {
       };
       this.broadcast(appealEvent);
     }
-    this.gameField.gmPopHide();
+    this.gameField.hidePopUp();
 
   }
 
@@ -538,7 +538,7 @@ export default class Game {
       decision: false,
     };
     this.broadcast(appealEvent);
-    this.gameField.appealPopHide();
+    this.gameField.hidePopUp();
   }
 
   agreeWithApeal = evt => {
@@ -548,7 +548,7 @@ export default class Game {
       decision: true,
     };
     this.broadcast(appealEvent);
-    this.gameField.appealPopHide();
+    this.gameField.hidePopUp();
   }
 
   startGame = () => {

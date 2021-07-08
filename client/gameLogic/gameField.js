@@ -158,7 +158,7 @@ export default class GameField {
   gmPopUp(who, ans, t, f) {
     Array.isArray(t) ? t = t.join(',') : false;
     Array.isArray(f) ? f = f.join(',') : false;
-    document.getElementById('reply').innerHTML = `<div class="container gm-popup">
+    document.getElementById('popupPlaceholder').innerHTML = `<div class="container gm-popup custom-popup">
         <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
           <span class="badge badge-primary" id="answr-author" style="font-size: 24px">${who}</span>
           <br>
@@ -170,7 +170,7 @@ export default class GameField {
             <h2 data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
             <div style="flex-grow: 1;"></div>
-            <div id="correct" class="btn dark-b-hover game-button btn-50" style="width: 100%" data-localize="correct">${Language.getTranslatedText('correct')}</div>
+            <div id="correct" class="btn dark-b-hover game-button" style="width: 100%" data-localize="correct">${Language.getTranslatedText('correct')}</div>
           </div>
           
           <div class="col-sm-6" style="display: flex; flex-direction: column">
@@ -202,7 +202,7 @@ export default class GameField {
 }
 
   // hides a popup
-  appealPopHide() {
+  hidePopUp() {
     document.getElementById('popupPlaceholder').innerHTML = '';
   }
 
@@ -263,7 +263,7 @@ export default class GameField {
   drawStartButton() {
     const placeHolder = document.getElementById('reply');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-      <button class="btn dark-b-hover" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
+      <button class="btn dark-r-hover" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
     </div>`;
     document.getElementById('game-state-text').innerHTML = '';
   }
@@ -343,7 +343,7 @@ export default class GameField {
   }
 
   highlightCurrentPlayer(name) {
-    document.getElementById(`icon-${name}`).style.backgroundColor = '#0399E1';
+    document.getElementById(`icon-${name}`).style.border = '2px solid #010101';
   }
 
   
