@@ -300,7 +300,7 @@ const APPEALTIME = 5; // sec
 const MIN_PLAYERS = 3; // minimum amount of players 
 ```
 
-The simple game class follows the classic game class, but changes some of its methods to change the course of the game.
+The simple game class extends the classic game class, but overrides some of its methods to change the game order.
 
 ### Timers and In-Game UI
 There are two types of timers: `Timer` and `GameTimer`.
@@ -320,7 +320,7 @@ Every other UI action in the game is controlled by `gameField.js`:
 - playing audio-questions
 
 ### Localization  
-To translate text in html we use `data-localize` tag. It is used like id:
+To translate text in html we use `data-localize` attribute. It is used like id:
 ```
 data-localize="translateme"
 ```
@@ -390,4 +390,4 @@ const connection = database.returnConnection();
 ```
 and then using mysql framework and Database class functions.
 ### DB  
-All database functions are stored in the Database class. We use mysql database for this project. Class diagram of it can be found in [there](ClassDiagram.png). Before inserting or selecting something from db use `checkExistance` function to be sure that tables exist (this function creates them even if they don't). To store audio and images we use file server, which is positioned in the [`fileServer`](./fileServer), than it is split by year and month directories. We use date and question_id to get audio and images.
+All database functions are stored in the Database class. We use mysql database for this project. ER-diagram of it can be found in [there](ClassDiagram.png). Before inserting or selecting something from db use `checkExistance` function to be sure that tables exist (this function creates them even if they don't). To store audio and images we use file server, which is positioned in the [`fileServer`](./fileServer), than it is split by year and month directories. We use date and question_id to get audio and images.
