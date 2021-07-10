@@ -3,7 +3,7 @@
 import * as controllers from './viewsControllers/indexControllers.js';
 import RenderEngine from './engine.js';
 import Router from './router.js';
-import Language from '../changeLanguage.js';
+import Language from '../language.js';
 import { yesnoPopup } from './uiElements.js';
 import { storage } from '../main.js';
 
@@ -36,7 +36,6 @@ const changeHash = hash => async () => {
   }
 
   router.change(hash);
-  console.log(hash);
   if (!storage.socket && hash !== 'chooseMode' && hash !== 'help') router.change('mainPage');
   await loadView();
 };
@@ -56,7 +55,6 @@ const loadView = async () => {
       console.log(reason);
     })
     .finally(() => {
-      console.log(viewName);
       if (viewName === 'mainPage') {
         const name = window.localStorage.getItem('name');
         if (name) document.getElementById('name-input').value = name;
@@ -71,7 +69,6 @@ const getViewControllerClassName = () => {
   let currrentView = checkView();
   currrentView = currrentView.charAt(0).toUpperCase() + currrentView.slice(1)
   const controllerName = currrentView + 'Controller';
-  console.log(controllerName);
   return controllerName;
 }
 

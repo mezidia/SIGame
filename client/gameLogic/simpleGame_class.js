@@ -4,16 +4,27 @@
 import User from "./user_class.js";
 import Game from "./game_class.js";
 import { getRandomIntInclusive } from "../utils.js";
-import Language from "../changeLanguage.js";
+import Language from "../language.js";
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 300; //sec
 const APPEALTIME = 5; //sec
 
 export default class SimpleGame extends Game {
+
+  _secretToRegularQType(decksArr) {
+    for (const deck of decksArr) {
+      for (const q of deck.questions) {
+        if (q.type === 'secret') q.type = 'regular';
+      }
+    }
+  }
+
   constructor(bundle, settings, players) {
     super(bundle, settings, players);
     this.rounds = this.bundle.getRegularDecks();
+    this._secretToRegularQType(this.rounds);
+    console.log(this.rounds);
   }
 
   onNextTurn = evt => {
@@ -40,7 +51,6 @@ export default class SimpleGame extends Game {
     this.currentQuestion = this.rounds[this.currentRound].questions[this.answerCounter];
     if (this.currentQuestion.type === 'secret') this.currentQuestion.type = 'regular';
     const qHandler = this.qTypeConfig[this.currentQuestion.type];//this.qTypeConfig[this.currentQuestion.type];
-    console.log(this.currentQuestion);
     evt.question = this.currentQuestion;
     if (!qHandler) return console.log(`Unknown q type: ${this.currentQuestion.type}`);
     qHandler(evt, Language.getTranslatedText(this.currentQuestion.type));
@@ -84,7 +94,7 @@ export default class SimpleGame extends Game {
       errPopup('start-min');
       return false;
     }
-    this.currentRound = getRandomIntInclusive(0, this.rounds.length - 1);
+    this.currentRound = 0;
     this.setCurrentRound(this.currentRound);
     const event = {
       eType: 'startGame',

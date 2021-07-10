@@ -1,7 +1,7 @@
 'use strict';
 
 import { changeHash } from '../spaControl.js';
-import Language from '../../changeLanguage.js';
+import Language from '../../language.js';
 
 export default class StaticElementsController {
 
@@ -19,7 +19,6 @@ export default class StaticElementsController {
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
-    console.log(configString);
     if (!this[configString]) return false;
     let handlers = this[configString](evt, evt.target.id);
     if (!handlers) {

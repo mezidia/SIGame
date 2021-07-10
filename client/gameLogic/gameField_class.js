@@ -1,6 +1,6 @@
 'use strict';
 
-import Language from '../changeLanguage.js';
+import Language from '../language.js';
 import QReader from './question_reader.js'
 
 export default class GameField {
@@ -27,7 +27,6 @@ export default class GameField {
 
     const gameDisplay = document.getElementById('game-display');
     const drawCells = (deck) => {
-      console.log(deck[0]);
       const res = [];
       for(let i = 1; i <= deck.length; ++i) {
         for(let j = 1; j <= deck[i - 1].questions.length; ++j) {
@@ -158,7 +157,7 @@ export default class GameField {
   gmPopUp(who, ans, t, f) {
     Array.isArray(t) ? t = t.join(',') : false;
     Array.isArray(f) ? f = f.join(',') : false;
-    document.getElementById('reply').innerHTML = `<div class="container gm-popup">
+    document.getElementById('popupPlaceholder').innerHTML = `<div class="container gm-popup custom-popup">
         <div id="answer-info" style="grid-row: 1 / 2; grid-column: 1 / 2">
           <span class="badge badge-primary" id="answr-author" style="font-size: 24px">${who}</span>
           <br>
@@ -170,7 +169,7 @@ export default class GameField {
             <h2 data-localize="correct-answers">${Language.getTranslatedText('correct-answers')}</h2>
             <p id="correct-answer-text">${t.split(',').map(el => el + '<br>').join(' ')}</p>
             <div style="flex-grow: 1;"></div>
-            <div id="correct" class="btn dark-b-hover game-button btn-50" style="width: 100%" data-localize="correct">${Language.getTranslatedText('correct')}</div>
+            <div id="correct" class="btn dark-b-hover game-button" style="width: 100%" data-localize="correct">${Language.getTranslatedText('correct')}</div>
           </div>
           
           <div class="col-sm-6" style="display: flex; flex-direction: column">
@@ -202,7 +201,7 @@ export default class GameField {
 }
 
   // hides a popup
-  appealPopHide() {
+  hidePopUp() {
     document.getElementById('popupPlaceholder').innerHTML = '';
   }
 
@@ -255,7 +254,6 @@ export default class GameField {
   }
 
   waitForPlayersJpgShow() {
-    console.log(document);
     const gameDisplay = document.getElementById('game-display');
     gameDisplay.innerHTML = `<img style="display: block; width: auto; height: auto; margin-left: auto; margin-right: auto;" src="lobbySearchImage.jpg" alt="Waiting for start">`;
   }
@@ -263,7 +261,7 @@ export default class GameField {
   drawStartButton() {
     const placeHolder = document.getElementById('reply');
     placeHolder.innerHTML = `<div style="display: flex; justify-content: center;">
-      <button class="btn dark-b-hover" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
+      <button class="btn dark-r-hover" id="startGame-btn" data-localize="play">${Language.getTranslatedText('play')}</button>
     </div>`;
     document.getElementById('game-state-text').innerHTML = '';
   }
@@ -310,7 +308,7 @@ export default class GameField {
     document.getElementById('popupPlaceholder').innerHTML = `<div class="custom-popup">
      <h2 class="text-primary" data-localize="make-bet">${Language.getTranslatedText('make-bet')}</h2>
      <input id="betSize" style="width: 100%" required>
-     <button id="bet-btn" class="btn dark-r-hover" style="width: 100%; text-align: center; float: left" id="place-bet">OK</button>
+     <button id="bet-btn" class="btn dark-r-hover" style="width: 100%; text-align: center; float: left">OK</button>
   </div>
   `;
   }
@@ -343,7 +341,7 @@ export default class GameField {
   }
 
   highlightCurrentPlayer(name) {
-    document.getElementById(`icon-${name}`).style.backgroundColor = '#0399E1';
+    document.getElementById(`icon-${name}`).style.border = '2px solid #010101';
   }
 
   

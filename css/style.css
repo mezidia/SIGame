@@ -97,20 +97,12 @@
     z-index: 5;
     position: absolute;
     top: 10vh;
-    left: 0;
     margin: auto;
-    /* margin-left: calc(20px + 6vw); */
     max-width: 500px;
     display: grid;
     grid-template-rows: 70px 1fr;
     grid-template-columns: 1fr;
 }
-
-/* @media (max-width: 576px) {
-    .gm-popup {
-        margin-left: 0;
-    }
-} */
 
 .custom-popup {
     padding: 7px;
@@ -131,8 +123,8 @@
 }
 
 .player-display {
-    background-color: #514c4c;
-    color: white;
+    background-color: #cacaca;
+    color: #010101;
     text-align: center;
     flex-grow: 1;
     min-width: 100px;

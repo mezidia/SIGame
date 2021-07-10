@@ -60,7 +60,6 @@ async function joinHandle(gameData) {
   }
   if (gm.settings.running) return;
   if (gm.players.includes(new User().name)) {
-    console.log(new User().name);
     yesnoPopup('username-taken');
     return;
   }

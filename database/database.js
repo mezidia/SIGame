@@ -330,7 +330,7 @@ class Database {
     })
     .catch(err => console.log(err))
     .finally(() => console.log('done'));
-    console.log(bundle);
+    //console.log(bundle);
     return bundle;
   }
 } 

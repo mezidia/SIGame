@@ -3,6 +3,7 @@
 //start with default language
 import { de } from '../localization/de.js';
 import { ua } from '../localization/ua.js';
+
 export default class Language {
   static _language = { json: de };
   static _languages = { de: de, ua: ua }; 

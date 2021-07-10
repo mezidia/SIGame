@@ -5,7 +5,7 @@ import { changeHash } from '../spaControl.js';
 import { loader } from '../../utils/loader.js';
 import { promisifySocketMSG } from '../../utils.js';
 import BundleEditor from '../../gameLogic/bundleEditor_class.js';
-import Language from '../../changeLanguage.js';
+import Language from '../../language.js';
 import User from '../../gameLogic/user_class.js';
 import Game from '../../gameLogic/game_class.js';
 import SimpleGame from '../../gameLogic/simpleGame_class.js';
@@ -34,7 +34,6 @@ export default class CreateGameController {
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
-    console.log(configString);
     if (!this[configString]) return false;
     if (!this[configString][evt.target.id]) return false;
     return this[configString][evt.target.id];
@@ -144,7 +143,6 @@ export default class CreateGameController {
       master: new User().name,
       hasPassword: password ? true : false,
     };
-    console.log(questionBundle.value);
     if (questionBundle.value === 'download') {
       const bundleFileImport = document.getElementById('bundle-file');
       const file = bundleFileImport.files[0];
@@ -172,7 +170,6 @@ export default class CreateGameController {
       const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
       loader();
       promisifySocketMSG(message, 'bundleRows', storage.socket).then(async (info) => {
-        console.log(info);
         data.bundle = bundleEditor.parseBundle(info.data); //todo
         storage.game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
         const msg = {
@@ -193,7 +190,6 @@ export default class CreateGameController {
       const message = {mType: 'getBundleByName', data: {name: bundleTitle}};
       loader();
       promisifySocketMSG(message, 'bundleRows', storage.socket).then(async (info) => {
-        console.log(info);
         data.bundle = bundleEditor.parseBundle(info.data);
         storage.game = gameMode === 'classic' ? new Game(data.bundle, data.settings) : new SimpleGame(data.bundle, data.settings);
         const msg = {

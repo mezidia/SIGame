@@ -15,7 +15,6 @@ export default class HelpController {
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
-    console.log(configString);
     if (!this[configString]) return false;
     let handlers = this[configString](evt, evt.target.id);
     if (!handlers) {

@@ -22,7 +22,6 @@ export default class LobbySearchController {
 
   getHandlers(evt) {
     const configString = evt.type + 'Config';
-    console.log(configString);
     if (!this[configString]) return false;
     if (!this[configString][evt.target.id]) return false;
     return this[configString][evt.target.id];
@@ -40,7 +39,6 @@ export default class LobbySearchController {
     okButton.innerText = 'OK';
     okButton.addEventListener('click', () => {
       const name = takeName()
-      console.log('okButton ' + takeName());
       if (takeName() === null) return;
       new User().setName(name);
       storage.socket.send(JSON.stringify({mType: 'sendName', data: {name: name}}));
