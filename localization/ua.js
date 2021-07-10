@@ -60,7 +60,7 @@ const ua = {
   "answers": {
     "placeholder": "Відповіді"
   },
-  "wrong-answers": {
+  "wrong-answers-input": {
     "placeholder": "Неправильні відповіді(необов'язково)"
   },
   "input-category": {
