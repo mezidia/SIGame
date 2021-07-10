@@ -116,7 +116,8 @@ const ua = {
   "count-players-1": "гравців,",
   "count-players-2": "щоб почати гру",
   "prime-meridian": "час (нульовий меридіан) додається до назви",
-
+  "secret-question": "Секретне питання",
+  "bet-question": "Питання зі ставкою",
 }
 
 export { ua };

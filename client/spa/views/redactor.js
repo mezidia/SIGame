@@ -48,7 +48,7 @@ const view = () => {
           <h4 data-localize="category-name">Category name</h4>
           <input type="text" maxlength=200 id="category-name-${roundNumber}-${i}" required>
       
-          <h5>Secret question</h5>
+          <h5 data-localize="secret-question">Secret question</h5>
           <select id="secretIndex-select-${roundNumber}-${i}" class="form-control">
             <option>none</option>
             <option>1</option>
@@ -57,7 +57,7 @@ const view = () => {
             <option>4</option>
             <option>5</option>
           </select>
-          <h5>Bet question</h5>
+          <h5 data-localize="bet-question">Bet question</h5>
           <select id="betIndex-select-${roundNumber}-${i}" class="form-control">
             <option>none</option>
             <option>1</option>

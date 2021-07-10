@@ -132,6 +132,8 @@ const de = {
   "count-players-1": "players",
   "count-players-2": "to start the game",
   "prime-meridian": "time (prime meridian) is added to the bundle name",
+  "secret-question": "Secret question",
+  "bet-question": "Bet question",
 };
 
 export { de };
