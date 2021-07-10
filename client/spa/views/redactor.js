@@ -92,19 +92,19 @@ const view = () => {
         </label>
       </div>
       <br>
-      <h2 class="collapse-control" id="ref_round1"><span class="collapse-control" id="ref2_round1" data-localize="round">Round</span> 1 &#11167;</h2>
+      <h2 class="collapse-control" id="ref_round1"><span class="collapse-control" id="ref2_round1" data-localize="round">Round</span> 1 ➔</h2>
       <div class="collapse" id="round1">
         ${themesList(1)}
       </div>
-     <h2 class="collapse-control" id="ref_round2"><span class="collapse-control" id="ref2_round2" data-localize="round">Round</span> 2 &#11167;</h2>
+     <h2 class="collapse-control" id="ref_round2"><span class="collapse-control" id="ref2_round2" data-localize="round">Round</span> 2 ➔</h2>
       <div class="collapse" id="round2">
         ${themesList(2)}
       </div>
-      <h2 class="collapse-control" id="ref_round3"><span class="collapse-control" id="ref2_round3" data-localize="round">Round</span> 3 &#11167;</h2>
+      <h2 class="collapse-control" id="ref_round3"><span class="collapse-control" id="ref2_round3" data-localize="round">Round</span> 3 ➔</h2>
       <div class="collapse" id="round3">
         ${themesList(3)}
       </div>
-      <h2 class="collapse-control" id="ref_round-fin"><span data-localize="final-round" class="collapse-control" id="ref2_round-fin">Final Round</span> &#11167;</h2>
+      <h2 class="collapse-control" id="ref_round-fin"><span data-localize="final-round" class="collapse-control" id="ref2_round-fin">Final Round</span> ➔</h2>
       <div class="collapse" id="round-fin">
         ${finalQuestionList()}
       </div>
