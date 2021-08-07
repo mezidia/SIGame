@@ -50,6 +50,9 @@ const ua = {
   "question-type": {
     "placeholder": "Тип запитання"
   },
+  "question-cost": {
+    "placeholder": "Ціна питання(не обов'язково)"
+  },
   "input-question": {
     "placeholder": "Питання"
   },
@@ -61,7 +64,7 @@ const ua = {
     "placeholder": "Відповіді"
   },
   "wrong-answers-input": {
-    "placeholder": "Неправильні відповіді(необов'язково)"
+    "placeholder": "Неправильні відповіді(не обов'язково)"
   },
   "input-category": {
     "placeholder": "Категорія"

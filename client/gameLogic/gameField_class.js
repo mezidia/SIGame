@@ -49,7 +49,7 @@ export default class GameField {
       </div>
     </div>
     <div class="col-9" style="padding: 0 0 0 0;">
-      <div class="table-25">
+      <div class="table-25" style="grid-template-rows: repeat(${deck.length}, 1fr); grid-template-columns: repeat(${deck[0].questions.length}, 1fr)">
         ${drawCells(deck)}
       </div>
     </div>

@@ -50,6 +50,9 @@ const de = {
   "question-type":{
     "placeholder": "Question type"
   },
+  "question-cost": {
+    "placeholder": "Question cost(optional)"
+  },
   "input-question": {
     "placeholder": "Question"
   },
