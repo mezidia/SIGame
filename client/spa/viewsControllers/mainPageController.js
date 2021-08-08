@@ -5,7 +5,7 @@ import { changeHash } from '../spaControl.js';
 import { takeName, disconnect, socketHandle, updateGames, sendMessageToGameChat} from './externalControlersFunctions.js';
 import User from "../../gameLogic/user_class.js";
 
-const wsAdress = `wss://our-si-game.herokuapp.com/`;
+const wsAdress = `ws://localhost:5000`;
 
 const socketHandleConfig = mType => {
   return {
