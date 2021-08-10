@@ -128,6 +128,18 @@ export default class BundleEditor {
     return BundleEditor._instance;
   }
 
+  static countDecksQ(decks) {
+    const nDecks = decks.length;
+    if (nDecks === 0) return 0;
+    let res = 0;
+    for (let i = 0; i < nDecks; i++) {
+      const deck = decks[i];
+      for (const theme of deck) {
+        res += theme.quenstions.length;
+      }
+    }
+  }
+
   parseBundle(obj) {
     const decks = obj.decks;
     const langcode = obj.langcode;
@@ -143,50 +155,23 @@ export default class BundleEditor {
       res.push(new Deck(deck));
     }
     const bundleData = { 
-      'decks': res,
+      decks: res,
       title,
       langcode,
       author,
-      
+      roundsNum: obj.roundsNum,
+      themsInRoundNum: obj.themsInRoundNum,
+      qInThemeNum: obj.qInThemeNum,
+      qInFinal: obj.qInFinal,
     };
     return new Bundle(bundleData);
   }
 
-  getRandomBundleFrom(allBundles, langcode) {
-    const bundleData = {
-      author: 'autogen',
-      langcode: langcode,
-      title: 'autogen',
-      decks: [],
-    };
-    const bundlesByLang = this.getBundlesByLangcode(allBundles, langcode);
-    // get 15 regular decks
-    const usedDecksSubjects = [];
-    for (let c = 0; c < 15; c++) {
-      const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
-      const allRegularDecks = bundle.getRegularDecks();
-      const allRegularUnusedDecks = allRegularDecks.filter(deck => !usedDecksSubjects.includes(deck.subject));
-      const deck = allRegularUnusedDecks[getRandomIntInclusive(0, allRegularUnusedDecks.length - 1)];
-      if (!deck) throw Error('not enough unique decks');
-
-       //usedDecksSubjects.push(deck.subject); !!! remove on production !!!
-
-      bundleData.decks.push(deck);
-    }
-    // get 7 final decks
-    usedDecksSubjects.length = 0;
-    for (let c = 0; c < 7; c++) {
-      const bundle = bundlesByLang[getRandomIntInclusive(0, bundlesByLang.length - 1)];
-      const finalDecks = bundle.getFinalDecks();
-      const uniqueFinalDecks = finalDecks.filter(deck => !usedDecksSubjects.includes(deck.subject));
-      const deck = uniqueFinalDecks[getRandomIntInclusive(0, uniqueFinalDecks.length - 1)];
-      if (!deck) throw Error('not enough unique decks');
-
-      //usedDecksSubjects.push(deck.subject); !!! remove on production !!!
-
-      bundleData.decks.push(deck);
-    }
-    return new Bundle(bundleData);
+  setBundleSize(roundNum, themeNum, questionNum, finQuestionNum) {
+    this.roundsNum = roundNum;
+    this.themsInRoundNum = themeNum;
+    this.qInThemeNum = questionNum;
+    this.qInFinal = finQuestionNum;
   }
 
   async submitBundleEditor() {
@@ -195,23 +180,27 @@ export default class BundleEditor {
     if (!mainBundleFields) return false;
     const bundleData = {
       decks: [],
-      'langcode': undefined,
-      'author': undefined,
-      'title': undefined,
+      langcode: undefined,
+      author: undefined,
+      title: undefined,
+      roundsNum: this.roundsNum,
+      themsInRoundNum: this.themsInRoundNum,
+      qInThemeNum: this.qInThemeNum,
+      qInFinal: this.qInFinal,
     };
     bundleData.langcode = toLangCode(mainBundleFields[0]);
     bundleData.author = mainBundleFields[1];
     bundleData.title = mainBundleFields[2] + ' ' + new Date().toLocaleString('en-GB');
     try {
-      for (let r = 1; r < 4; r++) { //round
-        for (let c = 1; c <= 5; c++) { //category
+      for (let r = 1; r <= bundleData.roundsNum; r++) { //round
+        for (let c = 1; c <= bundleData.themsInRoundNum; c++) { //category
           const sbjInput = document.getElementById(`category-name-${r}-${c}`);
           const subject = getDomElemVal(sbjInput);
           const deck = {
             subject,
             questions: [],
           }
-          for(let q = 1; q <= 5; q++) { //question
+          for(let q = 1; q <= bundleData.qInThemeNum; q++) { //question
             const qData = await getQData(r, c, q);
             if (!qData) {
               errPopup('invalid', 'popupPlaceholder', ` ${r}-${c}-${q}`);
@@ -227,14 +216,15 @@ export default class BundleEditor {
           bundleData.decks.push(new Deck(deck));
         }
       }
-      for (let q = 1; q <= 7; q++) {
+      const finalRoundIndex = bundleData.roundsNum + 1;
+      for (let q = 1; q <= bundleData.qInFinal; q++) {
         const sbjInput = document.getElementById(`final-theme-${q}`);
         const subject = getDomElemVal(sbjInput);
         const deck = {
           subject,
           questions: [],
         };
-        const qData = await getQData(4, 1, q);
+        const qData = await getQData(finalRoundIndex, 1, q);
         if (!qData) {
           errPopup('invalid', 'popupPlaceholder', ` final-${q}`);
           return false;

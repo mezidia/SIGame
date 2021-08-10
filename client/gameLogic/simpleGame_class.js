@@ -116,12 +116,14 @@ export default class SimpleGame extends Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.answerCounter === 25) {
+    const qNum = BundleEditor.countDecksQ(this.currentRound.decks);
+    const nOfQPerRound = percentsOf(qNum, 80) - 1;
+    if (this.currentRound === this.bundle.roundsNum && this.answerCounter === 1) {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
       const time = this.gameField.congratulate(winner);
       setTimeout(this.exit(), time);
-    } else if (this.answerCounter % 5 === 0) {
+    } else if (this.answerCounter === nOfQPerRound) {
       this.currentRound++;
       this.answerCounter = 0;
     }

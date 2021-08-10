@@ -7,6 +7,8 @@ import GameTimer from './gameTimer_class.js';
 import Timer from './timer_class.js';
 import { changeHash } from '../spa/spaControl.js';
 import Language from '../language.js';
+import { percentsOf } from '../utils.js'
+import BundleEditor from './bundleEditor_class.js';
 
 const ANSWERTIME = 10; //sec
 const GAMETIME = 500; //sec
@@ -194,7 +196,7 @@ export default class Game {
       }
     }
     this.checkAnswerCounter();
-    if (this.currentRound === 3) { // switch to 3 for production
+    if (this.currentRound === this.bundle.roundsNum) { // switch to 3 for production
       this.gameField.drawFinalRound(this.bundle.getFinalDecks());
     } else {
       this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
@@ -659,12 +661,14 @@ export default class Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    if (this.currentRound === 3 && this.answerCounter === 1) { //3, 1
+    const qNum = BundleEditor.countDecksQ(this.currentRound.decks);
+    const nOfQPerRound = percentsOf(qNum, 80) - 1;
+    if (this.currentRound === this.bundle.roundsNum && this.answerCounter === 1) { //3, 1
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
       const time = this.gameField.congratulate(winner);
       setTimeout(this.exit, time);
-    } else if (this.answerCounter === 14) {
+    } else if (this.answerCounter === nOfQPerRound) {
       this.answerCounter = 0;
       this.currentRound++;
     }

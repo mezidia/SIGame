@@ -121,11 +121,12 @@ export default class RedactorController {
   }
 
   submitSizes = () => {
-    const roundNum = document.getElementById('round-num').value;
-    const themeNum = document.getElementById('theme-num').value;
-    const questionNum = document.getElementById('question-num').value;
-    const finQuestionNum = document.getElementById('fin-question-num').value;
-    this.roundList(+roundNum, +themeNum, +questionNum, +finQuestionNum);
+    const roundNum = +document.getElementById('round-num').value;
+    const themeNum = +document.getElementById('theme-num').value;
+    const questionNum = +document.getElementById('question-num').value;
+    const finQuestionNum = +document.getElementById('fin-question-num').value;
+    bundleEditor.setBundleSize(roundNum, themeNum, questionNum, finQuestionNum);
+    this.roundList(roundNum, themeNum, questionNum, finQuestionNum);
   }
 
   imgAud(str) {

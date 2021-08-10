@@ -2,10 +2,11 @@
 
 export default class Bundle {
   _setupRounds() {
-    this.round_1 = this.decks.slice(0, 5);
-    this.round_2 = this.decks.slice(5, 10);
-    this.round_3 = this.decks.slice(10, 15);
-    this.final = this.decks.slice(15, 22);
+    this.rounds = [];
+    for (let round = 0; round < this.roundsNum; round++) {
+      this.rounds.push(this.decks.slice(round * this.qInThemeNum, round * this.qInThemeNum + this.qInThemeNum))
+    }
+    this.final = this.decks.slice(this.roundsNum * this.qInThemeNum, this.roundsNum * this.qInThemeNum + this.qInFinal);
   }
 
   constructor(data) {
@@ -13,15 +14,19 @@ export default class Bundle {
     this.langcode = data.langcode;
     this.author = data.author;
     this.title = data.title;
+    this.roundsNum = data.roundsNum;
+    this.themsInRoundNum = data.themsInRoundNum;
+    this.qInThemeNum = data.qInThemeNum;
+    this.qInFinal = data.qInFinal;
     this._setupRounds();
   }
 
   getRoundsArr() {
-    return [this.round_1, this.round_2, this.round_3, this.final];
+    return [this.rounds, this.final];
   }
 
   getRegularDecks() {
-    return [].concat(this.round_1, this.round_2, this.round_3);
+    return this.rounds;
   }
 
   getFinalDecks() {
