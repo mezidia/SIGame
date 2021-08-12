@@ -22,7 +22,7 @@ export default class Bundle {
   }
 
   getRoundsArr() {
-    return [this.rounds, this.final];
+    return [...this.rounds, this.final];
   }
 
   getRegularDecks() {

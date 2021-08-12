@@ -13,7 +13,7 @@ export default class GameField {
   }
 
   // returns a game table used in classic mode
-  drawTable(deck, isGm = false) {
+  drawTable(deck, isGm = false, themesInRound= 5, qInTheme = 5) {
     if (isGm) {
       try {
         document.getElementById('submitPoints-sums-btn').style.removeProperty('grid-area');
@@ -28,8 +28,8 @@ export default class GameField {
     const gameDisplay = document.getElementById('game-display');
     const drawCells = (deck) => {
       const res = [];
-      for(let i = 1; i <= deck.length; ++i) {
-        for(let j = 1; j <= deck[i - 1].questions.length; ++j) {
+      for(let i = 1; i <= themesInRound; ++i) {
+        for(let j = 1; j <= qInTheme; ++j) {
           if (deck[i-1].questions[j-1]) {
             let questionCost = deck[i - 1].questions[j - 1].cost;
             if (!questionCost) questionCost = '';
@@ -49,7 +49,7 @@ export default class GameField {
       </div>
     </div>
     <div class="col-9" style="padding: 0 0 0 0;">
-      <div class="table-25" style="grid-template-rows: repeat(${deck.length}, 1fr); grid-template-columns: repeat(${deck[0].questions.length}, 1fr)">
+      <div class="table-25" style="grid-template-rows: repeat(${themesInRound}, 1fr); grid-template-columns: repeat(${qInTheme}, 1fr)">
         ${drawCells(deck)}
       </div>
     </div>
@@ -76,7 +76,7 @@ export default class GameField {
   // return true if removed child was last, else false
   isNullThemes() {
     const finalDisplay = document.getElementById('final-display');
-    return finalDisplay.childElementCount === 0 ? true : false;
+    return finalDisplay.childElementCount === 0;
   }
 
   // draws a question and reads it.

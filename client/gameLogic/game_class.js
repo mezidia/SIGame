@@ -196,10 +196,11 @@ export default class Game {
       }
     }
     this.checkAnswerCounter();
-    if (this.currentRound === this.bundle.roundsNum) { // switch to 3 for production
+    if (this.currentRound === this.bundle.roundsNum) {
       this.gameField.drawFinalRound(this.bundle.getFinalDecks());
     } else {
-      this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
+      this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master,
+        this.bundle.themsInRoundNum, this.bundle.qInThemeNum);
     }
   }
 
@@ -284,7 +285,8 @@ export default class Game {
   onStartGame = evt => {
     this.gameStatus = 1;
     this.gameTimer.setTimer(GAMETIME);
-    this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master);
+    this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master,
+      this.bundle.themsInRoundNum, this.bundle.qInThemeNum);
     this.gTimerCallback = new Timer(() => {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
