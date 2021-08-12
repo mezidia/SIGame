@@ -40,12 +40,9 @@ export default class GameField {
       return res.join('\n');
     }
     gameDisplay.innerHTML = `<div class="col-3" style="padding: 0 0 0 0;">
-      <div class="vertical-grid-5">
-        <div class="centred-text" id="theme-1">${deck[0].subject}</div>
-        <div class="centred-text" id="theme-2" style="border-top: 2px solid #010101">${deck[1].subject}</div>
-        <div class="centred-text" id="theme-3" style="border-top: 2px solid #010101">${deck[2].subject}</div>
-        <div class="centred-text" id="theme-4" style="border-top: 2px solid #010101">${deck[3].subject}</div>
-        <div class="centred-text" id="theme-5" style="border-top: 2px solid #010101">${deck[4].subject}</div>
+      <div class="vertical-grid-5" style="grid-template-rows: repeat(${themesInRound}, 1fr)">
+      ${Array(themesInRound).fill(1).map((x, i) => i)
+        .map(i => `<div class="centred-text" id="theme-${i+1}">${deck[i].subject}</div>`).join('\n')}
       </div>
     </div>
     <div class="col-9" style="padding: 0 0 0 0;">

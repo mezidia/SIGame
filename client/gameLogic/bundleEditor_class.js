@@ -135,7 +135,7 @@ export default class BundleEditor {
     for (let i = 0; i < nDecks; i++) {
       const deck = decks[i];
       for (const theme of deck) {
-        res += theme.quenstions.length;
+        res += theme.questions.length;
       }
     }
   }
