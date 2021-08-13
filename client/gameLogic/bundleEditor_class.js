@@ -134,10 +134,9 @@ export default class BundleEditor {
     let res = 0;
     for (let i = 0; i < nDecks; i++) {
       const deck = decks[i];
-      for (const theme of deck) {
-        res += theme.questions.length;
-      }
+      res += deck.questions.length;
     }
+    return res;
   }
 
   parseBundle(obj) {
