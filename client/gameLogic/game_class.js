@@ -198,7 +198,7 @@ export default class Game {
     this.checkAnswerCounter();
     if (this.currentRound === this.bundle.roundsNum) {
       this.gameField.drawFinalRound(this.bundle.getFinalDecks());
-    } else {
+    } else if (this.currentRound <= this.bundle.roundsNum) {
       this.gameField.drawTable(this.rounds[this.currentRound], new User().name === this.master,
         this.bundle.themsInRoundNum, this.bundle.qInThemeNum);
     }
@@ -667,6 +667,7 @@ export default class Game {
     const nOfQPerRound = percentsOf(qNum, 80) - 1;
     if (this.currentRound === this.bundle.roundsNum && this.answerCounter === 1) { //3, 1
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
+      this.currentRound++;
       //show win window
       const time = this.gameField.congratulate(winner);
       setTimeout(this.exit, time);
