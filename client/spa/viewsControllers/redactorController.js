@@ -3,6 +3,7 @@
 import BundleEditor from '../../gameLogic/bundleEditor_class.js'
 import { changeHash } from '../spaControl.js';
 import { scrollToRef } from './externalControlersFunctions.js';
+import {errPopup} from '../uiElements.js';
 
 const bundleEditor = new BundleEditor();
 
@@ -120,11 +121,28 @@ export default class RedactorController {
       .join('\n');
   }
 
+  validateSize(num, lower, high, name) {
+    if (num < lower || num > high) {
+      errPopup(`wrong-${name}`, 'popupPlaceholder', ` ${lower}-${high}`)
+      return false;
+    }
+    return true;
+  }
+
+  validateForm(roundNum, themeNum, questionsNum, finQuestionsNum) {
+    return [this.validateSize(roundNum, 1, 3, 'round'), // 1 to 3 rounds
+      this.validateSize(themeNum, 2, 5, 'theme'), // 2 to 5 themes
+      this.validateSize(questionsNum, 2, 5, 'question'),  // 2 to 5 questions
+      this.validateSize(finQuestionsNum, 2, 7, 'f-question'), // 2 to 7 final questions
+    ].every(x => x)
+  }
+
   submitSizes = () => {
     const roundNum = +document.getElementById('round-num').value;
     const themeNum = +document.getElementById('theme-num').value;
     const questionNum = +document.getElementById('question-num').value;
     const finQuestionNum = +document.getElementById('fin-question-num').value;
+    if (!this.validateForm(roundNum, themeNum, questionNum, finQuestionNum)) return;
     bundleEditor.setBundleSize(roundNum, themeNum, questionNum, finQuestionNum);
     this.roundList(roundNum, themeNum, questionNum, finQuestionNum);
   }

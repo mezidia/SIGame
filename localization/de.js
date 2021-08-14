@@ -66,6 +66,10 @@ const de = {
   "wrong-answers-input": {
     "placeholder": "Wrong answers(optional)"
   },
+  "wrong-round": "Wrong quantity of rounds, must be in range",
+  "wrong-theme": "Wrong quantity of themes, must be in range",
+  "wrong-question": "Wrong quantity of questions, must be in range",
+  "wrong-f-question": "Wrong quantity of final questions, must be in range",
   "input-category": {
     "placeholder": "Category"
   },
