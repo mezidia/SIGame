@@ -21,6 +21,10 @@ class Database {
       bundle_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
       bundle_author varchar(34),
       bundle_langcode int,
+      bundle_roundsNum int unsigned,
+      bundle_themsInRoundNum int unsigned,
+      bundle_qInThemeNum int unsigned,
+      bundle_qInFinal int unsigned,
       FOREIGN KEY (bundle_langcode) REFERENCES langcode(langcode_id),
       bundle_title varchar(200)
     );
@@ -81,6 +85,10 @@ class Database {
       author: null,
       langcode: null,
       title: null,
+      roundsNum: null,
+      themsInRoundNum: null,
+      qInThemeNum: null,
+      qInFinal: null,
       decks: []
     };
     let deck = {
@@ -141,6 +149,10 @@ class Database {
         bundle.author = rows[i].bundle_author;
         bundle.langcode = rows[i].langcode_name;
         bundle.title = rows[i].bundle_title;
+        bundle.roundsNum = rows[i].bundle_roundsNum;
+        bundle.themsInRoundNum = rows[i].bundle_themsInRoundNum;
+        bundle.qInThemeNum = rows[i].bundle_qInThemeNum;
+        bundle.qInFinal = rows[i].bundle_qInFinal;
         deck.subject = rows[i].deck_subject;
         
         if (i === rows.length - 1 || deckId !== rows[i + 1].deck_id) {
@@ -206,8 +218,8 @@ class Database {
     .catch(err => console.log(err))
     .then(async rows => {
       const langcodeId = rows[0].langcode_id;
-      const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode) 
-                                  VALUES('${bundle.author.replace(/[']{1}/g, "''")}', '${bundle.title.replace(/[']{1}/g, "''")}', '${langcodeId}')`;
+      const insertBundleSqlStr = `INSERT INTO bundle (bundle_author, bundle_title, bundle_langcode, bundle_roundsNum, bundle_themsInRoundNum, bundle_qInThemeNum, bundle_qInFinal) 
+                                  VALUES('${bundle.author.replace(/[']{1}/g, "''")}', '${bundle.title.replace(/[']{1}/g, "''")}', '${langcodeId}', '${bundle.roundsNum}', '${bundle.themsInRoundNum}', '${bundle.qInThemeNum}', '${bundle.qInFinal}')`;
       return await this.promisifyConQuery(insertBundleSqlStr);
     })
     .catch(err => console.log(err))
@@ -257,6 +269,10 @@ class Database {
       author: null,
       langcode: null,
       title: null,
+      roundsNum: null,
+      themsInRoundNum: null,
+      qInThemeNum: null,
+      qInFinal: null,
       decks: []
     };
     let deck = {
@@ -315,6 +331,10 @@ class Database {
         bundle.author = rows[i].bundle_author;
         bundle.langcode = rows[i].langcode_name;
         bundle.title = rows[i].bundle_title;
+        bundle.roundsNum = rows[i].bundle_roundsNum;
+        bundle.themsInRoundNum = rows[i].bundle_themsInRoundNum;
+        bundle.qInThemeNum = rows[i].bundle_qInThemeNum;
+        bundle.qInFinal = rows[i].bundle_qInFinal;
         deck.subject = rows[i].deck_subject;
         
         if (i === rows.length - 1 || deckId !== rows[i + 1].deck_id) {

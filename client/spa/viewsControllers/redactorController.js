@@ -4,6 +4,7 @@ import BundleEditor from '../../gameLogic/bundleEditor_class.js'
 import { changeHash } from '../spaControl.js';
 import { scrollToRef } from './externalControlersFunctions.js';
 import {errPopup} from '../uiElements.js';
+import Language from '../../language.js';
 
 const bundleEditor = new BundleEditor();
 
@@ -42,19 +43,19 @@ export default class RedactorController {
 
   questionList(roundNumber, themeNumber, questionCount = 5) {
     return Array(questionCount).fill(1).map((x, i) => i + 1).map(i => `
-      <h5><span data-localize="question">Question</span> ${i}: ${i*roundNumber}00 <span data-localize="points">points</span></h5>
-      <p data-localize="sep-answers">Separate true and wrong answers via comas</p>
-      <input type="text" placeholder="Question" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
-      <input type="text" placeholder="Answers" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
-      <input type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers-input">
-      <input type="number" placeholder="Question price(optional)" id="question-cost-${roundNumber}-${themeNumber}-${i}" data-localize="question-price">      
-      <h5 data-localize="optional">Optional</h5>
+      <h5><span data-localize="question">${Language.getTranslatedText('question')}</span> ${i}: ${i*roundNumber}00 <span data-localize="points">${Language.getTranslatedText('points')}</span></h5>
+      <p data-localize="sep-answers">${Language.getTranslatedText('sep-answers')}</p>
+      <input type="text" placeholder="${Language.getTranslatedText('input-question').placeholder}" maxlength=200 id="question-${roundNumber}-${themeNumber}-${i}" data-localize="input-question" required>
+      <input type="text" placeholder="${Language.getTranslatedText('answers').placeholder}" maxlength=300 id="answer-${roundNumber}-${themeNumber}-${i}" data-localize="answers" required>
+      <input type="text" placeholder="${Language.getTranslatedText('wrong-answers-input').placeholder}" maxlength=300 id="wrong-answer-${roundNumber}-${themeNumber}-${i}" data-localize="wrong-answers-input">
+      <input type="number" placeholder="${Language.getTranslatedText('question-price')}" id="question-cost-${roundNumber}-${themeNumber}-${i}" data-localize="question-price">      
+      <h5 data-localize="optional">${Language.getTranslatedText('optional')}</h5>
       <div id="audio_cont-${roundNumber}-${themeNumber}-${i}">
-        <label for="audio" data-localize="input-audio">Select audio for a question</label>
+        <label for="audio" data-localize="input-audio">${Language.getTranslatedText('input-audio')}</label>
         <input type="file" class="exclude" id="audio-${roundNumber}-${themeNumber}-${i}" name="audio" accept=".mp3,.ogg">
       </div>
       <div id="img_cont-${roundNumber}-${themeNumber}-${i}">
-        <label for="image" data-localize="input-image">Select image for a question</label>
+        <label for="image" data-localize="input-image">${Language.getTranslatedText('input-image')}</label>
         <input type="file" class="exclude" id="img-${roundNumber}-${themeNumber}-${i}" name="image" accept=".jpeg,.jpg,.png">
       </div>
       `).join('\n');
@@ -62,39 +63,39 @@ export default class RedactorController {
 
   finalQuestionList(questionCount = 7, roundCount = 3) {
     return Array(questionCount).fill(1).map((x, i) => i + 1).map(i => `
-      <h5 data-localize="question">Question ${i}</h5>
-      <input type="text" placeholder="Category" id="final-theme-${i}" data-localize="input-category" required>  
+      <h5 data-localize="question">${Language.getTranslatedText('question')} ${i}</h5>
+      <input type="text" placeholder="${Language.getTranslatedText('input-category').placeholder}" id="final-theme-${i}" data-localize="input-category" required>  
       <br>
       <br>
-      <input type="text" placeholder="Question" maxlength=200 id="question-${roundCount + 1}-1-${i}" data-localize="input-question" required>
-      <input type="text" placeholder="Answers" maxlength=300 id="answer-${roundCount + 1}-1-${i}" data-localize="answers" required>
-      <input type="text" placeholder="Wrong answers(optional)" maxlength=300 id="wrong-answer-${roundCount + 1}-1-${i}" data-localize="wrong-answers-input">
-      <input type="text" placeholder="Question type" id="question-type-${roundCount + 1}-1-${i}" data-localize="question-type" required>
-      <input type="number" placeholder="Question price(optional)" id="question-cost-${roundCount + 1}-1-${i}" data-localize="question-price">      
-      <h5 data-localize="optional">Optional</h5>
+      <input type="text" placeholder="${Language.getTranslatedText('input-question').placeholder}" maxlength=200 id="question-${roundCount + 1}-1-${i}" data-localize="input-question" required>
+      <input type="text" placeholder="${Language.getTranslatedText('answers').placeholder}" maxlength=300 id="answer-${roundCount + 1}-1-${i}" data-localize="answers" required>
+      <input type="text" placeholder="${Language.getTranslatedText('wrong-answers-input').placeholder}" maxlength=300 id="wrong-answer-${roundCount + 1}-1-${i}" data-localize="wrong-answers-input">
+      <input type="text" placeholder="${Language.getTranslatedText('question-type').placeholder}" id="question-type-${roundCount + 1}-1-${i}" data-localize="question-type" required>
+      <input type="number" placeholder="${Language.getTranslatedText('question-price')}" id="question-cost-${roundCount + 1}-1-${i}" data-localize="question-price">      
+      <h5 data-localize="optional">${Language.getTranslatedText('optional')}</h5>
       <div id="audio_cont-${roundCount + 1}-1-${i}">
-        <label for="audio" data-localize="input-audio">Select audio for a question</label>
+        <label for="audio" data-localize="input-audio">${Language.getTranslatedText('input-audio')}</label>
         <input type="file" class="exclude" id="audio-${roundCount + 1}-1-${i}" name="audio" accept=".mp3,.ogg">
       </div>
       <div id="img_cont-${roundCount + 1}-1-${i}">
-        <label for="image" data-localize="input-audio">Select image for a question</label>
+        <label for="image" data-localize="input-image">${Language.getTranslatedText('input-image')}</label>
         <input type="file" class="exclude" id="img-${roundCount + 1}-1-${i}" name="image" accept=".jpeg,.jpg,.png">
       </div>`).join('\n');
   }
 
   themesList(roundNumber, themeCount = 5, questionCount = 5) {
     return Array(themeCount).fill(1).map((x, i) => i + 1).map(i => `
-        <h3><span data-localize="category">Category</span> ${i}</h3>
+        <h3><span data-localize="category">${Language.getTranslatedText('category')}</span> ${i}</h3>
         <div class="collapse show">
-          <h4 data-localize="category-name">Category name</h4>
+          <h4 data-localize="category-name">${Language.getTranslatedText('category-name')}</h4>
           <input type="text" maxlength=200 id="category-name-${roundNumber}-${i}" required>
       
-          <h5 data-localize="secret-question">Secret question</h5>
+          <h5 data-localize="secret-question">${Language.getTranslatedText('secret-question')}</h5>
           <select id="secretIndex-select-${roundNumber}-${i}" class="form-control">
             <option>none</option>
             ${Array(questionCount).fill(1).map((x, i) => i + 1).map(i => `<option>${i}</option>`).join('\n')}
           </select>
-          <h5 data-localize="bet-question">Bet question</h5>
+          <h5 data-localize="bet-question">${Language.getTranslatedText('bet-question')}</h5>
           <select id="betIndex-select-${roundNumber}-${i}" class="form-control">
             <option>none</option>
             ${Array(questionCount).fill(1).map((x, i) => i + 1).map(i => `<option>${i}</option>`).join('\n')}
@@ -107,16 +108,16 @@ export default class RedactorController {
 
   roundList(roundCount = 3, themeCount = 5, questionCount = 5, finQuestionCount = 7) {
     document.getElementById('rounds').innerHTML = Array(roundCount).fill(1).map((x, i) => i + 1)
-      .map(i => `<h2 class="collapse-control" id="ref_round${i}"><span class="collapse-control" id="ref2_round${i}" data-localize="round">Round</span> ${i} ➔</h2>
+      .map(i => `<h2 class="collapse-control" id="ref_round${i}"><span class="collapse-control" id="ref2_round${i}" data-localize="round">${Language.getTranslatedText('round')}</span> ${i} ➔</h2>
       <div class="collapse" id="round${i}">
         ${this.themesList(i, themeCount, questionCount)}
       </div>`).concat(`
-      <h2 class="collapse-control" id="ref_round-fin"><span data-localize="final-round" class="collapse-control" id="ref2_round-fin">Final Round</span> ➔</h2>
+      <h2 class="collapse-control" id="ref_round-fin"><span data-localize="final-round" class="collapse-control" id="ref2_round-fin">${Language.getTranslatedText('final-round')}</span> ➔</h2>
       <div class="collapse" id="round-fin">
         ${this.finalQuestionList(finQuestionCount, roundCount)}
       </div>`).concat(`
       <button id="submitBundleEditor-btn" type="button" class="btn dark-b-hover btn-lg btn-block" style="margin-top: 40px" data-localize="bundle">
-        Create bundle
+      ${Language.getTranslatedText('bundle')}
       </button>`)
       .join('\n');
   }

@@ -141,6 +141,11 @@ const de = {
   "prime-meridian": "time (prime meridian) is added to the bundle name",
   "secret-question": "Secret question",
   "bet-question": "Bet question",
+  "rounds-h2-1": "Quantity of rounds before final",
+  "rounds-h2-2": "Quantity of themes in a round",
+  "rounds-h2-3": "Quantity of questions in a theme",
+  "rounds-h2-4": "Quantity of questions in final round",
+  "question-price": "Question price",
 };
 
 export { de };

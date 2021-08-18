@@ -23,13 +23,13 @@ const view = () => {
       </div>
       <br>
       <div id="rounds">
-        <h2>Quantity of rounds before final</h2>
+        <h2 data-localize="rounds-h2-1">Quantity of rounds before final</h2>
         <input type="number" value="3" id="round-num">
-        <h2>Quantity of themes in a round</h2>
+        <h2 data-localize="rounds-h2-2">Quantity of themes in a round</h2>
         <input type="number" value="5" id="theme-num">
-        <h2>Quantity of questions in a theme</h2>
+        <h2 data-localize="rounds-h2-3">Quantity of questions in a theme</h2>
         <input type="number" value="5" id="question-num">
-        <h2>Quantity of questions in final round</h2>
+        <h2 data-localize="rounds-h2-4">Quantity of questions in final round</h2>
         <input type="number" value="7" id="fin-question-num">
         <button type="button" id="submit-size" class="btn dark-b-hover btn-lg btn-block" style="margin-top: 40px">OK</button>
       </div>
