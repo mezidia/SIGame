@@ -3,8 +3,8 @@
 
 import User from "./user_class.js";
 import Game from "./game_class.js";
-import { getRandomIntInclusive } from "../utils.js";
 import Language from "../language.js";
+import { percentsOf } from '../utils.js'
 
 const ANSWERTIME = 5; //sec
 const GAMETIME = 300; //sec
@@ -13,6 +13,7 @@ const APPEALTIME = 5; //sec
 export default class SimpleGame extends Game {
 
   _secretToRegularQType(decksArr) {
+    decksArr = decksArr.flat();
     for (const deck of decksArr) {
       for (const q of deck.questions) {
         if (q.type === 'secret') q.type = 'regular';
@@ -22,7 +23,7 @@ export default class SimpleGame extends Game {
 
   constructor(bundle, settings, players) {
     super(bundle, settings, players);
-    this.rounds = this.bundle.getRegularDecks();
+    this.rounds = this.bundle.getRegularDecks().flat();
     this._secretToRegularQType(this.rounds);
     console.log(this.rounds);
   }
@@ -116,7 +117,7 @@ export default class SimpleGame extends Game {
 
   checkAnswerCounter() {
     this.answerCounter++;
-    const qNum = BundleEditor.countDecksQ(this.currentRound.decks);
+    const qNum = this.rounds[this.currentRound].questions.length;
     const nOfQPerRound = percentsOf(qNum, 80) - 1;
     if (this.currentRound === this.bundle.roundsNum && this.answerCounter === 1) {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
