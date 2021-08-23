@@ -30,7 +30,7 @@ export default class QReader {
     const str = question.string;
     this.initDisplay();
     // noinspection CssInvalidPropertyValue
-    this._display.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
+    document.getElementById(this._displayName).innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter">${letter}</span>`).join('')}
     </span>`;
@@ -148,8 +148,6 @@ export default class QReader {
   pause(stopTime = Date.now()) {
     this.isPaused = true;
     console.error(stopTime);
-    // this._passedFromStart -= Date.now() - stopTime;
-    //this._startTime = stopTime - this._passedFromStart;
   }
 
   status() {
@@ -158,8 +156,6 @@ export default class QReader {
     console.log('textBlock ' + this._textBlock);
     console.log('startTime = ' + this._startTime);
     console.log('isPaused = ' + this.isPaused);
-    console.log('textblock');
-    console.log(this._textBlock);
   }
   
 }
