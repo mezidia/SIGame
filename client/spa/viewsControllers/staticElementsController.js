@@ -13,7 +13,7 @@ export default class StaticElementsController {
     'de': [() => this.changeLanguage('de')],
     'ua': [() => this.changeLanguage('ua')],
     'close-popup': [this.closeCustomPopup],
-    'home-bt': [() => document.getElementsByClassName(elementId)[0].remove(), changeHash('chooseMode')],
+    'home-bt': [() => document.getElementsByClassName(elementId)[0].remove(), () => { window.location.hash = ('chooseMode') }],
     }[elementId];
   }
 

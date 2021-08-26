@@ -34,6 +34,8 @@ const changeHash = hash => async () => {
     yesnoPopup('onleave');
     return;
   }
+  const hs = router.getHash();
+  if ((hs === 'mainPage' || hs === 'help') && hash === 'chooseMode') return;
 
   router.change(hash);
   if (!storage.socket && hash !== 'chooseMode' && hash !== 'help') router.change('mainPage');
@@ -43,6 +45,7 @@ const changeHash = hash => async () => {
 const loadView = async () => {
   const { viewName } = router.getState();
   engine.loader();
+  if (viewName.includes('?')) await loadMainView();
   await import(`./views/${viewName}.js`)
     .then((viewModel) => {      
       engine.render(viewModel.default);
