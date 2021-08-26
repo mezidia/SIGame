@@ -8,7 +8,7 @@ export default class StaticElementsController {
   clickConfig(evt, elementId) {
     return {
     'help': [changeHash('help')],
-    'home': [changeHash('chooseMode')],
+    'home': [changeHash('')],
     'dju': [changeHash('')],
     'de': [() => this.changeLanguage('de')],
     'ua': [() => this.changeLanguage('ua')],
