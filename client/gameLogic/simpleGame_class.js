@@ -118,7 +118,7 @@ export default class SimpleGame extends Game {
   checkAnswerCounter() {
     this.answerCounter++;
     const qNum = this.rounds[this.currentRound].questions.length;
-    const nOfQPerRound = percentsOf(qNum, 80) - 1;
+    const nOfQPerRound = percentsOf(qNum, 80);
     if (this.currentRound === this.bundle.roundsNum && this.answerCounter === 1) {
       const winner = Object.entries(this.points).sort(([,a], [,b]) => b - a)[0][0];
       //show win window
