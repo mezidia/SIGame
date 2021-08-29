@@ -53,14 +53,14 @@ export default class QReader {
     image.style.marginRight = 'auto';
     image.style.width = 'auto';
     this.initDisplay();
-    this._display.innerHTML = '';
-    this._display.appendChild(image);
+    document.getElementById(this._displayName).innerHTML = '';
+    document.getElementById(this._displayName).appendChild(image);
     const q_text = document.createElement('span');
     q_text.id = 'question-text';
     q_text.innerHTML = `${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter">${letter}</span>`).join('')}`
-    this._display.appendChild(q_text);
+    document.getElementById(this._displayName).appendChild(q_text);
     document.getElementById('last-letter').addEventListener('animationend', (evt) => {
       callback();
     });
@@ -77,7 +77,7 @@ export default class QReader {
     const str = question.string;
     this.initDisplay();
     // noinspection CssInvalidPropertyValue
-    this._display.innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
+    document.getElementById(this._displayName).innerHTML = `<span id="question-text">${[...str].map((letter, index) =>
       `<span ${(index === str.length - 1) ? 'id="last-letter"': ''}
           class="question-letter">${letter}</span>`).join('')}
     </span>`;
